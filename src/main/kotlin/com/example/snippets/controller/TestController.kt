@@ -13,7 +13,7 @@ class TestController {
   @GetMapping("/send-message")
   fun sendMessageToPermissionServer(): String {
     val restTemplate = RestTemplate()
-    val serverBUrl = "http://localhost:8080/receive-message"
+    val serverBUrl = "http://permission-app:8083/receive-message"
     val message = "Hello from Snippets!"
 
     val response = restTemplate.postForObject(serverBUrl, message, String::class.java)
