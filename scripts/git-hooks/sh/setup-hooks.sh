@@ -1,7 +1,9 @@
 #!/bin/bash
 
-HOOKS_DIR="scripts/git-hooks/sh"
-GIT_HOOKS_DIR=".git/hooks"
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+HOOKS_DIR="$SCRIPT_DIR"
+GIT_HOOKS_DIR="$(git rev-parse --git-dir)/hooks"
 
 for hook in "$HOOKS_DIR"/*; do
   hook_name=$(basename "$hook")
@@ -10,3 +12,4 @@ for hook in "$HOOKS_DIR"/*; do
 done
 
 echo "Git hooks have been installed."
+
