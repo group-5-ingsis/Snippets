@@ -1,8 +1,6 @@
 package com.example.snippets.entity
 
 import jakarta.persistence.*
-import lombok.Getter
-import lombok.Setter
 
 @Entity
 class TestCase {
