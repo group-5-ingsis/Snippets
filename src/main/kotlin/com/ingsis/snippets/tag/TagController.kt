@@ -34,7 +34,7 @@ class TagController(private val tagService: TagService) {
   fun updateTag(@PathVariable id: String, @RequestBody updatedTag: Tag): ResponseEntity<Tag> {
     val tag = tagService.updateTag(id, updatedTag)
     return if (tag != null) {
-      ResponseEntity(HttpStatus.OK)
+      ResponseEntity.ok(updatedTag)
     } else {
       ResponseEntity(HttpStatus.NOT_FOUND)
     }
