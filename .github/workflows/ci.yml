@@ -1,9 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -15,6 +12,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      pull-requests: write
+
 
     steps:
       - name: Checkout code
@@ -27,5 +26,14 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Clean Gradle
+        run: ./gradlew clean
+
+      - name: Formatting/Linting
+        run: ./gradlew ktlintCheck
+
+      - name: Tests
+        run: ./gradlew koverVerify
+
+      - name: Build Docker Image
+        run: docker build -t snippet .

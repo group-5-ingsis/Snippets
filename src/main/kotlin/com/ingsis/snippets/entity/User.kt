@@ -1,11 +1,10 @@
-package com.example.snippets.entity
+package com.ingsis.snippets.entity
 
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
-
 class User(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

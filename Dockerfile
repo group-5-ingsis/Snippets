@@ -1,21 +1,14 @@
-# Use JDK 21
-FROM openjdk:21-jdk-slim
+FROM gradle:8.10.1-jdk21 AS build
 
-# Set working directory inside the container
-WORKDIR /app
+COPY . /home/gradle/src
+WORKDIR /home/gradle/src
 
-# Copy only the Gradle wrapper files first to cache Gradle installation
-COPY gradlew ./
-COPY gradle ./gradle
+RUN ./gradlew assemble --no-daemon
 
-# Download and cache the Gradle distribution
-RUN ./gradlew --version
+FROM amazoncorretto:21-alpine
 
-# Copy the rest of the application code
-COPY . .
+RUN mkdir /app
 
-# Expose the application port (this should match the port defined in application.properties)
-EXPOSE 8082
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/snippet.jar
 
-# Run the Spring Boot application using Gradle
-CMD ["./gradlew", "bootRun"]
+ENTRYPOINT ["java", "-jar", "/app/snippet.jar"]
