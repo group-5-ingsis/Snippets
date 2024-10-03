@@ -40,8 +40,9 @@ class TagController(private val tagService: TagService) {
 
   @DeleteMapping("/delete/{id}")
   fun deleteTag(@PathVariable id: String): ResponseEntity<Void> {
-    return if (tagService.deleteTag(id)) {
-      ResponseEntity.noContent().build()
+    val deletedTag = tagService.deleteTag(id)
+    return if (deletedTag) {
+      ResponseEntity.ok().build()
     } else {
       ResponseEntity.notFound().build()
     }
