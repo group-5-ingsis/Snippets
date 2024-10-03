@@ -1,6 +1,5 @@
-package com.ingsis.snippets
+package com.ingsis.snippets.health
 
-import com.ingsis.snippets.health.HealthController
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc

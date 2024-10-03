@@ -4,30 +4,30 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-class Snippet {
+data class Snippet(
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private var id: String? = null
+  var id: String? = null,
 
-  private var title: String? = null
+  var title: String? = null,
 
-  private var content: String? = null
+  var content: String? = null,
 
-  private var language: String? = null
+  var language: String? = null,
 
-  private var creationDate: LocalDateTime? = null
+  var creationDate: LocalDateTime? = null,
 
-  private var modificationDate: LocalDateTime? = null
+  var modificationDate: LocalDateTime? = null,
 
-  private var userId: Long? = null
-
-  @ElementCollection
-  private var comments: List<String>? = mutableListOf()
+  var userId: Long? = null,
 
   @ElementCollection
-  private var testCases: List<String>? = mutableListOf()
+  var comments: List<String>? = mutableListOf(),
 
   @ElementCollection
-  private var tags: List<String>? = mutableListOf()
-}
+  var testCases: List<String>? = mutableListOf(),
+
+  @ElementCollection
+  var tags: List<String>? = mutableListOf()
+)
