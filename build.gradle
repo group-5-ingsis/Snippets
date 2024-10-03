@@ -37,6 +37,8 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
     implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0"
+
 
     annotationProcessor('org.projectlombok:lombok:1.18.34')
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -45,7 +47,7 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
     testImplementation("org.postgresql:postgresql")
     testImplementation 'io.projectreactor:reactor-test'
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation('org.mockito.kotlin:mockito-kotlin:5.4.0')
 
 
     testImplementation("com.h2database:h2")

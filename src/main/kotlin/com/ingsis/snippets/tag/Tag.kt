@@ -11,6 +11,6 @@ data class Tag(
 
   var name: String? = null,
 
-  @ElementCollection
-  var snippets: List<String>? = null
+  var snippetId: String? = null
+
 )
