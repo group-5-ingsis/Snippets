@@ -1,5 +1,6 @@
 package com.ingsis.snippets.tag
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -15,16 +16,17 @@ class TagController(private val tagService: TagService) {
 
   @GetMapping
   fun getAllTags(): ResponseEntity<List<Tag>> {
-    return ResponseEntity.ok(tagService.getAllTags())
+    val allTags = tagService.getAllTags()
+    return ResponseEntity.ok(allTags)
   }
 
   @GetMapping("/get/{id}")
   fun getTagById(@PathVariable id: String): ResponseEntity<Tag> {
     val tag = tagService.getTagById(id)
     return if (tag != null) {
-      ResponseEntity.ok(tag)
+      ResponseEntity(HttpStatus.OK)
     } else {
-      ResponseEntity.notFound().build()
+      ResponseEntity(HttpStatus.NOT_FOUND)
     }
   }
 
@@ -32,9 +34,9 @@ class TagController(private val tagService: TagService) {
   fun updateTag(@PathVariable id: String, @RequestBody updatedTag: Tag): ResponseEntity<Tag> {
     val tag = tagService.updateTag(id, updatedTag)
     return if (tag != null) {
-      ResponseEntity.ok(tag)
+      ResponseEntity(HttpStatus.OK)
     } else {
-      ResponseEntity.notFound().build()
+      ResponseEntity(HttpStatus.NOT_FOUND)
     }
   }
 

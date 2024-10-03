@@ -37,7 +37,7 @@ class SnippetController(private val snippetService: SnippetService) {
   @DeleteMapping("/delete/{id}")
   fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void> {
     return if (snippetService.deleteSnippet(id)) {
-      ResponseEntity(HttpStatus.NO_CONTENT)
+      ResponseEntity(HttpStatus.OK)
     } else {
       ResponseEntity(HttpStatus.NOT_FOUND)
     }

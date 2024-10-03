@@ -64,7 +64,6 @@ class TagControllerTests {
 
   @Test
   fun `should update existing tag`() {
-    val existingTag = Tag(id = "1", name = "Java", snippetId = "snippet1")
     val updatedTag = Tag(name = "Kotlin", snippetId = "snippet2")
 
     `when`(tagService.updateTag("1", updatedTag)).thenReturn(updatedTag)
