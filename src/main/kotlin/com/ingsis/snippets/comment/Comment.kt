@@ -4,11 +4,11 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-class Comment(
+data class Comment(
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private var id: String? = null,
+  var id: String? = null,
 
   var content: String? = null,
 

@@ -3,13 +3,14 @@ package com.ingsis.snippets.tag
 import jakarta.persistence.*
 
 @Entity
-class Tag {
+data class Tag(
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private var id: String? = null
+  var id: String? = null,
 
-  private var name: String? = null
+  var name: String? = null,
 
   @ElementCollection
-  private var snippets: List<String>? = null
-}
+  var snippets: List<String>? = null
+)

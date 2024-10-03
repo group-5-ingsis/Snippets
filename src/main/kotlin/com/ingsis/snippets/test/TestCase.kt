@@ -3,15 +3,17 @@ package com.ingsis.snippets.test
 import jakarta.persistence.*
 
 @Entity
-class TestCase {
+data class TestCase(
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private var id: String? = null
+  var id: String? = null,
 
-  private var input: String? = null
-  private var expectedOutput: String? = null
+  var input: String? = null,
 
-  private var snippetId: String? = null
+  var expectedOutput: String? = null,
 
-  private var userId: String? = null
-}
+  var snippetId: String? = null,
+
+  var userId: String? = null
+)
