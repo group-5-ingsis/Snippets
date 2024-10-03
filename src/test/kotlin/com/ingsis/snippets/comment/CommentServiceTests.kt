@@ -1,16 +1,25 @@
 package com.ingsis.snippets.comment
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class CommentServiceTests {
 
-  private val commentRepository = mock(CommentRepository::class.java)
-  private val commentService = CommentService(commentRepository)
+  @Mock
+  private lateinit var commentRepository: CommentRepository
+
+  @InjectMocks
+  private lateinit var commentService: CommentService
+
+  @BeforeEach
+  fun setUp() {
+    MockitoAnnotations.openMocks(this)
+  }
 
   @Test
   fun `should return comments for a given snippet`() {
