@@ -1,0 +1,35 @@
+services:
+  snippet:
+    container_name: snippet
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app_src
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    depends_on:
+      - snippet-postgres-db
+    env_file:
+      .env
+    ports:
+      - ${APP_PORT}
+
+  snippet-postgres-db:
+    container_name: snippet-db
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}
+
+volumes:
+  postgres_data:

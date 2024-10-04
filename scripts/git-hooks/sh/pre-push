@@ -1,0 +1,8 @@
+#!/bin/sh
+
+./gradlew build
+
+if [ $? -ne 0 ]; then
+  echo "Build failed, push aborted."
+  exit 1
+fi
