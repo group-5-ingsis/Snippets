@@ -25,8 +25,8 @@ class CommentServiceTests {
   fun `should return comments for a given snippet`() {
     val snippetId = "snippet1"
     val expectedComments = listOf(
-      Comment(id = "comment1", content = "Comment 1", snippetId = snippetId, user = "user1"),
-      Comment(id = "comment2", content = "Comment 2", snippetId = snippetId, user = "user2")
+      Comment(id = "comment1", content = "Comment 1", snippetId = snippetId, userId = "user1"),
+      Comment(id = "comment2", content = "Comment 2", snippetId = snippetId, userId = "user2")
     )
 
     whenever(commentRepository.findBySnippetId(snippetId)).thenReturn(expectedComments)

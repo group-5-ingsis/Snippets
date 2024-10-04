@@ -16,5 +16,5 @@ data class Comment(
 
   var snippetId: String? = null,
 
-  var user: String? = null
+  var userId: String? = null
 )
