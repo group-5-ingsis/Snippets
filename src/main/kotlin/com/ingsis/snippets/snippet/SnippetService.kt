@@ -23,7 +23,6 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
       existingSnippet.modificationDate = LocalDateTime.now()
       existingSnippet.comments = updatedSnippet.comments
       existingSnippet.testCases = updatedSnippet.testCases
-      existingSnippet.tags = updatedSnippet.tags
 
       snippetRepository.save(existingSnippet)
     } else {

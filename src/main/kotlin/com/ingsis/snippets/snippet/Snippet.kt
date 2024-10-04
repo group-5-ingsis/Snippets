@@ -26,8 +26,6 @@ data class Snippet(
   var comments: List<String>? = mutableListOf(),
 
   @ElementCollection
-  var testCases: List<String>? = mutableListOf(),
+  var testCases: List<String>? = mutableListOf()
 
-  @ElementCollection
-  var tags: List<String>? = mutableListOf()
 )

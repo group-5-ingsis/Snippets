@@ -10,10 +10,16 @@ class TestUtils(val client: WebTestClient) {
       .exchange()
   }
 
-  fun getSnippet(snippetId: String): WebTestClient.ResponseSpec {
+  fun getSnippet(snippetId: String?): WebTestClient.ResponseSpec {
     return client.get().uri("/snippets/$snippetId")
       .exchange()
       .expectStatus().isOk
+  }
+
+  fun getDeletedSnippet(snippetId: String?): WebTestClient.ResponseSpec {
+    return client.get().uri("/snippets/$snippetId")
+      .exchange()
+      .expectStatus().isNotFound
   }
 
   fun getAllSnippets(): WebTestClient.ResponseSpec {
@@ -22,13 +28,13 @@ class TestUtils(val client: WebTestClient) {
       .expectStatus().isOk
   }
 
-  fun updateSnippet(snippetId: String, request: SnippetDto): WebTestClient.ResponseSpec {
+  fun updateSnippet(snippetId: String?, request: SnippetDto): WebTestClient.ResponseSpec {
     return client.put().uri("/snippets/update/$snippetId").bodyValue(request)
       .exchange()
       .expectStatus().isOk
   }
 
-  fun deleteSnippet(snippetId: String): WebTestClient.ResponseSpec {
+  fun deleteSnippet(snippetId: String?): WebTestClient.ResponseSpec {
     return client.delete().uri("/snippets/delete/$snippetId")
       .exchange()
       .expectStatus().isOk

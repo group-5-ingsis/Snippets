@@ -27,10 +27,15 @@ class SnippetControllerE2ETests @Autowired constructor(
   @Test
   fun `can create a snippet`() {
     val request = SnippetDto("Sample Snippet", "Sample Content", "Kotlin")
-    testUtils.createSnippet(request)
+
+    val createResponse = testUtils.createSnippet(request)
       .expectStatus().isCreated
 
-    val response = testUtils.getSnippet("Sample Snippet")
+    val createdSnippet = createResponse.expectBody(Snippet::class.java)
+      .returnResult()
+      .responseBody!!
+
+    val response = testUtils.getSnippet(createdSnippet.id)
     response.expectBody(SnippetDto::class.java)
       .returnResult()
       .responseBody!!
@@ -40,9 +45,13 @@ class SnippetControllerE2ETests @Autowired constructor(
   @Test
   fun `can get a snippet by id`() {
     val snippet = SnippetDto("Test Snippet", "Test Content", "Kotlin")
-    testUtils.createSnippet(snippet).expectStatus().isCreated
+    val createResponse = testUtils.createSnippet(snippet).expectStatus().isCreated
 
-    val response = testUtils.getSnippet("Test Snippet")
+    val createdSnippet = createResponse.expectBody(Snippet::class.java)
+      .returnResult()
+      .responseBody!!
+
+    val response = testUtils.getSnippet(createdSnippet.id)
     response.expectBody(SnippetDto::class.java)
       .returnResult()
       .responseBody!!
@@ -52,13 +61,17 @@ class SnippetControllerE2ETests @Autowired constructor(
   @Test
   fun `can update a snippet`() {
     val originalSnippet = SnippetDto("Update Snippet", "Initial Content", "Kotlin")
-    testUtils.createSnippet(originalSnippet).expectStatus().isCreated
+    val createResponse = testUtils.createSnippet(originalSnippet).expectStatus().isCreated
 
-    val updatedSnippet = SnippetDto("Update Snippet", "Updated Content", "Kotlin")
-    testUtils.updateSnippet("Update Snippet", updatedSnippet)
+    val createdSnippet = createResponse.expectBody(Snippet::class.java)
+      .returnResult()
+      .responseBody!!
+
+    val updatedSnippet = SnippetDto(createdSnippet.title, "Updated Content", "Kotlin")
+    testUtils.updateSnippet(createdSnippet.id, updatedSnippet)
       .expectStatus().isOk
 
-    val response = testUtils.getSnippet("Update Snippet")
+    val response = testUtils.getSnippet(createdSnippet.id)
     response.expectBody(SnippetDto::class.java)
       .returnResult()
       .responseBody!!
@@ -68,12 +81,16 @@ class SnippetControllerE2ETests @Autowired constructor(
   @Test
   fun `can delete a snippet`() {
     val snippet = SnippetDto("Delete Snippet", "Content to be deleted", "Kotlin")
-    testUtils.createSnippet(snippet).expectStatus().isCreated
+    val createResponse = testUtils.createSnippet(snippet).expectStatus().isCreated
 
-    testUtils.deleteSnippet("Delete Snippet")
+    val createdSnippet = createResponse.expectBody(Snippet::class.java)
+      .returnResult()
+      .responseBody!!
+
+    testUtils.deleteSnippet(createdSnippet.id)
       .expectStatus().isOk
 
-    val response = testUtils.getSnippet("Delete Snippet")
+    val response = testUtils.getDeletedSnippet(createdSnippet.id)
     response.expectStatus().isNotFound
   }
 }
