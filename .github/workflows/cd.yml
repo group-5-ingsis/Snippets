@@ -1,3 +1,4 @@
+
 name: CD
 
 on:
@@ -33,7 +34,7 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ env.REPO }}:latest
+            ${{ github.ref == 'refs/heads/main' && format('ghcr.io/{0}:latest', env.REPO) || '' }}
+            ${{ github.ref == 'refs/heads/dev' && format('ghcr.io/{0}:latest-dev', env.REPO) || '' }}
             ghcr.io/${{ env.REPO }}:${{ github.sha }}
-            ${{ github.ref == 'refs/heads/dev' && format('ghcr.io/{0}:dev', env.REPO) || '' }}
           file: ./Dockerfile
