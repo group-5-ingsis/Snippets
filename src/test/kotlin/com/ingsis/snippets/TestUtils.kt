@@ -22,12 +22,6 @@ class TestUtils(val client: WebTestClient) {
       .expectStatus().isNotFound
   }
 
-  fun getAllSnippets(): WebTestClient.ResponseSpec {
-    return client.get().uri("/snippets")
-      .exchange()
-      .expectStatus().isOk
-  }
-
   fun updateSnippet(snippetId: String?, request: SnippetDto): WebTestClient.ResponseSpec {
     return client.put().uri("/snippets/update/$snippetId").bodyValue(request)
       .exchange()
