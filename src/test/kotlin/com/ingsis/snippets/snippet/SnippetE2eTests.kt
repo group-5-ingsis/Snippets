@@ -13,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-class SnippetControllerE2ETests @Autowired constructor(
+class SnippetE2eTests @Autowired constructor(
   val client: WebTestClient
 ) {
 
