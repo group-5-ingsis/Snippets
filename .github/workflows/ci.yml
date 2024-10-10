@@ -1,13 +1,13 @@
 name: CI
 
 on:
-  push:
-    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  cd:
+  ci:
     uses: husseymarcos/ingsis-workflows/.github/workflows/ci.yml@main
