@@ -10,4 +10,4 @@ permissions:
 
 jobs:
   cd:
-    uses: husseymarcos/ingsis-workflows/.github/workflows/cd-containers.yml@main
+    uses: group-5-ingsis/workflows/.github/workflows/cd-containers.yml@main
