@@ -17,6 +17,11 @@ class HealthController {
     return ResponseEntity("Service is running", HttpStatus.OK)
   }
 
+  @GetMapping("/test")
+  fun test(): ResponseEntity<String> {
+    return ResponseEntity("SpringBoot 'test' endpoint working. ", HttpStatus.OK)
+  }
+
   @GetMapping("/hello")
   fun sayHello(): ResponseEntity<String> {
     return ResponseEntity("Hello, World!", HttpStatus.OK)
