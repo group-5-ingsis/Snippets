@@ -11,6 +11,7 @@ permissions:
 jobs:
   cd:
     uses: group-5-ingsis/workflows/.github/workflows/cd-containers.yml@main
-    with:
-      image: 'snippets'
-      environment: ${{ github.ref_name }}
+    secrets:
+      AZURE_DEV_KEY: ${{ secrets.AZURE_DEV_KEY }}
+      AZURE_DEV_USER: ${{ secrets.AZURE_DEV_USER }}
+      AZURE_DEV_HOST: ${{ secrets.AZURE_DEV_HOST }}
