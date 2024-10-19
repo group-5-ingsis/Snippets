@@ -11,3 +11,6 @@ permissions:
 jobs:
   cd:
     uses: group-5-ingsis/workflows/.github/workflows/cd-containers.yml@main
+    with:
+      image: 'snippets'
+      environment: ${{ github.ref_name }}
