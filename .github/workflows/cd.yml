@@ -12,6 +12,6 @@ jobs:
   cd:
     uses: group-5-ingsis/workflows/.github/workflows/cd-containers.yml@main
     secrets:
-      AZURE_DEV_KEY: ${{ secrets.AZURE_DEV_KEY }}
-      AZURE_DEV_USER: ${{ secrets.AZURE_DEV_USER }}
-      AZURE_DEV_HOST: ${{ secrets.AZURE_DEV_HOST }}
+      AZURE_KEY: ${{ github.ref == 'refs/heads/main' && secrets.AZURE_MAIN_KEY || secrets.AZURE_DEV_KEY }}
+      AZURE_USER: ${{ github.ref == 'refs/heads/main' && secrets.AZURE_MAIN_USER || secrets.AZURE_DEV_USER }}
+      AZURE_HOST: ${{ github.ref == 'refs/heads/main' && secrets.AZURE_MAIN_HOST || secrets.AZURE_DEV_HOST }}
