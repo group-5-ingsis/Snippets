@@ -1,6 +1,6 @@
 services:
-  snippet:
-    container_name: snippet
+  snippets:
+    container_name: snippets
     build:
       context: .
       dockerfile: Dockerfile
