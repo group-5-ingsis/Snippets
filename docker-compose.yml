@@ -16,8 +16,6 @@ services:
       .env
     ports:
       - ${APP_PORT}
-    networks:
-      - app-network
 
   snippet-postgres-db:
     container_name: snippet-db
@@ -32,12 +30,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}
-    networks:
-      - app-network
 
 volumes:
   postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
