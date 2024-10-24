@@ -18,10 +18,12 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-open class OAuth2ResourceServerSecurityConfiguration(@Value("\${auth0.audience}")
-                                                val audience: String,
-                                                     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-                                                val issuer: String,) {
+open class OAuth2ResourceServerSecurityConfiguration(
+  @Value("\${auth0.audience}")
+  val audience: String,
+  @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+  val issuer: String
+) {
   @Bean
   open fun filterChain(http: HttpSecurity): SecurityFilterChain {
     http.authorizeHttpRequests {

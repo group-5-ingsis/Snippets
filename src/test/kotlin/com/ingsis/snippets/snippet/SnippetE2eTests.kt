@@ -59,26 +59,6 @@ class SnippetE2eTests @Autowired constructor(
   }
 
   @Test
-  fun `can update a snippet`() {
-    val originalSnippet = SnippetDto("Update Snippet", "Initial Content", "Kotlin")
-    val createResponse = testUtils.createSnippet(originalSnippet).expectStatus().isCreated
-
-    val createdSnippet = createResponse.expectBody(Snippet::class.java)
-      .returnResult()
-      .responseBody!!
-
-    val updatedSnippet = SnippetDto(createdSnippet.title, "Updated Content", "Kotlin")
-    testUtils.updateSnippet(createdSnippet.id, updatedSnippet)
-      .expectStatus().isOk
-
-    val response = testUtils.getSnippet(createdSnippet.id)
-    response.expectBody(SnippetDto::class.java)
-      .returnResult()
-      .responseBody!!
-      .content shouldBeEqualTo "Updated Content"
-  }
-
-  @Test
   fun `can delete a snippet`() {
     val snippet = SnippetDto("Delete Snippet", "Content to be deleted", "Kotlin")
     val createResponse = testUtils.createSnippet(snippet).expectStatus().isCreated

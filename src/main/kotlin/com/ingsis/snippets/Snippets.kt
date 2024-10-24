@@ -8,7 +8,6 @@ import org.springframework.boot.runApplication
 open class Snippets
 
 fun main(args: Array<String>) {
-
   val dotenv = Dotenv.load()
 
   System.setProperty("AUTH_SERVER_URI", dotenv["AUTH_SERVER_URI"])

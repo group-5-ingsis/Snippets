@@ -10,7 +10,7 @@ class SnippetController(private val snippetService: SnippetService) {
 
   @PostMapping("/create")
   fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
-    //val createdSnippet = putRequest("/v1/asset/snippet.container/snippet.")
+    // val createdSnippet = putRequest("/v1/asset/snippet.container/snippet.")
     return ResponseEntity(HttpStatus.CREATED)
   }
 

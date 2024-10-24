@@ -18,11 +18,8 @@ class HealthController {
     return ResponseEntity(serviceInfo, HttpStatus.OK)
   }
 
-
   @GetMapping("/jwt")
   fun jwt(@AuthenticationPrincipal jwt: Jwt): String {
     return jwt.tokenValue
   }
-
-
 }
