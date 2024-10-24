@@ -17,8 +17,6 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
   fun updateSnippet(id: String, updatedSnippet: Snippet): Snippet? {
     val existingSnippet = snippetRepository.findById(id).orElse(null)
     return if (existingSnippet != null) {
-      existingSnippet.title = updatedSnippet.title
-      existingSnippet.content = updatedSnippet.content
       existingSnippet.language = updatedSnippet.language
       existingSnippet.modificationDate = LocalDateTime.now()
       existingSnippet.comments = updatedSnippet.comments
