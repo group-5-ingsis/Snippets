@@ -10,9 +10,9 @@ data class Snippet(
   @GeneratedValue(strategy = GenerationType.UUID)
   var id: String? = null,
 
-  var title: String? = null,
+  var key: String? = null,
 
-  var content: String? = null,
+  var container: String? = null,
 
   var language: String? = null,
 
