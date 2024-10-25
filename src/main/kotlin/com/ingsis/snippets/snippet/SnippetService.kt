@@ -21,7 +21,7 @@ class SnippetService(
       val response = restTemplate.postForEntity(
         "$assetServiceBaseUrl/$container/$key",
         snippet,
-        Snippet::class.java
+        SnippetDto::class.java
       )
       return response.statusCode.is2xxSuccessful
     } catch (e: HttpClientErrorException) {

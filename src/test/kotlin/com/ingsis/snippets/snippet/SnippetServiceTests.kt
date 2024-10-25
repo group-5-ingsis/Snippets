@@ -7,10 +7,19 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.test.web.client.MockRestServiceServer
+import org.springframework.test.web.client.match.MockRestRequestMatchers.method
+import org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
+import org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
+import org.springframework.web.client.RestTemplate
 import java.time.LocalDateTime
 import java.util.*
 
 class SnippetServiceTests {
+
+  private lateinit var restTemplate: RestTemplate
 
   @Mock
   private lateinit var snippetRepository: SnippetRepository
@@ -18,11 +27,14 @@ class SnippetServiceTests {
   @InjectMocks
   private lateinit var snippetService: SnippetService
 
+  private lateinit var mockServer: MockRestServiceServer
+
   private lateinit var snippet: Snippet
 
   @BeforeEach
   fun setUp() {
     MockitoAnnotations.openMocks(this)
+    mockServer = MockRestServiceServer.createServer(restTemplate)
     snippet = Snippet(
       id = "1",
       language = "Kotlin",
@@ -30,6 +42,26 @@ class SnippetServiceTests {
       modificationDate = LocalDateTime.now(),
       testCases = listOf("TestCase1")
     )
+  }
+
+  @Test
+  fun `createSnippet should return true when assetService responds with CREATED`() {
+    val snippet = SnippetDto(
+      container = "PrintScript",
+      content = "Hello World!",
+      key = "HelloWorld.ps"
+    )
+
+    val assetServiceBaseUrl = System.getProperty("ASSET_SERVICE_URL")
+
+    mockServer.expect(requestTo("$assetServiceBaseUrl/${snippet.container}/${snippet.key}"))
+      .andExpect(method(HttpMethod.POST))
+      .andRespond(withStatus(HttpStatus.CREATED))
+
+    val result = snippetService.createSnippet(snippet)
+
+    assert(result)
+    mockServer.verify()
   }
 
   @Test
