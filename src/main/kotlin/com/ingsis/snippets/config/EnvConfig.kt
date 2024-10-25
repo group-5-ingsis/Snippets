@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration
 open class EnvConfig {
   @Bean
   open fun dotenv(): Dotenv {
-
     val dotenv = Dotenv.load()
 
     System.setProperty("AUTH_SERVER_URI", dotenv["AUTH_SERVER_URI"])
