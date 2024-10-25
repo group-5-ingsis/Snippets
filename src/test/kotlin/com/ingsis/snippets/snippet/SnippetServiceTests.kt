@@ -1,11 +1,11 @@
 package com.ingsis.snippets.snippet
 
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
-import org.mockito.Mockito.*
+import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import java.time.LocalDateTime
 import java.util.*
@@ -52,7 +52,6 @@ class SnippetServiceTest {
     assertNull(result)
     verify(snippetRepository, times(1)).findById("1")
   }
-
 
   @Test
   fun `updateSnippet should return null when snippet not found`() {
