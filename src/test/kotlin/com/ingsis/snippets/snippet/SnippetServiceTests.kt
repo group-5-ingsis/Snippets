@@ -10,7 +10,7 @@ import org.mockito.MockitoAnnotations
 import java.time.LocalDateTime
 import java.util.*
 
-class SnippetServiceTest {
+class SnippetServiceTests {
 
   @Mock
   private lateinit var snippetRepository: SnippetRepository

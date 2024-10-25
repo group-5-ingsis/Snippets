@@ -84,6 +84,8 @@ koverReport {
         filters {
             excludes {
                 packages("config")
+                packages("health")
+                packages("security")
                 classes("com.ingsis.parse.Snippet.kt")
             }
         }

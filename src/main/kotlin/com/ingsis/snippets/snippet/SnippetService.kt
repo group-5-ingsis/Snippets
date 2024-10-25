@@ -1,10 +1,34 @@
 package com.ingsis.snippets.snippet
 
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.RestTemplate
 import java.time.LocalDateTime
 
 @Service
-class SnippetService(private val snippetRepository: SnippetRepository) {
+class SnippetService(
+  private val snippetRepository: SnippetRepository,
+  private val restTemplate: RestTemplate
+) {
+
+  private val assetServiceBaseUrl = System.getProperty("ASSET_SERVICE_URL")
+
+  fun createSnippet(snippet: SnippetDto): Boolean {
+    val container = snippet.container
+    val key = snippet.key
+
+    try {
+      val response = restTemplate.postForEntity(
+        "$assetServiceBaseUrl/$container/$key",
+        snippet,
+        Snippet::class.java
+      )
+      return response.statusCode.is2xxSuccessful
+    } catch (e: HttpClientErrorException) {
+      println("Error creating snippet: ${e.message}")
+      return false
+    }
+  }
 
   fun getSnippet(id: String): Snippet? {
     return snippetRepository.findById(id).orElse(null)
@@ -25,7 +49,8 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
   }
 
   fun deleteSnippet(id: String): Boolean {
-    return if (snippetRepository.existsById(id)) {
+    val snippetExists = snippetRepository.existsById(id)
+    return if (snippetExists) {
       snippetRepository.deleteById(id)
       true
     } else {

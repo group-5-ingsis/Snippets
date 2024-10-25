@@ -10,6 +10,7 @@ open class EnvConfig {
   open fun dotenv(): Dotenv {
     val dotenv = Dotenv.load()
 
+    System.setProperty("ASSET_SERVICE_URL", dotenv["ASSET_SERVICE_URL"])
     System.setProperty("AUTH_SERVER_URI", dotenv["AUTH_SERVER_URI"])
     System.setProperty("AUTH_CLIENT_ID", dotenv["AUTH_CLIENT_ID"])
     System.setProperty("AUTH_CLIENT_SECRET", dotenv["AUTH_CLIENT_SECRET"])
