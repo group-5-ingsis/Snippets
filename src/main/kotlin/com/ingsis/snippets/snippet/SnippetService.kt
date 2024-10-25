@@ -6,10 +6,6 @@ import java.time.LocalDateTime
 @Service
 class SnippetService(private val snippetRepository: SnippetRepository) {
 
-  fun createSnippet(snippet: Snippet): Snippet {
-    return snippetRepository.save(snippet)
-  }
-
   fun getSnippet(id: String): Snippet? {
     return snippetRepository.findById(id).orElse(null)
   }

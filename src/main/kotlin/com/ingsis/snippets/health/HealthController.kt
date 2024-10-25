@@ -14,7 +14,7 @@ class HealthController {
 
   @GetMapping("/info")
   fun getServiceInfo(): ResponseEntity<String> {
-    val serviceInfo = "Service Name: Parse Service"
+    val serviceInfo = "Service: Parse"
     return ResponseEntity(serviceInfo, HttpStatus.OK)
   }
 
