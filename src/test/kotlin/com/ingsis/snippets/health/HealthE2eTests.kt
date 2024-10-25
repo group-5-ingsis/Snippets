@@ -1,5 +1,6 @@
 package com.ingsis.snippets.health
 
+import com.ingsis.snippets.TestUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,30 +15,40 @@ class HealthE2eTests @Autowired constructor(
   val client: WebTestClient
 ) {
 
+  val mockJwt = TestUtils(client).getMockJwt()
+
   @Test
   fun `checkHealth should return OK status with a message`() {
-    client.get().uri("/health").exchange()
+    client.get().uri("/health")
+      .header("Authorization", "Bearer $mockJwt")
+      .exchange()
       .expectStatus().isOk
       .expectBody(String::class.java).isEqualTo("Service is running")
   }
 
   @Test
   fun `sayHello should return OK status with Hello message`() {
-    client.get().uri("/health/hello").exchange()
+    client.get().uri("/health/hello")
+      .header("Authorization", "Bearer $mockJwt")
+      .exchange()
       .expectStatus().isOk
       .expectBody(String::class.java).isEqualTo("Hello, World!")
   }
 
   @Test
   fun `getServiceInfo should return OK status with service info`() {
-    client.get().uri("/health/info").exchange()
+    client.get().uri("/health/info")
+      .header("Authorization", "Bearer $mockJwt")
+      .exchange()
       .expectStatus().isOk
       .expectBody(String::class.java).isEqualTo("Service Name: Parse Service\nVersion: 1.0.0")
   }
 
   @Test
   fun `getCurrentTimestamp should return OK status with a valid timestamp`() {
-    client.get().uri("/health/timestamp").exchange()
+    client.get().uri("/health/timestamp")
+      .header("Authorization", "Bearer $mockJwt")
+      .exchange()
       .expectStatus().isOk
       .expectBody(String::class.java).consumeWith {
         val timestamp = it.responseBody!!
@@ -47,7 +58,9 @@ class HealthE2eTests @Autowired constructor(
 
   @Test
   fun `getHealthStatus should return OK status with health status and uptime`() {
-    client.get().uri("/health/health/status").exchange()
+    client.get().uri("/health/health/status")
+      .header("Authorization", "Bearer $mockJwt")
+      .exchange()
       .expectStatus().isOk
       .expectBody()
       .jsonPath("$.status").isEqualTo("UP")
@@ -57,8 +70,11 @@ class HealthE2eTests @Autowired constructor(
 
   @Test
   fun `sayGoodbye should return OK status with Goodbye message`() {
-    client.get().uri("/health/goodbye").exchange()
+    client.get().uri("/health/goodbye")
+      .header("Authorization", "Bearer $mockJwt")
+      .exchange()
       .expectStatus().isOk
       .expectBody(String::class.java).isEqualTo("Goodbye, World!")
   }
 }
+
