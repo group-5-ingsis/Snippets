@@ -6,14 +6,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.web.client.RestTemplate
 
 @SpringBootApplication
-open class Snippets {
+open class Snippets
 
-  @Bean
-  open fun restTemplate(): RestTemplate {
-    return RestTemplate()
-  }
+@Bean
+fun restTemplate(): RestTemplate {
+  return RestTemplate()
+}
 
-  fun main(args: Array<String>) {
-    runApplication<Snippets>(*args)
-  }
+fun main(args: Array<String>) {
+  runApplication<Snippets>(*args)
 }

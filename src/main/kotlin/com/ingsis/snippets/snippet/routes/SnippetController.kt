@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/v1/snippets")
 class SnippetController(private val snippetService: SnippetService) : SnippetRoutesSpec {
 
   override fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
