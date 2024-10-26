@@ -1,21 +1,21 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.snippet.routes
 
+import com.ingsis.snippets.snippet.Snippet
+import com.ingsis.snippets.snippet.SnippetService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/snippets")
-class SnippetController(private val snippetService: SnippetService) {
+@RequestMapping("/v1/snippets")
+class SnippetController(private val snippetService: SnippetService) : SnippetRoutesSpec {
 
-  @PostMapping("/create")
-  fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
+  override fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
     // val createdSnippet = putRequest("/v1/asset/snippet.container/snippet.")
     return ResponseEntity(HttpStatus.CREATED)
   }
 
-  @GetMapping("/{id}")
-  fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
+  override fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
     val snippet = snippetService.getSnippet(id)
     return if (snippet != null) {
       ResponseEntity(snippet, HttpStatus.OK)
@@ -24,8 +24,7 @@ class SnippetController(private val snippetService: SnippetService) {
     }
   }
 
-  @PutMapping("/update/{id}")
-  fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet> {
+  override fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet> {
     val snippet = snippetService.updateSnippet(id, updatedSnippet)
     return if (snippet != null) {
       ResponseEntity(snippet, HttpStatus.OK)
@@ -34,8 +33,7 @@ class SnippetController(private val snippetService: SnippetService) {
     }
   }
 
-  @DeleteMapping("/delete/{id}")
-  fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void> {
+  override fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void> {
     return if (snippetService.deleteSnippet(id)) {
       ResponseEntity(HttpStatus.OK)
     } else {

@@ -1,0 +1,25 @@
+package com.ingsis.snippets.snippet.routes
+
+import com.ingsis.snippets.snippet.Snippet
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+
+interface SnippetRoutesSpec {
+
+  @PostMapping("/create")
+  fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet>
+
+  @GetMapping("/{id}")
+  fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet>
+
+  @PutMapping("/update/{id}")
+  fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet>
+
+  @DeleteMapping("/delete/{id}")
+  fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void>
+}
