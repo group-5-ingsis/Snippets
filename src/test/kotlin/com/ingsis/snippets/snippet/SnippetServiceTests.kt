@@ -1,5 +1,6 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.asset.AssetClient
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -7,22 +8,21 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
-import java.util.Optional
 
 class SnippetServiceTests {
+
+  @InjectMocks
+  private lateinit var snippetService: SnippetService
 
   @Mock
   private lateinit var snippetRepository: SnippetRepository
 
   @Mock
-  private lateinit var restTemplate: RestTemplate
+  private lateinit var assetClient: AssetClient
 
-  @InjectMocks
-  private lateinit var snippetService: SnippetService
+  @Mock
+  private lateinit var restTemplate: RestTemplate
 
   @BeforeEach
   fun setUp() {
@@ -30,49 +30,28 @@ class SnippetServiceTests {
   }
 
   @Test
-  fun `createSnippet should return true when snippet is created successfully`() {
-    val snippetDto = SnippetDto(container = "container1", key = "key1")
-    val responseEntity = ResponseEntity(snippetDto, HttpStatus.CREATED)
+  fun `should return Snippet created successfully when snippet is created`() {
+    val snippetDto = SnippetDto(container = "PrintScript", key = "HelloWorld.ps", content = "HelloWorld!")
 
-    `when`(restTemplate.postForEntity(anyString(), eq(snippetDto), eq(SnippetDto::class.java)))
-      .thenReturn(responseEntity)
-
-    val result = snippetService.createSnippet(snippetDto)
-
-    assertTrue(result)
-    verify(restTemplate, times(1)).postForEntity(anyString(), eq(snippetDto), eq(SnippetDto::class.java))
-  }
-
-  @Test
-  fun `createSnippet should return false when HttpClientErrorException is thrown`() {
-    val snippetDto = SnippetDto(container = "container1", key = "key1")
-
-    `when`(restTemplate.postForEntity(anyString(), eq(snippetDto), eq(SnippetDto::class.java)))
-      .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
+    `when`(assetClient.createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto))
+      .thenReturn("Snippet created successfully.")
 
     val result = snippetService.createSnippet(snippetDto)
 
-    assertFalse(result)
-    verify(restTemplate, times(1)).postForEntity(anyString(), eq(snippetDto), eq(SnippetDto::class.java))
+    assertEquals("Snippet created successfully.", result)
+    verify(assetClient, times(1)).createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto)
   }
 
   @Test
-  fun `getSnippet should return Snippet when found`() {
-    val snippet = Snippet(id = "1", language = "Kotlin")
-    `when`(snippetRepository.findById("1")).thenReturn(Optional.of(snippet))
+  fun `createOrUpdateSnippet should return Snippet updated successfully when snippet is updated`() {
+    val snippetDto = SnippetDto(container = "PrintScript", key = "HelloWorld.ps", content = "HelloWorld!")
 
-    val result = snippetService.getSnippet("1")
+    `when`(assetClient.createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto))
+      .thenReturn("Snippet updated successfully.")
 
-    assertNotNull(result)
-    assertEquals("Kotlin", result?.language)
-  }
+    val result = snippetService.createSnippet(snippetDto)
 
-  @Test
-  fun `getSnippet should return null when not found`() {
-    `when`(snippetRepository.findById("1")).thenReturn(Optional.empty())
-
-    val result = snippetService.getSnippet("1")
-
-    assertNull(result)
+    assertEquals("Snippet updated successfully.", result)
+    verify(assetClient, times(1)).createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto)
   }
 }

@@ -1,33 +1,17 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.asset.AssetClient
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestTemplate
 import java.time.LocalDateTime
 
 @Service
 class SnippetService(
   private val snippetRepository: SnippetRepository,
-  private val restTemplate: RestTemplate
+  private val assetClient: AssetClient
 ) {
 
-  private val assetServiceBaseUrl = System.getProperty("ASSET_SERVICE_URL")
-
-  fun createSnippet(snippet: SnippetDto): Boolean {
-    val container = snippet.container
-    val key = snippet.key
-
-    try {
-      val response = restTemplate.postForEntity(
-        "$assetServiceBaseUrl/$container/$key",
-        snippet,
-        SnippetDto::class.java
-      )
-      return response.statusCode.is2xxSuccessful
-    } catch (e: HttpClientErrorException) {
-      println("Error creating snippet: ${e.message}")
-      return false
-    }
+  fun createSnippet(snippet: SnippetDto): String {
+    return assetClient.createOrUpdateSnippet(snippet.container, snippet.key, snippet)
   }
 
   fun getSnippet(id: String): Snippet? {
