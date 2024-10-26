@@ -1,4 +1,4 @@
-package com.ingsis.snippets.snippet.model
+package com.ingsis.snippets.snippet
 
 data class SnippetDto(
   var container: String,

@@ -1,7 +1,6 @@
 package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.AssetClient
-import com.ingsis.snippets.snippet.model.SnippetDto
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
