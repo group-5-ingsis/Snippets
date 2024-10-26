@@ -1,6 +1,6 @@
 package com.ingsis.snippets.snippet.routes
 
-import com.ingsis.snippets.snippet.Snippet
+import com.ingsis.snippets.snippet.model.Snippet
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

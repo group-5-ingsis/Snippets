@@ -1,6 +1,8 @@
 package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.AssetClient
+import com.ingsis.snippets.snippet.model.Snippet
+import com.ingsis.snippets.snippet.model.SnippetDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 

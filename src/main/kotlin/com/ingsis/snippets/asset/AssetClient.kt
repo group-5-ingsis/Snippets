@@ -1,6 +1,6 @@
 package com.ingsis.snippets.asset
 
-import com.ingsis.snippets.snippet.SnippetDto
+import com.ingsis.snippets.snippet.model.SnippetDto
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod

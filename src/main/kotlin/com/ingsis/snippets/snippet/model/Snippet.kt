@@ -1,4 +1,4 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.snippet.model
 
 import jakarta.persistence.*
 import java.time.LocalDateTime
