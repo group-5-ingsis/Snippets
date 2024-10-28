@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/v1/snippets")
 interface SnippetRoutesSpec {
 
-  @PostMapping("/create")
+  @PostMapping("/")
   fun createSnippet(
     @RequestBody snippet: SnippetDto
   ): ResponseEntity<String>
@@ -20,9 +20,12 @@ interface SnippetRoutesSpec {
   @GetMapping("/{id}")
   fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet>
 
-  @PutMapping("/update/{id}")
+  @GetMapping("/")
+  fun getAllSnippets(): ResponseEntity<Snippet>
+
+  @PutMapping("/{id}")
   fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet>
 
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping("/{id}")
   fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void>
 }
