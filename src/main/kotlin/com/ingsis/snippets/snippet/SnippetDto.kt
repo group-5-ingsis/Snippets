@@ -1,3 +1,7 @@
 package com.ingsis.snippets.snippet
 
-data class SnippetDto(var title: String?, var content: String?, var language: String?)
+data class SnippetDto(
+  var container: String,
+  var key: String,
+  var content: String
+)
