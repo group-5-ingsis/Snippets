@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 interface SnippetRoutesSpec {
 
   @PostMapping("/create")
-  fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet>
+  fun createSnippet(
+    @RequestBody snippet: SnippetDto
+  ): ResponseEntity<String>
 
   @GetMapping("/{id}")
   fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet>

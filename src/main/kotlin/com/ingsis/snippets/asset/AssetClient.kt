@@ -1,6 +1,5 @@
 package com.ingsis.snippets.asset
 
-import com.ingsis.snippets.snippet.SnippetDto
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -15,19 +14,22 @@ class AssetClient(private val restTemplate: RestTemplate) {
 
   private val assetServiceBaseUrl = System.getProperty("ASSET_SERVICE_URL")
 
-  fun createOrUpdateSnippet(container: String, key: String, snippet: SnippetDto): String {
+  fun createOrUpdateSnippet(asset: Asset): String {
+    val container = asset.container
+    val key = asset.key
+
     return try {
       val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
       }
 
-      val entity = HttpEntity(snippet, headers)
+      val requestEntity = HttpEntity(asset.content, headers)
 
-      val response: ResponseEntity<SnippetDto> = restTemplate.exchange(
+      val response: ResponseEntity<Void> = restTemplate.exchange(
         "$assetServiceBaseUrl/$container/$key",
         HttpMethod.PUT,
-        entity,
-        SnippetDto::class.java
+        requestEntity,
+        Void::class.java
       )
 
       when (response.statusCode) {

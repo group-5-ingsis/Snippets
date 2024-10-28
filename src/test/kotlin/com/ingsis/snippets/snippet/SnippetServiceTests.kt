@@ -1,5 +1,6 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetClient
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -31,27 +32,27 @@ class SnippetServiceTests {
 
   @Test
   fun `should return Snippet created successfully when snippet is created`() {
-    val snippetDto = SnippetDto(container = "PrintScript", key = "HelloWorld.ps", content = "HelloWorld!")
+    val asset = Asset(container = "PrintScript", key = "HelloWorld.ps", content = "HelloWorld!")
 
-    `when`(assetClient.createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto))
+    `when`(assetClient.createOrUpdateSnippet("PrintScript", "HelloWorld.ps", asset))
       .thenReturn("Snippet created successfully.")
 
-    val result = snippetService.createSnippet(snippetDto)
+    val result = snippetService.createSnippet(asset)
 
     assertEquals("Snippet created successfully.", result)
-    verify(assetClient, times(1)).createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto)
+    verify(assetClient, times(1)).createOrUpdateSnippet("PrintScript", "HelloWorld.ps", asset)
   }
 
   @Test
   fun `createOrUpdateSnippet should return Snippet updated successfully when snippet is updated`() {
-    val snippetDto = SnippetDto(container = "PrintScript", key = "HelloWorld.ps", content = "HelloWorld!")
+    val asset = Asset(container = "PrintScript", key = "HelloWorld.ps", content = "HelloWorld!")
 
-    `when`(assetClient.createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto))
+    `when`(assetClient.createOrUpdateSnippet("PrintScript", "HelloWorld.ps", asset))
       .thenReturn("Snippet updated successfully.")
 
-    val result = snippetService.createSnippet(snippetDto)
+    val result = snippetService.createSnippet(asset)
 
     assertEquals("Snippet updated successfully.", result)
-    verify(assetClient, times(1)).createOrUpdateSnippet("PrintScript", "HelloWorld.ps", snippetDto)
+    verify(assetClient, times(1)).createOrUpdateSnippet("PrintScript", "HelloWorld.ps", asset)
   }
 }
