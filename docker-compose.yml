@@ -54,6 +54,11 @@ services:
     volumes:
       - blob:/workspace
 
+  redis:
+    container_name: "event-bus"
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
 
 volumes:
   postgres_data:

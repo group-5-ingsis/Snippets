@@ -41,4 +41,8 @@ class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesS
       ResponseEntity(HttpStatus.NOT_FOUND)
     }
   }
+
+  override fun lintAllSnippets(): ResponseEntity<Snippet> {
+    TODO("Not yet implemented")
+  }
 }

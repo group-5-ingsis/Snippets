@@ -28,4 +28,7 @@ interface SnippetRoutesSpec {
 
   @DeleteMapping("/{id}")
   fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void>
+
+  @PostMapping("/lint")
+  fun lintAllSnippets(): ResponseEntity<Snippet>
 }
