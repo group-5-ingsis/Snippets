@@ -5,11 +5,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class SnippetController(private val snippetService: SnippetService) : SnippetRoutesSpec {
+class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesSpec {
 
-  override fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
-    // val createdSnippet = putRequest("/v1/asset/snippet.container/snippet.")
-    return ResponseEntity(HttpStatus.CREATED)
+  override fun createSnippet(snippet: SnippetDto): ResponseEntity<String> {
+    var result = snippetService.createSnippet(snippet)
+    return ResponseEntity.ok().body(result)
   }
 
   override fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
@@ -19,6 +19,10 @@ class SnippetController(private val snippetService: SnippetService) : SnippetRou
     } else {
       ResponseEntity(HttpStatus.NOT_FOUND)
     }
+  }
+
+  override fun getAllSnippets(): ResponseEntity<Snippet> {
+    TODO("Not yet implemented")
   }
 
   override fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet> {
@@ -36,5 +40,9 @@ class SnippetController(private val snippetService: SnippetService) : SnippetRou
     } else {
       ResponseEntity(HttpStatus.NOT_FOUND)
     }
+  }
+
+  override fun lintAllSnippets(): ResponseEntity<Snippet> {
+    TODO("Not yet implemented")
   }
 }

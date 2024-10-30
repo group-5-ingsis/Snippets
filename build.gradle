@@ -1,13 +1,8 @@
 plugins {
-    // Kotlin
     id 'org.jetbrains.kotlin.jvm' version '1.9.25'
-
-    //Springboot
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.25'
-
-    // Formatter & Linter
     id 'org.jlleitschuh.gradle.ktlint' version '11.5.0'
     id 'org.jetbrains.kotlinx.kover' version '0.7.3'
 }
@@ -24,13 +19,25 @@ java {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/austral-ingsis/class-redis-streams")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 dependencies {
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+
+    implementation 'org.austral.ingsis:redis-streams-flux:0.1.13'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.github.cdimascio:dotenv-java:2.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -42,7 +49,7 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
     implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0"
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
     annotationProcessor'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'

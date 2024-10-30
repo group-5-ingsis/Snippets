@@ -1,8 +1,8 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetClient
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 
 @Service
 class SnippetService(
@@ -11,7 +11,13 @@ class SnippetService(
 ) {
 
   fun createSnippet(snippet: SnippetDto): String {
-    return assetClient.createOrUpdateSnippet(snippet.container, snippet.key, snippet)
+    // snippetRepository.save(snippet);
+    val asset = Asset(
+      container = snippet.author,
+      key = snippet.name,
+      content = snippet.content
+    )
+    return assetClient.createOrUpdateSnippet(asset)
   }
 
   fun getSnippet(id: String): Snippet? {
@@ -22,10 +28,6 @@ class SnippetService(
     val existingSnippet = snippetRepository.findById(id).orElse(null)
     return if (existingSnippet != null) {
       existingSnippet.language = updatedSnippet.language
-      existingSnippet.modificationDate = LocalDateTime.now()
-      existingSnippet.comments = updatedSnippet.comments
-      existingSnippet.testCases = updatedSnippet.testCases
-
       snippetRepository.save(existingSnippet)
     } else {
       null
