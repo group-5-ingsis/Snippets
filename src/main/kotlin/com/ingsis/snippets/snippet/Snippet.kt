@@ -31,4 +31,14 @@ data class Snippet(
     compliant = "",
     author = ""
   )
+
+  constructor(snippetDto: SnippetDto) : this(
+    id = "",
+    author = snippetDto.author,
+    description = snippetDto.description,
+    name = snippetDto.name,
+    version = snippetDto.version,
+    language = snippetDto.language,
+    compliant = ""
+  )
 }

@@ -15,7 +15,7 @@ interface SnippetRoutesSpec {
   @PostMapping("/")
   fun createSnippet(
     @RequestBody snippet: SnippetDto
-  ): ResponseEntity<String>
+  ): Snippet
 
   @GetMapping("/{id}")
   fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet>

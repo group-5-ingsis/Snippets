@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesSpec {
 
-  override fun createSnippet(snippet: SnippetDto): ResponseEntity<String> {
-    var result = snippetService.createSnippet(snippet)
-    return ResponseEntity.ok().body(result)
+  override fun createSnippet(snippet: SnippetDto): Snippet {
+    return snippetService.createSnippet(snippet)
   }
 
   override fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
