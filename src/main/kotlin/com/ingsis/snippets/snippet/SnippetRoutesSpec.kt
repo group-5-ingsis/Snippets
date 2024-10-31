@@ -18,7 +18,7 @@ interface SnippetRoutesSpec {
   ): Snippet
 
   @GetMapping("/{id}")
-  fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet>
+  fun getSnippet(@PathVariable id: String): Snippet
 
   @GetMapping("/")
   fun getAllSnippets(): ResponseEntity<Snippet>

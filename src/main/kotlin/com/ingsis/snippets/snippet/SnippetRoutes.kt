@@ -11,13 +11,8 @@ class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesS
     return snippetService.createSnippet(snippet)
   }
 
-  override fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
-    val snippet = snippetService.getSnippet(id)
-    return if (snippet != null) {
-      ResponseEntity(snippet, HttpStatus.OK)
-    } else {
-      ResponseEntity(HttpStatus.NOT_FOUND)
-    }
+  override fun getSnippet(id: String): Snippet {
+    return snippetService.getSnippet(id)
   }
 
   override fun getAllSnippets(): ResponseEntity<Snippet> {

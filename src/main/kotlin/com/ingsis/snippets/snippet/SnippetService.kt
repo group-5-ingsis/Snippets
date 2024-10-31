@@ -24,7 +24,8 @@ class SnippetService(
     return snippetRepository.save(snippet)
   }
 
-  fun getSnippet(id: String): Snippet? {
+  fun getSnippet(id: String): Snippet {
+    // val content = assetClient.getAsset(id)
     return snippetRepository.findById(id).orElse(null)
   }
 
