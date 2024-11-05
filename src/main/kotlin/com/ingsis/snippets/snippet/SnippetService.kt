@@ -33,7 +33,7 @@ class SnippetService(
   fun getSnippetContent(id: String): String {
     val snippet = getSnippet(id)
     val container = snippet.author
-    val key = snippet.name
+    val key = snippet.id
 
     return assetService.getAssetContent(container, key)
   }

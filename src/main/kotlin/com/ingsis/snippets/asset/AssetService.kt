@@ -3,6 +3,7 @@ package com.ingsis.snippets.asset
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
@@ -20,7 +21,11 @@ class AssetService(private val restTemplate: RestTemplate) {
   }
 
   fun getAssetContent(container: String, key: String): String {
-    val requestEntity = HttpEntity<String>(null, createHeaders())
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.TEXT_EVENT_STREAM
+    }
+
+    val requestEntity = HttpEntity(null, headers)
 
     val url = "$assetServiceBaseUrl/$container/$key"
 
@@ -39,7 +44,12 @@ class AssetService(private val restTemplate: RestTemplate) {
   }
 
   fun createOrUpdateAsset(asset: Asset): String {
-    val requestEntity = HttpEntity(String, createHeaders())
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val requestEntity = HttpEntity(asset.content, headers)
     val container = asset.container
     val key = asset.key
 
