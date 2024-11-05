@@ -1,4 +1,4 @@
-package com.ingsis.snippets.snippet.producer
+package com.ingsis.snippets.snippet.async.producer
 
 data class SnippetOperation(
   var id: String,

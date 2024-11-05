@@ -1,4 +1,4 @@
-package com.ingsis.snippets.snippet.producer
+package com.ingsis.snippets.snippet.async.producer
 
 import kotlinx.coroutines.reactive.awaitSingle
 import org.austral.ingsis.redis.RedisStreamProducer

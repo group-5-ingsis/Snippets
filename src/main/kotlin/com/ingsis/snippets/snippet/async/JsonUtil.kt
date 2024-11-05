@@ -1,10 +1,10 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.snippet.async
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ingsis.snippets.snippet.consumer.OperationResult
+import com.ingsis.snippets.snippet.async.consumer.OperationResult
 
 object JsonUtil {
   private val objectMapper: ObjectMapper = jacksonObjectMapper()

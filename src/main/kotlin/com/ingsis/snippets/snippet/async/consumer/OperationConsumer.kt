@@ -1,6 +1,6 @@
-package com.ingsis.snippets.snippet.consumer
+package com.ingsis.snippets.snippet.async.consumer
 
-import com.ingsis.snippets.snippet.JsonUtil
+import com.ingsis.snippets.snippet.async.JsonUtil
 import org.austral.ingsis.redis.RedisStreamConsumer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
