@@ -38,14 +38,34 @@ class SnippetService(
     return assetService.getAssetContent(container, key)
   }
 
-  fun updateSnippet(id: String, updatedSnippet: Snippet): Snippet? {
-    val existingSnippet = snippetRepository.findById(id).orElse(null)
-    return if (existingSnippet != null) {
-      existingSnippet.language = updatedSnippet.language
-      snippetRepository.save(existingSnippet)
-    } else {
-      null
-    }
+  fun updateSnippet(id: String, newSnippet: SnippetDto): Snippet {
+    val existingSnippet = getSnippet(id)
+
+    val updatedSnippet = updateFields(existingSnippet, newSnippet)
+
+    val savedSnippet = snippetRepository.save(updatedSnippet)
+
+    val asset = Asset(
+      container = savedSnippet.author,
+      key = savedSnippet.id,
+      content = newSnippet.content
+    )
+
+    assetService.createOrUpdateAsset(asset)
+
+    return savedSnippet
+  }
+
+  private fun updateFields(existingSnippet: Snippet, updatedSnippet: SnippetDto): Snippet {
+    return Snippet(
+      id = existingSnippet.id,
+      author = existingSnippet.author,
+      description = updatedSnippet.description,
+      name = updatedSnippet.name,
+      version = updatedSnippet.version,
+      language = updatedSnippet.language,
+      compliant = "unknown"
+    )
   }
 
   // Falta borrarlo del asset service

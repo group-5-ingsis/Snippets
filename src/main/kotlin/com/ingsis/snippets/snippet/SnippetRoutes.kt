@@ -23,13 +23,8 @@ class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesS
     TODO("Not yet implemented")
   }
 
-  override fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet> {
-    val snippet = snippetService.updateSnippet(id, updatedSnippet)
-    return if (snippet != null) {
-      ResponseEntity(snippet, HttpStatus.OK)
-    } else {
-      ResponseEntity(HttpStatus.NOT_FOUND)
-    }
+  override fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: SnippetDto): Snippet {
+    return snippetService.updateSnippet(id, updatedSnippet)
   }
 
   override fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void> {

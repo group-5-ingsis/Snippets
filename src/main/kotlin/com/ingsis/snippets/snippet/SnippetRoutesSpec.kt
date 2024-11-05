@@ -27,7 +27,7 @@ interface SnippetRoutesSpec {
   fun getAllSnippets(): ResponseEntity<Snippet>
 
   @PutMapping("/{id}")
-  fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet>
+  fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: SnippetDto): Snippet
 
   @DeleteMapping("/{id}")
   fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void>

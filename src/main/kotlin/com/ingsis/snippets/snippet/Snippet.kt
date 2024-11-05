@@ -39,6 +39,6 @@ data class Snippet(
     name = snippetDto.name,
     version = snippetDto.version,
     language = snippetDto.language,
-    compliant = "false"
+    compliant = "unknown"
   )
 }
