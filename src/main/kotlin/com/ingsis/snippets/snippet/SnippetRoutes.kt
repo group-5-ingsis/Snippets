@@ -15,6 +15,10 @@ class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesS
     return snippetService.getSnippet(id)
   }
 
+  override fun getSnippetContent(id: String): String {
+    return snippetService.getSnippetContent(id)
+  }
+
   override fun getAllSnippets(): ResponseEntity<Snippet> {
     TODO("Not yet implemented")
   }

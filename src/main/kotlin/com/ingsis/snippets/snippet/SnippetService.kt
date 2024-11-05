@@ -19,14 +19,21 @@ class SnippetService(
       content = snippetDto.content
     )
 
-    assetService.createOrUpdateSnippet(asset)
+    assetService.createOrUpdateAsset(asset)
 
     return snippetRepository.save(snippet)
   }
 
   fun getSnippet(id: String): Snippet {
-    // val content = assetClient.getAsset(id)
     return snippetRepository.findById(id).orElse(null)
+  }
+
+  fun getSnippetContent(id: String): String {
+    val snippet = getSnippet(id)
+    val container = snippet.author
+    val key = snippet.name
+
+    return assetService.getAssetContent(container, key)
   }
 
   fun updateSnippet(id: String, updatedSnippet: Snippet): Snippet? {
@@ -39,6 +46,7 @@ class SnippetService(
     }
   }
 
+  // Falta borrarlo del asset service
   fun deleteSnippet(id: String): Boolean {
     val snippetExists = snippetRepository.existsById(id)
     return if (snippetExists) {
