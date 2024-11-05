@@ -3,7 +3,6 @@ package com.ingsis.snippets.asset
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
@@ -12,7 +11,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class AssetService(private val restTemplate: RestTemplate) {
 
-  private val assetServiceBaseUrl: String = System.getProperty("ASSET_SERVICE_URL") ?: throw IllegalArgumentException("Asset service URL not set")
+  private val assetServiceBaseUrl: String = System.getProperty("ASSET_SERVICE_URL")
 
   private fun createHeaders(): HttpHeaders {
     return HttpHeaders().apply {
@@ -23,9 +22,11 @@ class AssetService(private val restTemplate: RestTemplate) {
   fun getAssetContent(container: String, key: String): String {
     val requestEntity = HttpEntity<String>(null, createHeaders())
 
+    val url = "$assetServiceBaseUrl/$container/$key"
+
     return try {
       val response: ResponseEntity<String> = restTemplate.exchange(
-        "$assetServiceBaseUrl/$container/$key",
+        url,
         HttpMethod.GET,
         requestEntity,
         String::class.java
@@ -38,23 +39,21 @@ class AssetService(private val restTemplate: RestTemplate) {
   }
 
   fun createOrUpdateAsset(asset: Asset): String {
-    val requestEntity = HttpEntity(asset.content, createHeaders())
+    val requestEntity = HttpEntity(String, createHeaders())
     val container = asset.container
     val key = asset.key
 
+    val url = "$assetServiceBaseUrl/$container/$key"
+
     return try {
-      val response: ResponseEntity<Void> = restTemplate.exchange(
-        "$assetServiceBaseUrl/$container/$key",
+      val response: ResponseEntity<String> = restTemplate.exchange(
+        url,
         HttpMethod.PUT,
         requestEntity,
-        Void::class.java
+        String::class.java
       )
 
-      when (response.statusCode) {
-        HttpStatus.CREATED -> "Asset created successfully."
-        HttpStatus.OK -> "Asset updated successfully."
-        else -> "Unexpected response status: ${response.statusCode}"
-      }
+      return response.body ?: "No Content"
     } catch (e: RestClientException) {
       handleException(e, "Error creating or updating asset")
     }

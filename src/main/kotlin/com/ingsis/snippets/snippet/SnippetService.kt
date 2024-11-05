@@ -13,15 +13,17 @@ class SnippetService(
   fun createSnippet(snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto)
 
+    val savedSnippet = snippetRepository.save(snippet)
+
     val asset = Asset(
-      container = snippet.author,
-      key = snippet.id,
+      container = savedSnippet.author,
+      key = savedSnippet.id,
       content = snippetDto.content
     )
 
     assetService.createOrUpdateAsset(asset)
 
-    return snippetRepository.save(snippet)
+    return savedSnippet
   }
 
   fun getSnippet(id: String): Snippet {
