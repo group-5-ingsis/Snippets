@@ -1,13 +1,13 @@
 package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
-import com.ingsis.snippets.asset.AssetClient
+import com.ingsis.snippets.asset.AssetService
 import org.springframework.stereotype.Service
 
 @Service
 class SnippetService(
   private val snippetRepository: SnippetRepository,
-  private val assetClient: AssetClient
+  private val assetService: AssetService
 ) {
 
   fun createSnippet(snippetDto: SnippetDto): Snippet {
@@ -19,7 +19,7 @@ class SnippetService(
       content = snippetDto.content
     )
 
-    assetClient.createOrUpdateSnippet(asset)
+    assetService.createOrUpdateSnippet(asset)
 
     return snippetRepository.save(snippet)
   }

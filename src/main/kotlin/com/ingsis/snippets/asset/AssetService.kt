@@ -5,12 +5,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 
-@Component
-class AssetClient(private val restTemplate: RestTemplate) {
+@Service
+class AssetService(private val restTemplate: RestTemplate) {
 
   private val assetServiceBaseUrl = System.getProperty("ASSET_SERVICE_URL")
 
@@ -21,6 +21,7 @@ class AssetClient(private val restTemplate: RestTemplate) {
     return try {
       val headers = HttpHeaders().apply {
         set("Content-Type", "application/json")
+        setBearerAuth(token)
       }
 
       val requestEntity = HttpEntity(asset.content, headers)
