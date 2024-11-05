@@ -15,7 +15,7 @@ class SnippetService(
 
     val asset = Asset(
       container = snippet.author,
-      key = snippet.name,
+      key = snippet.id,
       content = snippetDto.content
     )
 
