@@ -1,4 +1,3 @@
- 
 package com.ingsis.snippets.snippet.consumer
 
 import com.ingsis.snippets.snippet.JsonUtil
