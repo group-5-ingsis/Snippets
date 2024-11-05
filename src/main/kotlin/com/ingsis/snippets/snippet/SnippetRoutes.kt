@@ -1,6 +1,5 @@
 package com.ingsis.snippets.snippet
 
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -27,12 +26,8 @@ class SnippetRoutes(private val snippetService: SnippetService) : SnippetRoutesS
     return snippetService.updateSnippet(id, updatedSnippet)
   }
 
-  override fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void> {
-    return if (snippetService.deleteSnippet(id)) {
-      ResponseEntity(HttpStatus.OK)
-    } else {
-      ResponseEntity(HttpStatus.NOT_FOUND)
-    }
+  override fun deleteSnippet(@PathVariable id: String) {
+    snippetService.deleteSnippet(id)
   }
 
   override fun lintAllSnippets(): ResponseEntity<Snippet> {

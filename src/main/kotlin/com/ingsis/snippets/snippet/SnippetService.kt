@@ -68,14 +68,11 @@ class SnippetService(
     )
   }
 
-  // Falta borrarlo del asset service
-  fun deleteSnippet(id: String): Boolean {
-    val snippetExists = snippetRepository.existsById(id)
-    return if (snippetExists) {
-      snippetRepository.deleteById(id)
-      true
-    } else {
-      false
-    }
+  fun deleteSnippet(id: String) {
+    val snippet = getSnippet(id)
+    val container = snippet.author
+    val key = snippet.id
+    assetService.deleteAsset(container, key)
+    snippetRepository.deleteById(id)
   }
 }

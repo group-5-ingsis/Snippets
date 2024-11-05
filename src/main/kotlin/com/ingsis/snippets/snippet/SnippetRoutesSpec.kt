@@ -30,7 +30,7 @@ interface SnippetRoutesSpec {
   fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: SnippetDto): Snippet
 
   @DeleteMapping("/{id}")
-  fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void>
+  fun deleteSnippet(@PathVariable id: String)
 
   @PostMapping("/lint")
   fun lintAllSnippets(): ResponseEntity<Snippet>

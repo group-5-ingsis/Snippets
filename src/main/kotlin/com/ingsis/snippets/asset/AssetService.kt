@@ -4,7 +4,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -14,59 +13,50 @@ class AssetService(private val restTemplate: RestTemplate) {
 
   private val assetServiceBaseUrl: String = System.getProperty("ASSET_SERVICE_URL")
 
-  private fun createHeaders(): HttpHeaders {
-    return HttpHeaders().apply {
-      set("Content-Type", "application/json")
-    }
-  }
-
   fun getAssetContent(container: String, key: String): String {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.TEXT_EVENT_STREAM
-    }
-
-    val requestEntity = HttpEntity(null, headers)
-
-    val url = "$assetServiceBaseUrl/$container/$key"
+    val headers = createHeaders(MediaType.TEXT_EVENT_STREAM)
+    val url = buildUrl(container, key)
 
     return try {
-      val response: ResponseEntity<String> = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        requestEntity,
-        String::class.java
-      )
-
-      return response.body ?: "No Content"
+      val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(null, headers), String::class.java)
+      response.body ?: "No Content"
     } catch (e: RestClientException) {
       handleException(e, "Error retrieving asset content")
     }
   }
 
   fun createOrUpdateAsset(asset: Asset): String {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
-    }
-
-    val requestEntity = HttpEntity(asset.content, headers)
-    val container = asset.container
-    val key = asset.key
-
-    val url = "$assetServiceBaseUrl/$container/$key"
+    val headers = createHeaders(MediaType.APPLICATION_JSON)
+    val url = buildUrl(asset.container, asset.key)
 
     return try {
-      val response: ResponseEntity<String> = restTemplate.exchange(
-        url,
-        HttpMethod.PUT,
-        requestEntity,
-        String::class.java
-      )
-
-      return response.body ?: "No Content"
+      val response = restTemplate.exchange(url, HttpMethod.PUT, HttpEntity(asset.content, headers), String::class.java)
+      response.body ?: "No Content"
     } catch (e: RestClientException) {
       handleException(e, "Error creating or updating asset")
     }
+  }
+
+  fun deleteAsset(container: String, key: String) {
+    val headers = createHeaders()
+    val url = buildUrl(container, key)
+
+    try {
+      restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity<Unit>(headers), Void::class.java)
+    } catch (e: RestClientException) {
+      handleException(e, "Error deleting asset")
+    }
+  }
+
+  private fun createHeaders(contentType: MediaType? = null): HttpHeaders {
+    return HttpHeaders().apply {
+      contentType?.let { this.contentType = it }
+      accept = listOf(MediaType.ALL)
+    }
+  }
+
+  private fun buildUrl(container: String, key: String): String {
+    return "$assetServiceBaseUrl/$container/$key"
   }
 
   private fun handleException(e: RestClientException, defaultMessage: String): String {
