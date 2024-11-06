@@ -36,10 +36,13 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
+    implementation 'io.netty:netty-resolver-dns-native-macos'
     implementation 'org.austral.ingsis:redis-streams-flux:0.1.13'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -48,20 +51,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
-    implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
-    annotationProcessor'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
+    testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-    testImplementation("org.postgresql:postgresql")
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation('org.mockito.kotlin:mockito-kotlin:5.4.0')
+    testImplementation 'org.postgresql:postgresql'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.4.0'
 
     testImplementation 'org.amshove.kluent:kluent:1.73'
-    testImplementation("com.h2database:h2")
+    testImplementation 'com.h2database:h2'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 

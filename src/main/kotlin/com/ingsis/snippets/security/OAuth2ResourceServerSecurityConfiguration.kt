@@ -30,16 +30,10 @@ open class OAuth2ResourceServerSecurityConfiguration(
       it
         .requestMatchers("/").permitAll()
         .requestMatchers(GET, "/v1/snippets/*").hasAuthority("SCOPE_read:snippets")
-        .requestMatchers(POST, "v1/snippets").hasAuthority("SCOPE_write:snippets")
+        .requestMatchers(POST, "v1/snippets/").hasAuthority("SCOPE_write:snippets")
         .anyRequest().authenticated()
     }
       .oauth2ResourceServer { it.jwt(withDefaults()) }
-      .cors {
-        it.disable()
-      }
-      .csrf {
-        it.disable()
-      }
     return http.build()
   }
 

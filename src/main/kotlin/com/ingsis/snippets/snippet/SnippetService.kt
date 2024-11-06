@@ -1,46 +1,78 @@
 package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
-import com.ingsis.snippets.asset.AssetClient
+import com.ingsis.snippets.asset.AssetService
 import org.springframework.stereotype.Service
 
 @Service
 class SnippetService(
   private val snippetRepository: SnippetRepository,
-  private val assetClient: AssetClient
+  private val assetService: AssetService
 ) {
 
-  fun createSnippet(snippet: SnippetDto): String {
-    // snippetRepository.save(snippet);
+  fun createSnippet(snippetDto: SnippetDto): Snippet {
+    val snippet = Snippet(snippetDto)
+
+    val savedSnippet = snippetRepository.save(snippet)
+
     val asset = Asset(
-      container = snippet.author,
-      key = snippet.name,
-      content = snippet.content
+      container = savedSnippet.author,
+      key = savedSnippet.id,
+      content = snippetDto.content
     )
-    return assetClient.createOrUpdateSnippet(asset)
+
+    assetService.createOrUpdateAsset(asset)
+
+    return savedSnippet
   }
 
-  fun getSnippet(id: String): Snippet? {
+  fun getSnippet(id: String): Snippet {
     return snippetRepository.findById(id).orElse(null)
   }
 
-  fun updateSnippet(id: String, updatedSnippet: Snippet): Snippet? {
-    val existingSnippet = snippetRepository.findById(id).orElse(null)
-    return if (existingSnippet != null) {
-      existingSnippet.language = updatedSnippet.language
-      snippetRepository.save(existingSnippet)
-    } else {
-      null
-    }
+  fun getSnippetContent(id: String): String {
+    val snippet = getSnippet(id)
+    val container = snippet.author
+    val key = snippet.id
+
+    return assetService.getAssetContent(container, key)
   }
 
-  fun deleteSnippet(id: String): Boolean {
-    val snippetExists = snippetRepository.existsById(id)
-    return if (snippetExists) {
-      snippetRepository.deleteById(id)
-      true
-    } else {
-      false
-    }
+  fun updateSnippet(id: String, newSnippet: SnippetDto): Snippet {
+    val existingSnippet = getSnippet(id)
+
+    val updatedSnippet = updateFields(existingSnippet, newSnippet)
+
+    val savedSnippet = snippetRepository.save(updatedSnippet)
+
+    val asset = Asset(
+      container = savedSnippet.author,
+      key = savedSnippet.id,
+      content = newSnippet.content
+    )
+
+    assetService.createOrUpdateAsset(asset)
+
+    return savedSnippet
+  }
+
+  private fun updateFields(existingSnippet: Snippet, updatedSnippet: SnippetDto): Snippet {
+    return Snippet(
+      id = existingSnippet.id,
+      author = existingSnippet.author,
+      description = updatedSnippet.description,
+      name = updatedSnippet.name,
+      version = updatedSnippet.version,
+      language = updatedSnippet.language,
+      compliant = "unknown"
+    )
+  }
+
+  fun deleteSnippet(id: String) {
+    val snippet = getSnippet(id)
+    val container = snippet.author
+    val key = snippet.id
+    assetService.deleteAsset(container, key)
+    snippetRepository.deleteById(id)
   }
 }
