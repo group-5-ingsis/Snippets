@@ -41,7 +41,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
     implementation 'io.netty:netty-resolver-dns-native-macos'
-//    implementation 'org.austral.ingsis:redis-streams-flux:0.1.13'
+    implementation 'org.austral.ingsis:redis-streams-flux:0.1.13'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

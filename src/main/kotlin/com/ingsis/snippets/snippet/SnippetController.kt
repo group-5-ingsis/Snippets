@@ -1,6 +1,6 @@
 package com.ingsis.snippets.snippet
 
-// import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
+import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.async.producer.format.SnippetFormatRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/snippet")
 @RestController
 class SnippetController(
-  private val snippetService: SnippetService
-//  private val snippetFormatProducer: SnippetFormatProducer
+  private val snippetService: SnippetService,
+  private val snippetFormatProducer: SnippetFormatProducer
 ) {
 
   @PostMapping("/")
@@ -60,6 +60,6 @@ class SnippetController(
       version = snippet.version
     )
 
-    // snippetFormatProducer.publishEvent(snippetToFormat)
+    snippetFormatProducer.publishEvent(snippetToFormat)
   }
 }
