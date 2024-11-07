@@ -25,8 +25,8 @@ repositories {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/austral-ingsis/class-redis-streams")
         credentials {
-            username = project.findProperty("gpr.user") ?: System.getProperty("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            username = System.getenv("USERNAME") ?: project.findProperty("gpr.user")
+            password = System.getenv("TOKEN") ?: project.findProperty("gpr.key")
         }
     }
 }
