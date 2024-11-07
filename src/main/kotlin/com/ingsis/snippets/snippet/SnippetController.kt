@@ -60,6 +60,6 @@ class SnippetController(
       version = snippet.version
     )
 
-    snippetFormatProducer.publishEvent(snippetToFormat)
+    // snippetFormatProducer.publishEvent(snippetToFormat)
   }
 }
