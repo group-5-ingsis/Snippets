@@ -30,6 +30,10 @@ class SnippetService(
     return snippetRepository.findById(id).orElse(null)
   }
 
+  fun getFormattingRules(userId: String): String {
+    return assetService.getAssetContent(userId, "FormattingRules")
+  }
+
   fun getSnippetContent(id: String): String {
     val snippet = getSnippet(id)
     val container = snippet.author
