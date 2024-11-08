@@ -2,7 +2,9 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
-import com.ingsis.snippets.rules.RuleCreator
+import com.ingsis.snippets.async.JsonUtil
+import com.ingsis.snippets.rules.Rule
+import com.ingsis.snippets.rules.RuleManager
 import org.springframework.stereotype.Service
 
 @Service
@@ -31,18 +33,25 @@ class SnippetService(
     return snippetRepository.findById(id).orElse(null)
   }
 
-  fun getFormattingRules(userId: String): String {
-    val rules = assetService.getAssetContent(userId, "FormattingRules")
+  fun getFormattingRules(userId: String): List<Rule> {
+    val rulesJson = assetService.getAssetContent(userId, "FormattingRules")
 
-    return if (rules == "No Content") {
+    return if (rulesJson == "No Content") {
+      val defaultFormattingRules = RuleManager.getDefaultFormattingRules()
+
       val asset = Asset(
         container = userId,
         key = "FormattingRules",
-        content = RuleCreator.getDefaultFormattingRules()
+        content = JsonUtil.serializeFormattingRules(defaultFormattingRules)
       )
+
       assetService.createOrUpdateAsset(asset)
+
+      RuleManager.convertToRuleList(defaultFormattingRules)
     } else {
-      rules
+      val existingFormattingRules = JsonUtil.deserializeFormattingRules(rulesJson)
+
+      RuleManager.convertToRuleList(existingFormattingRules)
     }
   }
 

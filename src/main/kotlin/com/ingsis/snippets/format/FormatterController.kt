@@ -2,6 +2,7 @@ package com.ingsis.snippets.format
 
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.async.producer.format.SnippetFormatRequest
+import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.snippet.SnippetService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -11,14 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RequestMapping("/v1/snippets/format")
+@RequestMapping("/v1/snippet/format")
 @RestController
 class FormatterController(
   private val snippetService: SnippetService,
   private val snippetFormatProducer: SnippetFormatProducer
 ) {
 
-  @PostMapping("/format/{id}")
+  @PostMapping("/{id}")
   suspend fun formatSnippet(@PathVariable id: String) {
     val snippet = snippetService.getSnippet(id)
 
@@ -32,8 +33,8 @@ class FormatterController(
     snippetFormatProducer.publishEvent(snippetToFormat)
   }
 
-  @GetMapping("/format/rules")
-  fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): String {
+  @GetMapping("/rules")
+  fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
     val userId = jwt.subject
     return snippetService.getFormattingRules(userId)
   }

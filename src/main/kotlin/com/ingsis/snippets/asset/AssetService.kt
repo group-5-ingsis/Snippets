@@ -20,8 +20,8 @@ class AssetService(private val restTemplate: RestTemplate) {
     return try {
       val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(null, headers), String::class.java)
       response.body ?: "No Content"
-    } catch (e: RestClientException) {
-      handleException(e, "Error retrieving asset content")
+    } catch (_: RestClientException) {
+      "No Content"
     }
   }
 
