@@ -1,7 +1,8 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.format
 
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.async.producer.format.SnippetFormatRequest
+import com.ingsis.snippets.snippet.SnippetService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
