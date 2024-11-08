@@ -10,8 +10,7 @@ open class Snippets
 fun main(args: Array<String>) {
   val dotenv = Dotenv.load()
 
-  val profile = dotenv["SPRING_PROFILES_ACTIVE"] ?: "local"
-  System.setProperty("spring.profiles.active", profile)
+  val profile = dotenv["SPRING_PROFILES_ACTIVE"]
 
   if (profile == "local") {
     System.setProperty("SPRING_DATASOURCE_URL", dotenv["SPRING_DATASOURCE_LOCAL_URL"])
@@ -26,5 +25,6 @@ fun main(args: Array<String>) {
     System.setProperty("FORMAT_STREAM_KEY", dotenv["FORMAT_STREAM_KEY"])
     System.setProperty("GROUP_ID", dotenv["GROUP_ID"])
   }
+
   runApplication<Snippets>(*args)
 }
