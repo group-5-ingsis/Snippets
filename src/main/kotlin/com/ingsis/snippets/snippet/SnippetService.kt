@@ -2,6 +2,7 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
+import com.ingsis.snippets.rules.RuleCreator
 import org.springframework.stereotype.Service
 
 @Service
@@ -31,7 +32,18 @@ class SnippetService(
   }
 
   fun getFormattingRules(userId: String): String {
-    return assetService.getAssetContent(userId, "FormattingRules")
+    val rules = assetService.getAssetContent(userId, "FormattingRules")
+
+    return if (rules == "No Content") {
+      val asset = Asset(
+        container = userId,
+        key = "FormattingRules",
+        content = RuleCreator.getDefaultFormattingRules()
+      )
+      assetService.createOrUpdateAsset(asset)
+    } else {
+      rules
+    }
   }
 
   fun getSnippetContent(id: String): String {
