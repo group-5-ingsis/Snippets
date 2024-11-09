@@ -11,7 +11,7 @@ FROM amazoncorretto:21-alpine
 
 RUN mkdir /app
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/permission.jar
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/snippets.jar
 
 ENTRYPOINT ["java", "-jar", "/app/snippets.jar"]
 
