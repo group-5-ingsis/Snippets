@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class LanguageController {
 
-  @GetMapping
+  @GetMapping("/types")
   fun getFileTypes(): List<Language> {
     return LanguageProvider.getLanguages()
   }
