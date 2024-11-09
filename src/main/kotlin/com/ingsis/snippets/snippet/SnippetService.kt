@@ -13,13 +13,15 @@ class SnippetService(
   private val assetService: AssetService
 ) {
 
-  fun createSnippet(snippetDto: SnippetDto): Snippet {
+  fun createSnippet(userId: String, snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto)
+
+    snippet.author = userId
 
     val savedSnippet = snippetRepository.save(snippet)
 
     val asset = Asset(
-      container = savedSnippet.author,
+      container = userId,
       key = savedSnippet.id,
       content = snippetDto.content
     )
@@ -85,10 +87,9 @@ class SnippetService(
     return Snippet(
       id = existingSnippet.id,
       author = existingSnippet.author,
-      description = updatedSnippet.description,
-      name = updatedSnippet.name,
-      version = updatedSnippet.version,
       language = updatedSnippet.language,
+      extension = updatedSnippet.extension,
+      name = updatedSnippet.name,
       compliant = "unknown"
     )
   }

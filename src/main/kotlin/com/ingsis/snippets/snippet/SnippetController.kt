@@ -1,5 +1,7 @@
 package com.ingsis.snippets.snippet
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/v1/snippet")
@@ -8,9 +10,11 @@ class SnippetController(private val snippetService: SnippetService) {
 
   @PostMapping("/")
   fun createSnippet(
-    @RequestBody snippet: SnippetDto
+    @RequestBody snippet: SnippetDto,
+    @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
-    return snippetService.createSnippet(snippet)
+    val userId = jwt.subject
+    return snippetService.createSnippet(userId, snippet)
   }
 
   @GetMapping("/{id}")

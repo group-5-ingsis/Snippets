@@ -12,33 +12,29 @@ data class Snippet(
 
   var author: String,
 
-  var description: String,
-
   var name: String,
 
-  var version: String,
-
   var language: String,
+
+  var extension: String,
 
   var compliant: String
 ) {
   constructor() : this(
     id = "",
+    author = "",
     name = "",
-    description = "",
-    version = "",
     language = "",
-    compliant = "",
-    author = ""
+    extension = "",
+    compliant = ""
   )
 
   constructor(snippetDto: SnippetDto) : this(
     id = "",
-    author = snippetDto.author,
-    description = snippetDto.description,
+    author = "",
     name = snippetDto.name,
-    version = snippetDto.version,
     language = snippetDto.language,
+    extension = snippetDto.extension,
     compliant = "unknown"
   )
 }

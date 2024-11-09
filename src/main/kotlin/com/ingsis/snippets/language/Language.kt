@@ -1,6 +1,6 @@
 package com.ingsis.snippets.language
 
 data class Language(
-  val name: String,
+  val language: String,
   val extension: String
 )

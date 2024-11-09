@@ -27,7 +27,7 @@ class FormatterController(
       container = snippet.author,
       key = snippet.id,
       language = snippet.language,
-      version = snippet.version
+      version = "1.1"
     )
 
     snippetFormatProducer.publishEvent(snippetToFormat)
