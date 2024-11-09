@@ -2,6 +2,9 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
+import com.ingsis.snippets.async.JsonUtil
+import com.ingsis.snippets.rules.Rule
+import com.ingsis.snippets.rules.RuleManager
 import org.springframework.stereotype.Service
 
 @Service
@@ -10,13 +13,15 @@ class SnippetService(
   private val assetService: AssetService
 ) {
 
-  fun createSnippet(snippetDto: SnippetDto): Snippet {
+  fun createSnippet(userId: String, snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto)
+
+    snippet.author = userId
 
     val savedSnippet = snippetRepository.save(snippet)
 
     val asset = Asset(
-      container = savedSnippet.author,
+      container = userId,
       key = savedSnippet.id,
       content = snippetDto.content
     )
@@ -28,6 +33,28 @@ class SnippetService(
 
   fun getSnippet(id: String): Snippet {
     return snippetRepository.findById(id).orElse(null)
+  }
+
+  fun getFormattingRules(userId: String): List<Rule> {
+    val rulesJson = assetService.getAssetContent(userId, "FormattingRules")
+
+    return if (rulesJson == "No Content") {
+      val defaultFormattingRules = RuleManager.getDefaultFormattingRules()
+
+      val asset = Asset(
+        container = userId,
+        key = "FormattingRules",
+        content = JsonUtil.serializeFormattingRules(defaultFormattingRules)
+      )
+
+      assetService.createOrUpdateAsset(asset)
+
+      RuleManager.convertToRuleList(defaultFormattingRules)
+    } else {
+      val existingFormattingRules = JsonUtil.deserializeFormattingRules(rulesJson)
+
+      RuleManager.convertToRuleList(existingFormattingRules)
+    }
   }
 
   fun getSnippetContent(id: String): String {
@@ -60,10 +87,9 @@ class SnippetService(
     return Snippet(
       id = existingSnippet.id,
       author = existingSnippet.author,
-      description = updatedSnippet.description,
-      name = updatedSnippet.name,
-      version = updatedSnippet.version,
       language = updatedSnippet.language,
+      extension = updatedSnippet.extension,
+      name = updatedSnippet.name,
       compliant = "unknown"
     )
   }
