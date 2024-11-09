@@ -2,7 +2,7 @@ auth0:
   audience: ${AUTH0_AUDIENCE}
 
 stream:
-  format: ${FORMAT_STREAM_KEY}
+  format: ${STREAM_KEY_FORMAT}
 
 groups:
   product: ${GROUP_ID}
