@@ -4,7 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
-@RequestMapping("/v1/snippet")
+@RequestMapping("/snippet")
 @RestController
 class SnippetController(private val snippetService: SnippetService) {
 

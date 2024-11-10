@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RequestMapping("/v1/snippet/format")
+@RequestMapping("/format")
 @RestController
 class FormatterController(
   private val snippetService: SnippetService,
