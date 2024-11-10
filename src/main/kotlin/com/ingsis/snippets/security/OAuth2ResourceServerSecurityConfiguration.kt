@@ -3,8 +3,6 @@ package com.ingsis.snippets.security
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -31,9 +29,6 @@ open class OAuth2ResourceServerSecurityConfiguration(
   open fun filterChain(http: HttpSecurity): SecurityFilterChain {
     http.authorizeHttpRequests {
       it
-        .requestMatchers("/").permitAll()
-        .requestMatchers(GET, "/v1/snippets/*").hasAuthority("SCOPE_read:snippets")
-        .requestMatchers(POST, "v1/snippets/").hasAuthority("SCOPE_write:snippets")
         .anyRequest().authenticated()
     }
       .oauth2ResourceServer { it.jwt(withDefaults()) }
@@ -54,7 +49,7 @@ open class OAuth2ResourceServerSecurityConfiguration(
   @Bean
   open fun corsConfigurationSource(): CorsConfigurationSource {
     val corsConfig = CorsConfiguration()
-    corsConfig.allowedOrigins = listOf("http://localhost:5173", "https://localhost:5173/rules")
+    corsConfig.allowedOrigins = listOf("http://localhost:5173", "https://snippetsearcher-group5.duckdns.org")
     corsConfig.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
     corsConfig.allowedHeaders = listOf("Authorization", "Content-Type")
     corsConfig.allowCredentials = true
