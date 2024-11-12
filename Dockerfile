@@ -12,6 +12,7 @@ FROM amazoncorretto:21-alpine
 RUN mkdir /app
 
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/snippets.jar
+COPY newrelic /app/newrelic
 
-ENTRYPOINT ["java", "-jar", "/app/snippets.jar"]
+ENTRYPOINT ["java", "-jar", "-javaagent:/app/newrelic/newrelic.jar","/app/snippets.jar"]
 
