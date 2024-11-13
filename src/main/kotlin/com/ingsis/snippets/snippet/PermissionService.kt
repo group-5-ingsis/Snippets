@@ -28,13 +28,27 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun getSnippets(jwt: Jwt, type: String) {
+  fun getSnippets(userData: UserData, type: String): List<String> {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
+    val requestEntity = HttpEntity(userData, headers)
+
     val url = "$permissionServiceUrl/$type"
+
+    return try {
+      val result = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        requestEntity,
+        List::class.java
+      )
+      result.body as List<String>
+    } catch (_: RestClientException) {
+      emptyList()
+    }
   }
 
   fun getUsers(): List<UserDto> {
@@ -57,7 +71,6 @@ class PermissionService(private val restTemplate: RestTemplate) {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
-      set("Authorization", "Bearer $token")
     }
 
     val url = "$permissionServiceUrl/"

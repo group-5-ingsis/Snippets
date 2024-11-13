@@ -1,8 +1,8 @@
 package com.ingsis.snippets.logging
 
-import org.springframework.stereotype.Component
-import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.slf4j.MDC
+import org.springframework.http.client.ClientHttpRequestInterceptor
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 @Component

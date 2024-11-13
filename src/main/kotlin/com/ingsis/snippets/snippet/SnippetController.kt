@@ -1,7 +1,6 @@
 package com.ingsis.snippets.snippet
 
 import org.slf4j.LoggerFactory
-import org.slf4j.MDC
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -58,8 +57,10 @@ class SnippetController(private val snippetService: SnippetService, private val 
   }
 
   @PostMapping("/share/{snippetId}/{userToShare}")
-  fun shareSnippetWithUser(@PathVariable snippetId: String, @PathVariable userToShare: String, @AuthenticationPrincipal jwt: Jwt) {
-    snippetService.shareSnippet(jwt, snippetId, userToShare)
+  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String) {
+    val (userId, username) = extractUserInfo(jwt)
+    val userData = UserData(userId, username)
+    snippetService.shareSnippet(userData, snippetId, userToShare)
   }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
