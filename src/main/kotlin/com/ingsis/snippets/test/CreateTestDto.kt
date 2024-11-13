@@ -1,4 +1,4 @@
-package com.ingsis.snippets.async.producer.test
+package com.ingsis.snippets.test
 
 data class CreateTestDto(
   val snippetId: String,

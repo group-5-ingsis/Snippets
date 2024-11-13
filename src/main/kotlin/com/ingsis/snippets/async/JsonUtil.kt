@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ingsis.snippets.async.producer.format.SnippetFormatRequest
-import com.ingsis.snippets.async.producer.test.CreateTestDto
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
 import com.ingsis.snippets.format.FormattingRules

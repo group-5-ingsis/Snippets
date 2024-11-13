@@ -1,6 +1,5 @@
 package com.ingsis.snippets.test
 
-import com.ingsis.snippets.async.producer.test.CreateTestDto
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestProducer
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
@@ -23,7 +22,7 @@ class TestController(
     val snippet = snippetService.getSnippetById(snippetTest.snippetId)
     val languageAndVersion = snippet.language.split(" ")
     snippetTestProducer.publishCreateTestEvent(
-      SnippetCreateTestRequest(snippetTest, languageAndVersion[0], languageAndVersion[1]))
+      SnippetCreateTestRequest(snippetTest, snippet.author, languageAndVersion[0], languageAndVersion[1]))
     logger.info("Sent request to create a new test")
   }
 
