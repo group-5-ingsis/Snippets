@@ -81,7 +81,7 @@ class SnippetService(
     }
   }
 
-  fun updateSnippet(id: String, newContent: String): Snippet {
+  fun updateSnippet(id: String, newContent: String): SnippetWithContent {
     val existingSnippet = getSnippetById(id)
 
     val asset = Asset(
@@ -92,7 +92,7 @@ class SnippetService(
 
     assetService.createOrUpdateAsset(asset)
 
-    return existingSnippet
+    return SnippetWithContent(existingSnippet, newContent)
   }
 
   fun deleteSnippet(id: String) {

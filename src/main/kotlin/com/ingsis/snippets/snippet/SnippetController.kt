@@ -39,7 +39,7 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @PutMapping("/{id}")
-  fun updateSnippet(@PathVariable id: String, @RequestBody newSnippetContent: String): Snippet {
+  fun updateSnippet(@PathVariable id: String, @RequestBody newSnippetContent: String): SnippetWithContent {
     logger.info("Updating snippet with id: $id (put/{id})")
     return snippetService.updateSnippet(id, newSnippetContent)
   }
