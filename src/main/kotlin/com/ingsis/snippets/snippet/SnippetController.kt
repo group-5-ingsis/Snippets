@@ -8,7 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class SnippetController(private val snippetService: SnippetService) {
+class SnippetController(private val snippetService: SnippetService, private val permissionService: PermissionService) {
 
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
@@ -52,6 +52,16 @@ class SnippetController(private val snippetService: SnippetService) {
     logger.info("Deleting snippet with id: $id (delete/{id})")
     snippetService.deleteSnippet(id)
     return "Snippet deleted!"
+  }
+
+  @GetMapping("/users")
+  fun getUsers(): List<UserDto> {
+    return permissionService.getUsers()
+  }
+
+  @PostMapping("/share/{snippetId}/{userToShare}")
+  fun shareSnippetWithUser(@PathVariable snippetId: String, @PathVariable userToShare: String, @AuthenticationPrincipal jwt: Jwt) {
+    snippetService.shareSnippet(jwt, snippetId, userToShare)
   }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {

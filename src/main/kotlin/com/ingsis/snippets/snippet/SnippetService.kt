@@ -105,4 +105,11 @@ class SnippetService(
     assetService.deleteAsset(container, key)
     snippetRepository.deleteById(id)
   }
+
+  // 1. Fijarse si es dueño (writable)
+  // 2. Agregar al userId a la lista de readable snippets
+  fun shareSnippet(jwt: Jwt, userId: String, snippetId: String, userToShare: String) {
+    val snippet = getSnippetById(userId)
+    val writableSnippets = permissionService.getSnippets(jwt, "write")
+  }
 }
