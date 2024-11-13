@@ -29,26 +29,25 @@ class SnippetController(private val snippetService: SnippetService) {
 
   @GetMapping("/name/{name}")
   fun getSnippetsByName(@PathVariable name: String): List<Snippet> {
-    logger.info("SnippetController initialized and ready to handle requests")
-    logger.info("Fetching snippets with name: $name")
+    logger.info("Fetching snippets with name: $name (get/name/{name})")
     return snippetService.getSnippetsByName(name)
   }
 
   @GetMapping("/")
   fun getAllSnippets(): List<Snippet> {
-    logger.info("Fetching all snippets")
+    logger.info("Fetching all snippets (get/)")
     return snippetService.getSnippets()
   }
 
   @PutMapping("/{id}")
   fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: SnippetDto): Snippet {
-    logger.info("Updating snippet with id: $id")
+    logger.info("Updating snippet with id: $id (put/{id})")
     return snippetService.updateSnippet(id, updatedSnippet)
   }
 
   @DeleteMapping("/{id}")
   fun deleteSnippet(@PathVariable id: String) {
-    logger.info("Deleting snippet with id: $id")
+    logger.info("Deleting snippet with id: $id (delete/{id})")
     snippetService.deleteSnippet(id)
   }
 
