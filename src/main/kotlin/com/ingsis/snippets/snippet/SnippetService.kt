@@ -90,7 +90,7 @@ class SnippetService(
       language = updatedSnippet.language,
       extension = updatedSnippet.extension,
       name = updatedSnippet.name,
-      compliant = "unknown"
+      compliance = "unknown"
     )
   }
 

@@ -18,7 +18,7 @@ data class Snippet(
 
   var extension: String,
 
-  var compliant: String
+  var compliance: String
 ) {
   constructor() : this(
     id = "",
@@ -26,7 +26,7 @@ data class Snippet(
     name = "",
     language = "",
     extension = "",
-    compliant = ""
+    compliance = ""
   )
 
   constructor(snippetDto: SnippetDto) : this(
@@ -35,6 +35,6 @@ data class Snippet(
     name = snippetDto.name,
     language = snippetDto.language,
     extension = snippetDto.extension,
-    compliant = "unknown"
+    compliance = "unknown"
   )
 }
