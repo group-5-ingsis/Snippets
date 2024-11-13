@@ -1,12 +1,13 @@
 package com.ingsis.snippets.snippet
 
-import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
 @RestController
 class SnippetController(private val snippetService: SnippetService) {
+
+  private val claimsKey = System.getenv("CLAIMS_KEY")
 
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
@@ -15,6 +16,8 @@ class SnippetController(private val snippetService: SnippetService) {
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
+    val (_, username) = extractUserInfo(jwt)
+    return snippetService.createSnippet(username, snippet)
     val userId = jwt.subject
     logger.info("Creating snippet for userId: $userId")
     return snippetService.createSnippet(userId, snippet)
@@ -48,5 +51,11 @@ class SnippetController(private val snippetService: SnippetService) {
   fun deleteSnippet(@PathVariable id: String) {
     logger.info("Deleting snippet with id: $id")
     snippetService.deleteSnippet(id)
+  }
+
+  private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
+    val userId = jwt.subject
+    val username = jwt.claims["$claimsKey/username"]?.toString() ?: "unknown"
+    return Pair(userId, username)
   }
 }

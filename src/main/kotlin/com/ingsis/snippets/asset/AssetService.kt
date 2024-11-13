@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class AssetService(private val restTemplate: RestTemplate) {
 
-  private val assetServiceBaseUrl: String = System.getenv("ASSET_SERVICE_URL")
+  private val assetServiceBaseUrl: String = System.getenv("ASSET_SERVICE_URL") ?: "asset_service"
 
   fun getAssetContent(container: String, key: String): String {
     val headers = createHeaders(MediaType.TEXT_EVENT_STREAM)
