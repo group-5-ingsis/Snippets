@@ -1,6 +1,5 @@
 package com.ingsis.snippets.snippet
 
-import com.ingsis.snippets.logging.CorrelationIdFilter
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -37,7 +36,6 @@ class SnippetController(private val snippetService: SnippetService, private val 
   @GetMapping("/")
   fun getAllSnippets(): List<Snippet> {
     logger.info("Fetching all snippets (get/)")
-    logger.info("Correlation ID in request: ${MDC.get(CorrelationIdFilter.CORRELATION_ID_HEADER)}")
     return snippetService.getSnippets()
   }
 
