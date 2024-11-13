@@ -19,7 +19,8 @@ class TestController(
 ) {
   private val logger = LoggerFactory.getLogger(TestController::class.java)
 
-  @PostMapping("/")
+  // Changed @PostMapping("/") to @PostMapping("/create") to avoid ambiguity
+  @PostMapping("/create")
   suspend fun createSnippet(@RequestBody snippetTest: CreateTestDto) {
     val snippet = snippetService.getSnippetById(snippetTest.snippetId)
     val languageAndVersion = snippet.language.split(" ")
@@ -28,7 +29,7 @@ class TestController(
     logger.info("Sent request to create a new test")
   }
 
-  @PostMapping("run/{id}")
+  @PostMapping("/run/{id}")
   suspend fun testSnippet(@PathVariable id: String) {
     val snippet = snippetService.getSnippetById(id)
     val snippetRequest = SnippetTestRequest(
