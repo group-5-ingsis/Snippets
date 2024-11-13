@@ -26,7 +26,7 @@ class TestController(
     logger.info("Sent request to create a new test")
   }
 
-  @PostMapping("/{id}/run")
+  @PostMapping("run/{id}")
   suspend fun testSnippet(@PathVariable id: String) {
     val snippet = snippetService.getSnippetById(id)
     val snippetRequest = SnippetTestRequest(
