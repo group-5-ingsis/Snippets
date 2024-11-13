@@ -29,6 +29,7 @@ class SnippetController(private val snippetService: SnippetService) {
 
   @GetMapping("/name/{name}")
   fun getSnippetsByName(@PathVariable name: String): List<Snippet> {
+    logger.info("SnippetController initialized and ready to handle requests")
     logger.info("Fetching snippets with name: $name")
     return snippetService.getSnippetsByName(name)
   }
