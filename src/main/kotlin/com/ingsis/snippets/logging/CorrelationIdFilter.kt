@@ -1,5 +1,6 @@
 package com.ingsis.snippets.logging
 
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -17,20 +18,25 @@ class CorrelationIdFilter : Filter {
     const val CORRELATION_ID_HEADER = "X-Correlation-Id"
   }
 
+  private val logger = LoggerFactory.getLogger(CorrelationIdFilter::class.java)
+
   override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
     val httpServletRequest = request as HttpServletRequest
     var correlationId = httpServletRequest.getHeader(CORRELATION_ID_HEADER)
 
     if (correlationId.isNullOrEmpty()) {
-      correlationId = UUID.randomUUID().toString() // Genera un nuevo ID si no existe
+      correlationId = UUID.randomUUID().toString() // Generate a new ID if not provided
+      logger.info("Generated new Correlation ID: $correlationId")
+    } else {
+      logger.info("Received Correlation ID: $correlationId")
     }
 
-    MDC.put(CORRELATION_ID_HEADER, correlationId) // Agrega el ID al contexto de log
+    MDC.put(CORRELATION_ID_HEADER, correlationId) // Set the ID in MDC for logging
 
     try {
       chain.doFilter(request, response)
     } finally {
-      MDC.remove(CORRELATION_ID_HEADER) // Limpia el ID del contexto después de la respuesta
+      MDC.remove(CORRELATION_ID_HEADER) // Clear the ID from MDC after request completes
     }
   }
 

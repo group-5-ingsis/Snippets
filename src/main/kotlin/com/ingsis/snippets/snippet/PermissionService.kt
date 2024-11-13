@@ -1,9 +1,11 @@
 package com.ingsis.snippets.snippet
 
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -23,6 +25,30 @@ class PermissionService(private val restTemplate: RestTemplate) {
       restTemplate.exchange(url, HttpMethod.POST, HttpEntity<Unit>(null, headers), Void::class.java)
     } catch (_: RestClientException) {
       "Error updating permissions"
+    }
+  }
+
+  fun getMySnippetsIds(token: Jwt): List<String> {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+      set("Authorization", "Bearer $token")
+    }
+
+    val url = "$permissionServiceUrl/"
+
+    return try {
+      val result = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        HttpEntity<Unit>(null, headers),
+        object : ParameterizedTypeReference<List<String>>() {}
+      )
+
+      result.body ?: emptyList()
+    } catch (e: RestClientException) {
+      println("Error fetching snippets: ${e.message}")
+      emptyList()
     }
   }
 }

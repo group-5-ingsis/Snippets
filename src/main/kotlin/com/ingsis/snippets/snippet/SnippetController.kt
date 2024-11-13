@@ -1,6 +1,8 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.logging.CorrelationIdFilter
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -27,19 +29,20 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @GetMapping("/name/{name}")
-  fun getSnippetsByName(@PathVariable name: String): List<Snippet> {
+  fun getSnippetsByName(@PathVariable name: String, @AuthenticationPrincipal jwt: Jwt): List<Snippet> {
     logger.info("Fetching snippets with name: $name (get/name/{name})")
-    return snippetService.getSnippetsByName(name)
+    return snippetService.getSnippetsByName(jwt, name)
   }
 
   @GetMapping("/")
   fun getAllSnippets(): List<Snippet> {
     logger.info("Fetching all snippets (get/)")
+    logger.info("Correlation ID in request: ${MDC.get(CorrelationIdFilter.CORRELATION_ID_HEADER)}")
     return snippetService.getSnippets()
   }
 
   @PutMapping("/{id}")
-  fun updateSnippet(@PathVariable id: String, @RequestBody newSnippetContent: String): Snippet {
+  fun updateSnippet(@PathVariable id: String, @RequestBody newSnippetContent: String): SnippetWithContent {
     logger.info("Updating snippet with id: $id (put/{id})")
     return snippetService.updateSnippet(id, newSnippetContent)
   }
