@@ -21,7 +21,7 @@ class FormatterController(
 
   @PostMapping("/{id}")
   suspend fun formatSnippet(@PathVariable id: String) {
-    val snippet = snippetService.getSnippet(id)
+    val snippet = snippetService.getSnippetById(id)
 
     val snippetToFormat = SnippetFormatRequest(
       container = snippet.author,
