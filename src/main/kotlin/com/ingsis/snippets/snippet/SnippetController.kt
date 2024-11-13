@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class SnippetController(private val snippetService: SnippetService) {
 
-  private val claimsKey = System.getenv("CLAIMS_KEY") ?: "defaultClaimsKey"
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   @PostMapping("/")
@@ -53,7 +52,7 @@ class SnippetController(private val snippetService: SnippetService) {
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
     val userId = jwt.subject
-    val username = jwt.claims["$claimsKey/username"]?.toString() ?: "unknown"
+    val username = jwt.claims["https://snippets/claims/username"]?.toString() ?: "unknown"
     return Pair(userId, username)
   }
 }
