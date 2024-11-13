@@ -4,6 +4,7 @@ import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.async.producer.format.SnippetFormatRequest
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.snippet.SnippetService
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,8 +20,12 @@ class FormatterController(
   private val snippetFormatProducer: SnippetFormatProducer
 ) {
 
+  private val logger = LoggerFactory.getLogger(FormatterController::class.java)
+
   @PostMapping("/{id}")
   suspend fun formatSnippet(@PathVariable id: String) {
+    logger.info("Formatting snippet with id: $id")
+
     val snippet = snippetService.getSnippetById(id)
 
     val snippetToFormat = SnippetFormatRequest(
@@ -31,11 +36,15 @@ class FormatterController(
     )
 
     snippetFormatProducer.publishEvent(snippetToFormat)
+
+    logger.info("Published formatting request for snippet id: $id")
   }
 
   @GetMapping("/rules")
   fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
     val userId = jwt.subject
+    logger.info("Fetching formatting rules for userId: $userId")
+
     return snippetService.getFormattingRules(userId)
   }
 }
