@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
+import com.newrelic.api.agent.NewRelic  // Import New Relic API
 import java.util.UUID
 
 @Component
@@ -30,6 +31,9 @@ class CorrelationIdFilter : Filter {
 
     // Set the correlation ID in the MDC context for logging
     MDC.put(CORRELATION_ID_HEADER, correlationId)
+
+    // Add correlation ID as a custom attribute in New Relic
+    NewRelic.addCustomParameter("Correlation-ID", correlationId)
 
     try {
       chain.doFilter(request, response)
