@@ -1,5 +1,6 @@
 package com.ingsis.snippets.snippet
 
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -7,8 +8,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class SnippetController(private val snippetService: SnippetService) {
 
-  private val claimsKey = System.getenv("CLAIMS_KEY")
-
+  private val claimsKey = System.getenv("CLAIMS_KEY") ?: "defaultClaimsKey"
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   @PostMapping("/")
@@ -17,10 +17,8 @@ class SnippetController(private val snippetService: SnippetService) {
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
     val (_, username) = extractUserInfo(jwt)
+    logger.info("Creating snippet for user: $username")
     return snippetService.createSnippet(username, snippet)
-    val userId = jwt.subject
-    logger.info("Creating snippet for userId: $userId")
-    return snippetService.createSnippet(userId, snippet)
   }
 
   @GetMapping("/id/{id}")
