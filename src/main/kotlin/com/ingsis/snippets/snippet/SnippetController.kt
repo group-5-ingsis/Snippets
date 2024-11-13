@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class SnippetController(private val snippetService: SnippetService) {
 
+  private val claimsKey = System.getenv("CLAIMS_KEY")
+
   @PostMapping("/")
   fun createSnippet(
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
-    val userId = jwt.subject
-    return snippetService.createSnippet(userId, snippet)
+    val (_, username) = extractUserInfo(jwt)
+    return snippetService.createSnippet(username, snippet)
   }
 
   @GetMapping("/id/{id}")
@@ -39,5 +41,11 @@ class SnippetController(private val snippetService: SnippetService) {
   @DeleteMapping("/{id}")
   fun deleteSnippet(@PathVariable id: String) {
     snippetService.deleteSnippet(id)
+  }
+
+  private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
+    val userId = jwt.subject
+    val username = jwt.claims["$claimsKey/username"]?.toString() ?: "unknown"
+    return Pair(userId, username)
   }
 }
