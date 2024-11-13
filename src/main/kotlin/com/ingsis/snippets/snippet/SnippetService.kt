@@ -5,6 +5,7 @@ import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.JsonUtil
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 
 @Service
@@ -47,11 +48,13 @@ class SnippetService(
     return snippetWithContent
   }
 
-  fun getSnippetsByName(name: String): List<Snippet> {
+  fun getSnippetsByName(jwt: Jwt, name: String): List<Snippet> {
+    val mySnippetsIds = permissionService.getMySnippetsIds(jwt)
+
     return if (name.isBlank()) {
-      snippetRepository.findAll()
+      snippetRepository.findAll().filter { it.id in mySnippetsIds }
     } else {
-      snippetRepository.findByName(name)
+      snippetRepository.findByName(name).filter { it.id in mySnippetsIds }
     }
   }
 
