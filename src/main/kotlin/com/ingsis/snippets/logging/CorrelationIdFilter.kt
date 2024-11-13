@@ -1,42 +1,40 @@
 package com.ingsis.snippets.logging
 
-import org.slf4j.LoggerFactory
+import jakarta.servlet.Filter
+import jakarta.servlet.FilterChain
+import jakarta.servlet.FilterConfig
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
 import java.util.UUID
-import javax.servlet.Filter
-import javax.servlet.FilterChain
-import javax.servlet.FilterConfig
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
-import javax.servlet.http.HttpServletRequest
 
 @Component
 class CorrelationIdFilter : Filter {
 
   companion object {
-    const val CORRELATION_ID_HEADER = "X-Correlation-Id"
+    const val CORRELATION_ID_HEADER = "X-Correlation-ID"
   }
-
-  private val logger = LoggerFactory.getLogger(CorrelationIdFilter::class.java)
 
   override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
     val httpServletRequest = request as HttpServletRequest
-    var correlationId = httpServletRequest.getHeader(CORRELATION_ID_HEADER)
+    val httpServletResponse = response as HttpServletResponse
 
-    if (correlationId.isNullOrEmpty()) {
-      correlationId = UUID.randomUUID().toString() // Generate a new ID if not provided
-      logger.info("Generated new Correlation ID: $correlationId")
-    } else {
-      logger.info("Received Correlation ID: $correlationId")
-    }
+    // Get or generate a correlation ID
+    val correlationId = httpServletRequest.getHeader(CORRELATION_ID_HEADER) ?: UUID.randomUUID().toString()
 
-    MDC.put(CORRELATION_ID_HEADER, correlationId) // Set the ID in MDC for logging
+    // Add the correlation ID to the response header
+    httpServletResponse.setHeader(CORRELATION_ID_HEADER, correlationId)
+
+    // Set the correlation ID in the MDC context for logging
+    MDC.put(CORRELATION_ID_HEADER, correlationId)
 
     try {
       chain.doFilter(request, response)
     } finally {
-      MDC.remove(CORRELATION_ID_HEADER) // Clear the ID from MDC after request completes
+      MDC.remove(CORRELATION_ID_HEADER)
     }
   }
 
