@@ -1,4 +1,3 @@
- 
 package com.ingsis.snippets.logging
 
 import org.slf4j.MDC
