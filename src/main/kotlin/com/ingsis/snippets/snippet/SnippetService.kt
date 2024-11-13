@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 class SnippetService(
   private val snippetRepository: SnippetRepository,
   private val assetService: AssetService,
-  private val permissionService: SnippetPermissionService
+  private val permissionService: PermissionService
 ) {
 
   fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
