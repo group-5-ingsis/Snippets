@@ -7,6 +7,13 @@
 # This section is for settings common to all environments.
 # Do not add anything above this next line.
 common: &default_settings
+
+  # ============================== LICENSE KEY ===============================
+  # You must specify the license key associated with your New Relic
+  # account. For example, if your license key is 12345 use this:
+  # license_key: '12345'
+  # The key binds your agent's data to your account in the New Relic service.
+
   # Agent Enabled
   # Use this setting to disable the agent instead of removing it from the startup command.
   # Default is true.
@@ -21,7 +28,7 @@ common: &default_settings
   # app_name: My Application;My Application 2
   # This setting is required. Up to 3 different application names can be specified.
   # The first application name must be unique.
-  app_name: 'snippets-app'
+  app_name: 'snippets-service-app'
 
   # To enable high security, set this property to true. When in high
   # security mode, the agent will use SSL and obfuscated SQL. Additionally,
@@ -378,15 +385,15 @@ common: &default_settings
 
 development:
   <<: *default_settings
-  app_name: 'snippets-app (Development)'
+  app_name: 'snippets-service-app (Development)'
 
 test:
   <<: *default_settings
-  app_name: 'snippets-app (Test)'
+  app_name: 'snippets-service-app (Test)'
 
 production:
   <<: *default_settings
 
 staging:
   <<: *default_settings
-  app_name: 'snippets-app (Staging)'
+  app_name: 'snippets-service-app (Staging)'
