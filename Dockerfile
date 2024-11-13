@@ -14,4 +14,4 @@ RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/snippets.jar
 COPY newrelic /app/newrelic
 
-ENTRYPOINT ["java", "-javaagent:/app/newrelic/newrelic.jar", "-Dnewrelic.config.license_key=${NEW_RELIC_LICENSE_KEY}", "-Dnewrelic.config.app_name=snippets-app",  "-jar", "/app/snippets.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/newrelic/newrelic.jar", "-jar", "/app/snippets.jar"]
