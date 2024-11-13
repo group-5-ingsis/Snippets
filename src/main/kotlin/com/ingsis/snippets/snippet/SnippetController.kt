@@ -17,8 +17,8 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @GetMapping("/id/{id}")
-  fun getSnippetById(@PathVariable id: String): Snippet {
-    return snippetService.getSnippetById(id)
+  fun getSnippetById(@PathVariable id: String): SnippetWithContent {
+    return snippetService.getSnippetContent(id)
   }
 
   @GetMapping("/name/{name}")
@@ -29,11 +29,6 @@ class SnippetController(private val snippetService: SnippetService) {
   @GetMapping("/")
   fun getAllSnippets(): List<Snippet> {
     return snippetService.getSnippets()
-  }
-
-  @GetMapping("/{id}/content")
-  fun getSnippetContent(@PathVariable id: String): String {
-    return snippetService.getSnippetContent(id)
   }
 
   @PutMapping("/{id}")

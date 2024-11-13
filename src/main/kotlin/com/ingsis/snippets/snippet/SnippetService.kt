@@ -35,6 +35,13 @@ class SnippetService(
     return snippetRepository.findById(id).orElse(null)
   }
 
+  fun getSnippetContent(id: String): SnippetWithContent {
+    val snippet = getSnippetById(id)
+    val content = assetService.getAssetContent(snippet.author, snippet.id)
+    val snippetWithContent = SnippetWithContent(snippet, content)
+    return snippetWithContent
+  }
+
   fun getSnippetsByName(name: String): List<Snippet> {
     return if (name.isBlank()) {
       snippetRepository.findAll()
@@ -67,14 +74,6 @@ class SnippetService(
 
       RuleManager.convertToRuleList(existingFormattingRules)
     }
-  }
-
-  fun getSnippetContent(id: String): String {
-    val snippet = getSnippetById(id)
-    val container = snippet.author
-    val key = snippet.id
-
-    return assetService.getAssetContent(container, key)
   }
 
   fun updateSnippet(id: String, newSnippet: SnippetDto): Snippet {
