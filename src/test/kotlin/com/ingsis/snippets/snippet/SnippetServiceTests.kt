@@ -1,17 +1,17 @@
-//package com.ingsis.snippets.snippet
+// package com.ingsis.snippets.snippet
 //
-//import com.ingsis.snippets.asset.Asset
-//import com.ingsis.snippets.asset.AssetService
-//import org.junit.jupiter.api.Assertions.*
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import org.mockito.InjectMocks
-//import org.mockito.Mock
-//import org.mockito.Mockito.*
-//import org.mockito.MockitoAnnotations
-//import org.springframework.web.client.RestTemplate
+// import com.ingsis.snippets.asset.Asset
+// import com.ingsis.snippets.asset.AssetService
+// import org.junit.jupiter.api.Assertions.*
+// import org.junit.jupiter.api.BeforeEach
+// import org.junit.jupiter.api.Test
+// import org.mockito.InjectMocks
+// import org.mockito.Mock
+// import org.mockito.Mockito.*
+// import org.mockito.MockitoAnnotations
+// import org.springframework.web.client.RestTemplate
 //
-//class SnippetServiceTests {
+// class SnippetServiceTests {
 //
 //  @InjectMocks
 //  private lateinit var snippetService: SnippetService
@@ -78,4 +78,4 @@
 //
 //    assertEquals(snippet, result)
 //  }
-//}
+// }

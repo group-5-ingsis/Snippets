@@ -10,21 +10,26 @@ import org.springframework.stereotype.Service
 @Service
 class SnippetService(
   private val snippetRepository: SnippetRepository,
-  private val assetService: AssetService
+  private val assetService: AssetService,
+  private val permissionService: SnippetPermissionService
 ) {
 
-  fun createSnippet(email: String, snippetDto: SnippetDto): Snippet {
+  fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto)
 
-    snippet.author = email
+    snippet.author = username
 
     val savedSnippet = snippetRepository.save(snippet)
+    val createdSnippetId = savedSnippet.id
 
     val asset = Asset(
-      container = email,
-      key = savedSnippet.id,
+      container = username,
+      key = createdSnippetId,
       content = snippetDto.content
     )
+
+    permissionService.updatePermissions(userId, createdSnippetId, "read")
+    permissionService.updatePermissions(userId, createdSnippetId, "write")
 
     assetService.createOrUpdateAsset(asset)
 

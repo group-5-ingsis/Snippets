@@ -16,9 +16,9 @@ class SnippetController(private val snippetService: SnippetService) {
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
-    val (_, username) = extractUserInfo(jwt)
+    val (userId, username) = extractUserInfo(jwt)
     logger.info("Creating snippet for user: $username")
-    return snippetService.createSnippet(username, snippet)
+    return snippetService.createSnippet(userId, username, snippet)
   }
 
   @GetMapping("/id/{id}")

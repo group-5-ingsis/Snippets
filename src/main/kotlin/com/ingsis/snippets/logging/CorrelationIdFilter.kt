@@ -1,17 +1,18 @@
- package com.ingsis.snippets.logging
+ 
+package com.ingsis.snippets.logging
 
- import org.slf4j.MDC
- import org.springframework.stereotype.Component
- import java.util.UUID
- import javax.servlet.Filter
- import javax.servlet.FilterChain
- import javax.servlet.FilterConfig
- import javax.servlet.ServletRequest
- import javax.servlet.ServletResponse
- import javax.servlet.http.HttpServletRequest
+import org.slf4j.MDC
+import org.springframework.stereotype.Component
+import java.util.UUID
+import javax.servlet.Filter
+import javax.servlet.FilterChain
+import javax.servlet.FilterConfig
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
+import javax.servlet.http.HttpServletRequest
 
- @Component
- class CorrelationIdFilter : Filter {
+@Component
+class CorrelationIdFilter : Filter {
 
   companion object {
     const val CORRELATION_ID_HEADER = "X-Correlation-Id"
@@ -36,4 +37,4 @@
 
   override fun init(filterConfig: FilterConfig?) {}
   override fun destroy() {}
- }
+}
