@@ -45,9 +45,10 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @DeleteMapping("/{id}")
-  fun deleteSnippet(@PathVariable id: String) {
+  fun deleteSnippet(@PathVariable id: String): String {
     logger.info("Deleting snippet with id: $id (delete/{id})")
     snippetService.deleteSnippet(id)
+    return "Snippet deleted!"
   }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
