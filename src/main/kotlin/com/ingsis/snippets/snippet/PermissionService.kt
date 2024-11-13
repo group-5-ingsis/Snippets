@@ -1,5 +1,6 @@
 package com.ingsis.snippets.snippet
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -7,13 +8,12 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
-import org.slf4j.LoggerFactory
 
 @Service
 class PermissionService(private val restTemplate: RestTemplate) {
 
-  private val logger = LoggerFactory.getLogger(SnippetPermissionService::class.java)
-  private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL") ?: "http://default-permission-service-url"
+  private val logger = LoggerFactory.getLogger(PermissionService::class.java)
+  private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL") ?: "http://permission"
 
   fun updatePermissions(userId: String, snippetId: String, type: String) {
     val headers = HttpHeaders().apply {
