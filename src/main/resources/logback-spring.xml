@@ -1,0 +1,39 @@
+<configuration>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <!-- Incluye la fecha y hora del evento en el formato ISO8601 -->
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
+                </timestamp>
+
+                <!-- Incluye el nivel de log (INFO, ERROR, etc.) -->
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+
+                <!-- Incluye el nombre del logger (normalmente la clase) -->
+                <loggerName>
+                    <fieldName>logger</fieldName>
+                </loggerName>
+
+                <!-- Incluye el mensaje del log -->
+                <message />
+
+                <!-- Incluye el ID de la traza si está configurado en MDC -->
+                <mdc />
+
+                <!-- Incluye detalles de la excepción si la hay -->
+                <stackTrace />
+
+            </providers>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="console" />
+    </root>
+
+</configuration>
