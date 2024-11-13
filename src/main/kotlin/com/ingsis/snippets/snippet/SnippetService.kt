@@ -81,33 +81,18 @@ class SnippetService(
     }
   }
 
-  fun updateSnippet(id: String, newSnippet: SnippetDto): Snippet {
+  fun updateSnippet(id: String, newContent: String): Snippet {
     val existingSnippet = getSnippetById(id)
 
-    val updatedSnippet = updateFields(existingSnippet, newSnippet)
-
-    val savedSnippet = snippetRepository.save(updatedSnippet)
-
     val asset = Asset(
-      container = savedSnippet.author,
-      key = savedSnippet.id,
-      content = newSnippet.content
+      container = existingSnippet.author,
+      key = existingSnippet.id,
+      content = newContent
     )
 
     assetService.createOrUpdateAsset(asset)
 
-    return savedSnippet
-  }
-
-  private fun updateFields(existingSnippet: Snippet, updatedSnippet: SnippetDto): Snippet {
-    return Snippet(
-      id = existingSnippet.id,
-      author = existingSnippet.author,
-      language = updatedSnippet.language,
-      extension = updatedSnippet.extension,
-      name = updatedSnippet.name,
-      compliance = "unknown"
-    )
+    return existingSnippet
   }
 
   fun deleteSnippet(id: String) {
