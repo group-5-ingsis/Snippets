@@ -4,15 +4,15 @@ auth0:
 stream:
   format: ${STREAM_KEY_FORMAT}
   format-response: "abc"
-  test: "test"
-  test-create: "test-create"
-  test-result: "test-result"
+  test: ${STREAM_KEY_TEST}
+  test-create: ${STREAM_KEY_TEST_CREATE}
+  test-result: ${STREAM_KEY_TEST_RESULT}
   lint-request: "12345"
   lint-response: "54321"
 
 groups:
   product: ${GROUP_ID}
-  test-res: "test-res"
+  test-res: ${GROUP_ID_TEST_RES}
 
 spring:
   application:

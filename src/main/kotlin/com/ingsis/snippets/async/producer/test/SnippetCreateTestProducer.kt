@@ -15,6 +15,7 @@ class SnippetCreateTestProducer @Autowired constructor(
 ) : RedisStreamProducer(streamKey, redis) {
 
   suspend fun publishCreateTestEvent(snippet: SnippetCreateTestRequest) {
+    println("Publishing on stream $streamKey")
     val snippetAsJson = JsonUtil.serializeCreateTestToJson(snippet)
     emit(snippetAsJson).awaitSingle()
   }
