@@ -45,7 +45,7 @@ class SnippetService(
     )
 
     permissionService.updatePermissions(userId, createdSnippetId, "read")
-    permissionService.updatePermissions(username, createdSnippetId, "write")
+    permissionService.updatePermissions(userId, createdSnippetId, "write")
 
     assetService.createOrUpdateAsset(asset)
 
