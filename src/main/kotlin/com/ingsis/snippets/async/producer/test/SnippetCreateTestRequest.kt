@@ -9,7 +9,7 @@ data class SnippetCreateTestRequest(
   val input: List<String>,
   val output: List<String>,
   val language: String,
-  val version: String,
+  val version: String
 ) {
   constructor(createTestDto: CreateTestDto, author: String, language: String, version: String) : this(
     snippetId = createTestDto.snippetId,

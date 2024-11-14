@@ -22,7 +22,8 @@ class TestController(
     val snippet = snippetService.getSnippetById(snippetTest.snippetId)
     val languageAndVersion = snippet.language.split(" ")
     snippetTestProducer.publishCreateTestEvent(
-      SnippetCreateTestRequest(snippetTest, snippet.author, languageAndVersion[0], languageAndVersion[1]))
+      SnippetCreateTestRequest(snippetTest, snippet.author, languageAndVersion[0], languageAndVersion[1])
+    )
     logger.info("Sent request to create a new test")
   }
 
@@ -31,7 +32,7 @@ class TestController(
     val snippet = snippetService.getSnippetById(id)
     val snippetRequest = SnippetTestRequest(
       snippet.author,
-      snippet.id,
+      snippet.id
     )
     snippetTestProducer.publishTestRequestEvent(snippetRequest)
     logger.info("Published test request for snippet id: $id")

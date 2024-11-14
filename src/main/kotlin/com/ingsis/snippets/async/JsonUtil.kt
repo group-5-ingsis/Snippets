@@ -4,15 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ingsis.snippets.async.producer.format.SnippetFormatRequest
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
-import com.ingsis.snippets.format.FormattingRules
+import com.ingsis.snippets.rules.FormatRequest
+import com.ingsis.snippets.rules.FormatResponse
+import com.ingsis.snippets.rules.FormattingRules
 
 object JsonUtil {
   private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
-  fun serializeToJson(snippetToFormat: SnippetFormatRequest): String {
+  fun serializeToJson(snippetToFormat: FormatRequest): String {
     return try {
       objectMapper.writeValueAsString(snippetToFormat)
     } catch (e: JsonProcessingException) {
@@ -23,6 +24,14 @@ object JsonUtil {
   fun deserializeFormattingRules(rules: String): FormattingRules {
     return try {
       objectMapper.readValue(rules)
+    } catch (e: JsonProcessingException) {
+      throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
+    }
+  }
+
+  fun deserializeFormatResponse(response: String): FormatResponse {
+    return try {
+      objectMapper.readValue(response)
     } catch (e: JsonProcessingException) {
       throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
     }

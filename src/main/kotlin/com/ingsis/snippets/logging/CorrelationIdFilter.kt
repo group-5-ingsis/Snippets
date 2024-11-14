@@ -1,5 +1,6 @@
 package com.ingsis.snippets.logging
 
+import com.newrelic.api.agent.NewRelic // Import New Relic API
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.FilterConfig
@@ -9,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
-import com.newrelic.api.agent.NewRelic  // Import New Relic API
 import java.util.UUID
 
 @Component

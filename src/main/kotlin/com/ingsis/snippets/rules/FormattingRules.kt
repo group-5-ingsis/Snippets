@@ -1,4 +1,4 @@
-package com.ingsis.snippets.format
+package com.ingsis.snippets.rules
 
 data class FormattingRules(
   val spaceBeforeColon: Boolean,
