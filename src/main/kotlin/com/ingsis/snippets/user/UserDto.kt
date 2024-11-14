@@ -1,6 +1,8 @@
 package com.ingsis.snippets.user
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class UserDto(
-  val id: String,
-  val name: String
+  @JsonProperty("user_id") val id: String,
+  @JsonProperty("name") val name: String
 )

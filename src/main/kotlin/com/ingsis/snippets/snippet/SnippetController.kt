@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -75,21 +76,23 @@ class SnippetController(
   @GetMapping("/users")
   fun getUsers(): List<UserDto> {
     val token = auth0ManagementTokenService.getManagementApiToken()
-    if (token == null) {
-      throw RuntimeException("Unable to obtain Auth0 Management API token")
-    }
-
     val url = "${auth0Domain}api/v2/users"
     val headers = HttpHeaders().apply {
       set("Authorization", "Bearer $token")
+      accept = listOf(MediaType.APPLICATION_JSON)
     }
     val entity = HttpEntity<String>(headers)
 
     return try {
-      val response: ResponseEntity<Array<UserDto>> =
-        restTemplate.exchange(url, HttpMethod.GET, entity, Array<UserDto>::class.java)
+      val response: ResponseEntity<Array<UserDto>> = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        entity,
+        Array<UserDto>::class.java
+      )
       response.body?.toList() ?: emptyList()
-    } catch (_: RestClientException) {
+    } catch (e: RestClientException) {
+      logger.error("Error fetching users: ${e.message}")
       emptyList()
     }
   }

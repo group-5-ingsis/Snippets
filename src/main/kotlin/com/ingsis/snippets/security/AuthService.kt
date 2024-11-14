@@ -1,11 +1,14 @@
 package com.ingsis.snippets.security
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
@@ -13,34 +16,37 @@ import org.springframework.web.client.RestTemplate
 class AuthService(
   private val restTemplate: RestTemplate,
   @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") private val domain: String,
-  @Value("\${spring.security.oauth2.resourceserver.jwt.client-id}") private val clientId: String,
-  @Value("\${spring.security.oauth2.resourceserver.jwt.client-secret}") private val clientSecret: String,
-  @Value("\${spring.security.oauth2.resourceserver.jwt.management-api}") private val audience: String
+  @Value("\${spring.security.oauth2.resourceserver.jwt.m2m-clientId}") private val clientId: String,
+  @Value("\${spring.security.oauth2.resourceserver.jwt.m2m-clientsecret}") private val clientSecret: String
 ) {
 
-  data class Auth0TokenResponse(
-    @JsonProperty("access_token") val accessToken: String,
-    @JsonProperty("token_type") val tokenType: String
-  )
-
-  fun getManagementApiToken(): String? {
+  fun getManagementApiToken(): String {
     val url = "${domain}oauth/token"
     val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
+      contentType = MediaType.APPLICATION_FORM_URLENCODED
     }
-    val requestBody = mapOf(
-      "client_id" to clientId,
-      "client_secret" to clientSecret,
-      "audience" to audience,
-      "grant_type" to "client_credentials"
-    )
-    val entity = HttpEntity(requestBody, headers)
+
+    val body = LinkedMultiValueMap<String, String>().apply {
+      add("client_id", clientId)
+      add("client_secret", clientSecret)
+      add("audience", "${domain}api/v2/")
+      add("grant_type", "client_credentials")
+    }
+
+    val entity = HttpEntity(body, headers)
 
     return try {
-      val response: Auth0TokenResponse = restTemplate.postForObject(url, entity, Auth0TokenResponse::class.java)!!
-      response.accessToken
-    } catch (_: RestClientException) {
-      null
+      val response: ResponseEntity<Map<String, String>> = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        entity,
+        object : ParameterizedTypeReference<Map<String, String>>() {}
+      )
+      response.body?.get("access_token")
+        ?: throw IllegalStateException("No access token returned in response")
+    } catch (e: RestClientException) {
+      println("Error retrieving token: ${e.message}")
+      throw IllegalStateException("Failed to retrieve access token")
     }
   }
 }

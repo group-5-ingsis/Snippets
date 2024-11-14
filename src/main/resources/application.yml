@@ -44,6 +44,9 @@ spring:
           client-id: ${AUTH_CLIENT_ID}
           client-secret: ${AUTH_CLIENT_SECRET}
           management-api: ${MANAGEMENT_API_IDENTIFIER}
+          m2m-clientsecret: ${M_CLIENT_SECRET}
+          m2m-clientId: ${M_CLIENT_ID}
+
 
 server:
   port: ${SERVER_PORT}
