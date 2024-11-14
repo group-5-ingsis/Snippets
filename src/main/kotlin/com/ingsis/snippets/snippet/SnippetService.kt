@@ -5,6 +5,7 @@ import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.JsonUtil
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
+import org.slf4j.LoggerFactory
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 
@@ -14,6 +15,8 @@ class SnippetService(
   private val assetService: AssetService,
   private val permissionService: PermissionService
 ) {
+
+  private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto)
