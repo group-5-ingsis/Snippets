@@ -1,5 +1,6 @@
 package com.ingsis.snippets.test
 
+import com.ingsis.snippets.async.producer.test.SnippetCreateTestProducer
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestProducer
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/test") // Set the base path correctly here
 class TestController(
   private val snippetService: SnippetService,
-  private val snippetTestProducer: SnippetTestProducer
+  private val snippetTestProducer: SnippetTestProducer,
+  private val snippetCreateTestProducer: SnippetCreateTestProducer
 ) {
   private val logger = LoggerFactory.getLogger(TestController::class.java)
 
@@ -24,7 +26,7 @@ class TestController(
   suspend fun createSnippet(@RequestBody snippetTest: CreateTestDto) {
     val snippet = snippetService.getSnippetById(snippetTest.snippetId)
     val languageAndVersion = snippet.language.split(" ")
-    snippetTestProducer.publishCreateTestEvent(
+    snippetCreateTestProducer.publishCreateTestEvent(
       SnippetCreateTestRequest(snippetTest, snippet.author, languageAndVersion[0], languageAndVersion[1])
     )
     logger.info("Sent request to create a new test")

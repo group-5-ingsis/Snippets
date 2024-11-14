@@ -4,6 +4,8 @@ auth0:
 stream:
   format: ${STREAM_KEY_FORMAT}
   format-response: "abc"
+  test: ${STREAM_KEY_TEST}
+  test-create: ${STREAM_KEY_TEST_CREATE}
 
 groups:
   product: ${GROUP_ID}

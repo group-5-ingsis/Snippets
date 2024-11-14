@@ -9,13 +9,13 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class SnippetTestProducer @Autowired constructor(
-  @Value("\${stream.test}") streamKey: String,
+class SnippetCreateTestProducer @Autowired constructor(
+  @Value("\${stream.test-create}") streamKey: String,
   redis: ReactiveRedisTemplate<String, String>
 ) : RedisStreamProducer(streamKey, redis) {
 
-  suspend fun publishTestRequestEvent(snippet: SnippetTestRequest) {
-    val snippetAsJson = JsonUtil.serializeTestToJson(snippet)
+  suspend fun publishCreateTestEvent(snippet: SnippetCreateTestRequest) {
+    val snippetAsJson = JsonUtil.serializeCreateTestToJson(snippet)
     emit(snippetAsJson).awaitSingle()
   }
 }
