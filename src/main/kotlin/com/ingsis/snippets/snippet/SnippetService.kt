@@ -14,7 +14,6 @@ import com.ingsis.snippets.rules.RuleManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -29,10 +28,8 @@ class SnippetService(
   private val lintResultConsumer: LintResultConsumer
 ) {
 
-  suspend fun createSnippet(jwt: Jwt, snippetDto: SnippetDto): Snippet {
-    val (userId, username) = extractUserInfo(jwt)
-
-    val compliance = lintSnippet(jwt, snippetDto.content)
+  suspend fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
+    val compliance = lintSnippet(username, snippetDto.content)
     val snippet = Snippet(snippetDto, compliance)
 
     snippet.author = username
@@ -46,18 +43,15 @@ class SnippetService(
       content = snippetDto.content
     )
 
-    val userData = UserData(userId, username)
-
-    permissionService.updatePermissions(userData, createdSnippetId, "read")
-    permissionService.updatePermissions(userData, createdSnippetId, "write")
+    permissionService.updatePermissions(userId, createdSnippetId, "read")
+    permissionService.updatePermissions(username, createdSnippetId, "write")
 
     assetService.createOrUpdateAsset(asset)
 
     return savedSnippet
   }
 
-  suspend fun lintSnippet(jwt: Jwt, content: String): String {
-    val (_, username) = extractUserInfo(jwt)
+  suspend fun lintSnippet(username: String, content: String): String {
     val requestId = UUID.randomUUID().toString()
     val lintRequest = LintRequest(requestId, username, snippet = content)
 
@@ -78,8 +72,8 @@ class SnippetService(
     return snippetWithContent
   }
 
-  fun getSnippetsByName(name: String): List<Snippet> {
-    val mySnippetsIds = permissionService.getMySnippetsIds()
+  fun getSnippetsByName(userId: String, name: String): List<Snippet> {
+    val mySnippetsIds = permissionService.getMySnippetsIds(userId)
 
     return if (name.isBlank()) {
       snippetRepository.findAll().filter { it.id in mySnippetsIds }
@@ -151,7 +145,7 @@ class SnippetService(
   }
 
   fun formatAllSnippetsForUser(userData: UserData) {
-    val snippets = getAllSnippetsForUser(userData)
+    val snippets = getAllSnippetsForUser(userData.userId)
 
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
@@ -172,7 +166,7 @@ class SnippetService(
   }
 
   fun lintAllSnippetsForUser(userData: UserData) {
-    val snippets = getAllSnippetsForUser(userData)
+    val snippets = getAllSnippetsForUser(userData.userId)
 
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
@@ -192,8 +186,8 @@ class SnippetService(
     }
   }
 
-  fun getAllSnippetsForUser(userData: UserData): List<SnippetWithContent> {
-    val snippetIds = permissionService.getMyWritableSnippets(userData)
+  fun getAllSnippetsForUser(userId: String): List<SnippetWithContent> {
+    val snippetIds = permissionService.getSnippets(userId, "read")
 
     return snippetIds.mapNotNull { snippetId ->
       try {
@@ -265,11 +259,5 @@ class SnippetService(
     }
     val content = assetService.getAssetContent(snippet.author, snippet.id)
     return SnippetWithContent(snippet, content)
-  }
-
-  private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
-    val userId = jwt.subject
-    val username = jwt.claims["https://snippets/claims/username"]?.toString() ?: "unknown"
-    return Pair(userId, username)
   }
 }

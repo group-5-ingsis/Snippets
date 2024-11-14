@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class SnippetController(private val snippetService: SnippetService, private val permissionService: PermissionService) {
+class SnippetController(private val snippetService: SnippetService) {
 
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
@@ -15,9 +15,9 @@ class SnippetController(private val snippetService: SnippetService, private val 
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
-    val (_, username) = extractUserInfo(jwt)
+    val (userId, username) = extractUserInfo(jwt)
     logger.info("Creating snippet for user: $username")
-    return snippetService.createSnippet(jwt, snippet)
+    return snippetService.createSnippet(userId, username, snippet)
   }
 
   @GetMapping("/id/{id}")
@@ -27,9 +27,10 @@ class SnippetController(private val snippetService: SnippetService, private val 
   }
 
   @GetMapping("/name/{name}")
-  fun getSnippetsByName(@PathVariable name: String): List<Snippet> {
+  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable name: String): List<Snippet> {
+    val (userId, _) = extractUserInfo(jwt)
     logger.info("Fetching snippets with name: $name (get/name/{name})")
-    return snippetService.getSnippetsByName(name)
+    return snippetService.getSnippetsByName(userId, name)
   }
 
   @GetMapping("/")
@@ -49,11 +50,6 @@ class SnippetController(private val snippetService: SnippetService, private val 
     logger.info("Deleting snippet with id: $id (delete/{id})")
     snippetService.deleteSnippet(id)
     return "Snippet deleted!"
-  }
-
-  @GetMapping("/users")
-  fun getUsers(): List<UserDto> {
-    return permissionService.getUsers()
   }
 
   @PostMapping("/share/{snippetId}/{userToShare}")

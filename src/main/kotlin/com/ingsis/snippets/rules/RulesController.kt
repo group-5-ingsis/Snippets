@@ -37,7 +37,8 @@ class RulesController(
 
   @PostMapping("/lint")
   suspend fun lintSnippet(@AuthenticationPrincipal jwt: Jwt, @RequestBody content: String): String {
-    return snippetService.lintSnippet(jwt, content)
+    val (_, username) = extractUserInfo(jwt)
+    return snippetService.lintSnippet(username, content)
   }
 
   @GetMapping("/format/rules")

@@ -15,23 +15,24 @@ class PermissionService(private val restTemplate: RestTemplate) {
 
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
-  private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL")
+  private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL") ?: "http://localhost:8083"
 
-  fun updatePermissions(userData: UserData, snippetId: String, type: String) {
-    logger.info("Permission URL: $permissionServiceUrl")
-
+  fun updatePermissions(userId: String, snippetId: String, type: String) {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/$type/${userData.userId}/$snippetId"
+    val url = "$permissionServiceUrl/$type/$userId/$snippetId"
+    logger.info("Calling: $url")
 
     try {
+      val entity = HttpEntity<Void>(headers)
+
       restTemplate.exchange(
         url,
         HttpMethod.POST,
-        HttpEntity(userData, headers),
+        entity,
         Void::class.java
       )
       logger.info("Permissions updated successfully.")
@@ -50,13 +51,13 @@ class PermissionService(private val restTemplate: RestTemplate) {
 
     val url = "$permissionServiceUrl/write/$userId/$snippetId"
 
-    val userData = UserData(userId, "Unknown")
+    val entity = HttpEntity<Void>(headers)
 
     try {
       restTemplate.exchange(
         url,
         HttpMethod.POST,
-        HttpEntity(userData, headers),
+        entity,
         Void::class.java
       )
       logger.info("Permissions updated successfully.")
@@ -74,10 +75,12 @@ class PermissionService(private val restTemplate: RestTemplate) {
     val url = "$permissionServiceUrl/$type/$userId"
 
     return try {
+      val entity = HttpEntity<Void>(headers)
+
       val result = restTemplate.exchange(
         url,
         HttpMethod.GET,
-        HttpEntity<String>(null, headers),
+        entity,
         object : ParameterizedTypeReference<List<String>>() {}
       )
       result.body ?: emptyList()
@@ -87,58 +90,21 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun getUsers(): List<UserDto> {
+  fun getMySnippetsIds(userId: String): List<String> {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/users"
-
-    try {
-      val result = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(null, headers), List::class.java)
-      return result.body as List<UserDto>
-    } catch (_: RestClientException) {
-      return emptyList()
-    }
-  }
-
-  fun getMySnippetsIds(): List<String> {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
-    }
-
-    val url = "$permissionServiceUrl/"
+    val url = "$permissionServiceUrl/$userId"
 
     return try {
+      val entity = HttpEntity<Void>(headers)
+
       val result = restTemplate.exchange(
         url,
         HttpMethod.POST,
-        HttpEntity<Unit>(null, headers),
-        object : ParameterizedTypeReference<List<String>>() {}
-      )
-
-      result.body ?: emptyList()
-    } catch (e: RestClientException) {
-      println("Error fetching snippets: ${e.message}")
-      emptyList()
-    }
-  }
-
-  fun getMyWritableSnippets(userData: UserData): List<String> {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
-    }
-
-    val url = "$permissionServiceUrl/write"
-
-    return try {
-      val result = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        HttpEntity(userData, headers),
+        entity,
         object : ParameterizedTypeReference<List<String>>() {}
       )
 
