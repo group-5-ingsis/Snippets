@@ -6,6 +6,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormatResponse
+import com.ingsis.snippets.async.producer.lint.LintResponse
+import com.ingsis.snippets.async.producer.lint.SnippetLintRequest
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
 import com.ingsis.snippets.rules.FormattingRules
@@ -15,6 +17,14 @@ object JsonUtil {
   private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
   fun serializeToJson(snippetToFormat: FormatRequest): String {
+    return try {
+      objectMapper.writeValueAsString(snippetToFormat)
+    } catch (e: JsonProcessingException) {
+      throw RuntimeException("Failed to serialize object to JSON", e)
+    }
+  }
+
+  fun serializeToJson(snippetToFormat: SnippetLintRequest): String {
     return try {
       objectMapper.writeValueAsString(snippetToFormat)
     } catch (e: JsonProcessingException) {
@@ -39,6 +49,14 @@ object JsonUtil {
   }
 
   fun deserializeFormatResponse(response: String): FormatResponse {
+    return try {
+      objectMapper.readValue(response)
+    } catch (e: JsonProcessingException) {
+      throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
+    }
+  }
+
+  fun deserializeLintResponse(response: String): LintResponse {
     return try {
       objectMapper.readValue(response)
     } catch (e: JsonProcessingException) {
