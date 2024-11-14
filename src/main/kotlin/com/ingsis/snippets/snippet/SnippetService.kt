@@ -85,6 +85,28 @@ class SnippetService(
     }
   }
 
+  fun getLintingRules(userId: String): List<Rule> {
+    val rulesJson = assetService.getAssetContent(userId, "LintingRules")
+
+    return if (rulesJson == "No Content") {
+      val defaultLintingRules = RuleManager.getDefaultLintingRules()
+
+      val asset = Asset(
+        container = userId,
+        key = "LintingRules",
+        content = JsonUtil.serializeLintingRules(defaultLintingRules)
+      )
+
+      assetService.createOrUpdateAsset(asset)
+
+      RuleManager.convertToRuleList(defaultLintingRules)
+    } else {
+      val existingFormattingRules = JsonUtil.deserializeFormattingRules(rulesJson)
+
+      RuleManager.convertToRuleList(existingFormattingRules)
+    }
+  }
+
   fun updateSnippet(id: String, newContent: String): SnippetWithContent {
     val existingSnippet = getSnippetById(id)
 

@@ -59,13 +59,13 @@ class RulesController(
 //    logger.info("Published formatting request for snippet id: $id")
 //  }
 
-//  @GetMapping("/lint/rules")
-//  fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
-//    val userId = jwt.subject
-//    logger.info("Fetching linting rules for userId: $userId")
-//
-//    return snippetService.getLintingRules(userId)
-//  }
+  @GetMapping("/lint/rules")
+  fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
+    val userId = jwt.subject
+    logger.info("Fetching linting rules for userId: $userId")
+
+    return snippetService.getLintingRules(userId)
+  }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
     val userId = jwt.subject
