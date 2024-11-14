@@ -3,6 +3,9 @@ package com.ingsis.snippets.rules
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
+import com.ingsis.snippets.async.producer.lint.LintRequestProducer
+import com.ingsis.snippets.async.producer.lint.LintResultConsumer
+import com.ingsis.snippets.async.producer.lint.SnippetLintRequest
 import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.snippet.UserData
 import org.slf4j.LoggerFactory
@@ -18,7 +21,9 @@ import java.util.UUID
 class RulesController(
   private val snippetService: SnippetService,
   private val snippetFormatProducer: SnippetFormatProducer,
-  private val formattedSnippetConsumer: FormattedSnippetConsumer
+  private val formattedSnippetConsumer: FormattedSnippetConsumer,
+  private val lintRequestProducer: LintRequestProducer,
+  private val lintResultConsumer: LintResultConsumer
 ) {
 
   private val logger = LoggerFactory.getLogger(RulesController::class.java)
@@ -32,6 +37,18 @@ class RulesController(
     snippetFormatProducer.publishEvent(formatRequest)
 
     val responseDeferred = formattedSnippetConsumer.getFormatResponse(requestId)
+    return responseDeferred.await()
+  }
+
+  @PostMapping("/lint")
+  suspend fun lintSnippet(@AuthenticationPrincipal jwt: Jwt, @RequestBody content: String): String {
+    val (_, username) = extractUserInfo(jwt)
+    val requestId = UUID.randomUUID().toString()
+    val lintRequest = SnippetLintRequest(requestId, username, snippet = content)
+
+    lintRequestProducer.publishEvent(lintRequest)
+
+    val responseDeferred = lintResultConsumer.getFormatResponse(requestId)
     return responseDeferred.await()
   }
 

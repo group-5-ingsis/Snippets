@@ -29,12 +29,12 @@ data class Snippet(
     compliance = ""
   )
 
-  constructor(snippetDto: SnippetDto) : this(
+  constructor(snippetDto: SnippetDto, compliance: String) : this(
     id = "",
     author = "",
     name = snippetDto.name,
     language = snippetDto.language,
     extension = snippetDto.extension,
-    compliance = "unknown"
+    compliance = compliance
   )
 }

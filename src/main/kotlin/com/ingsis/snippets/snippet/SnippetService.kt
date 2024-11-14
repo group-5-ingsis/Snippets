@@ -8,9 +8,11 @@ import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
+import com.ingsis.snippets.rules.RulesController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -20,11 +22,15 @@ class SnippetService(
   private val assetService: AssetService,
   private val permissionService: PermissionService,
   private val snippetFormatProducer: SnippetFormatProducer,
-  private val formattedSnippetConsumer: FormattedSnippetConsumer
+  private val formattedSnippetConsumer: FormattedSnippetConsumer,
+  private val rulesController: RulesController
 ) {
 
-  fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
-    val snippet = Snippet(snippetDto)
+  suspend fun createSnippet(jwt: Jwt, snippetDto: SnippetDto): Snippet {
+    val (userId, username) = extractUserInfo(jwt)
+
+    val compliance = rulesController.lintSnippet(jwt, snippetDto.content)
+    val snippet = Snippet(snippetDto, compliance)
 
     snippet.author = username
 
@@ -200,5 +206,11 @@ class SnippetService(
     }
     val content = assetService.getAssetContent(snippet.author, snippet.id)
     return SnippetWithContent(snippet, content)
+  }
+
+  private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
+    val userId = jwt.subject
+    val username = jwt.claims["https://snippets/claims/username"]?.toString() ?: "unknown"
+    return Pair(userId, username)
   }
 }
