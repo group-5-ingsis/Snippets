@@ -17,18 +17,18 @@ class LintResultConsumer @Autowired constructor(
   @Value("\${groups.product}") groupId: String
 ) : RedisStreamConsumer<String>(streamResponseKey, groupId, redis) {
 
-  private val formatResponses = mutableMapOf<String, CompletableDeferred<String>>()
+  private val lintResponses = mutableMapOf<String, CompletableDeferred<String>>()
 
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value
     val response = JsonUtil.deserializeLintResponse(streamValue)
 
-    formatResponses[response.requestId]?.complete(response.status)
-    formatResponses.remove(response.requestId)
+    lintResponses[response.requestId]?.complete(response.status)
+    lintResponses.remove(response.requestId)
   }
 
   fun getLintResponseResponse(requestId: String): CompletableDeferred<String> {
-    return formatResponses.computeIfAbsent(requestId) { CompletableDeferred() }
+    return lintResponses.computeIfAbsent(requestId) { CompletableDeferred() }
   }
 
   override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, String>> {

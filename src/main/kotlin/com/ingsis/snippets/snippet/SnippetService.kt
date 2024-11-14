@@ -132,6 +132,24 @@ class SnippetService(
     return RuleManager.convertToRuleList(JsonUtil.deserializeFormattingRules(newRules))
   }
 
+  fun updateLintingRules(userData: UserData, rules: List<Rule>): List<Rule> {
+    val rulesAsType = RuleManager.convertToLintingRules(rules)
+    val rulesAsJson = JsonUtil.serializeLintingRules(rulesAsType)
+    val newAsset = Asset(
+      container = userData.username,
+      key = "LintingRules",
+      content = rulesAsJson
+    )
+    assetService.createOrUpdateAsset(newAsset)
+
+    CoroutineScope(Dispatchers.IO).launch {
+      lintAllSnippetsForUser(userData)
+    }
+
+    val newRules = assetService.getAssetContent(userData.username, "LintingRules")
+    return RuleManager.convertToRuleList(JsonUtil.deserializeLintingRules(newRules))
+  }
+
   fun formatAllSnippetsForUser(userData: UserData) {
     val snippets = getAllSnippetsForUser(userData)
 
@@ -147,6 +165,27 @@ class SnippetService(
           val formattedContent = responseDeferred.await()
 
           updateSnippet(snippet.id, formattedContent)
+        } catch (_: Exception) {
+        }
+      }
+    }
+  }
+
+  fun lintAllSnippetsForUser(userData: UserData) {
+    val snippets = getAllSnippetsForUser(userData)
+
+    snippets.forEach { snippet ->
+      CoroutineScope(Dispatchers.IO).launch {
+        val requestId = UUID.randomUUID().toString()
+        val formatRequest = LintRequest(requestId, userData.username, snippet.content)
+
+        lintRequestProducer.publishEvent(formatRequest)
+
+        try {
+          val responseDeferred = lintResultConsumer.getLintResponseResponse(requestId)
+          val complianceResult = responseDeferred.await()
+
+          updateSnippetCompliance(snippet.id, complianceResult)
         } catch (_: Exception) {
         }
       }
@@ -202,6 +241,12 @@ class SnippetService(
     assetService.createOrUpdateAsset(asset)
 
     return SnippetWithContent(existingSnippet, newContent)
+  }
+
+  fun updateSnippetCompliance(id: String, status: String) {
+    val existingSnippet = getSnippetById(id)
+    existingSnippet.compliance = status
+    snippetRepository.save(existingSnippet)
   }
 
   fun deleteSnippet(id: String) {

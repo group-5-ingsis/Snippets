@@ -3,8 +3,6 @@ package com.ingsis.snippets.rules
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
-import com.ingsis.snippets.async.producer.lint.LintRequestProducer
-import com.ingsis.snippets.async.producer.lint.LintResultConsumer
 import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.snippet.UserData
 import org.slf4j.LoggerFactory
@@ -20,9 +18,7 @@ import java.util.UUID
 class RulesController(
   private val snippetService: SnippetService,
   private val snippetFormatProducer: SnippetFormatProducer,
-  private val formattedSnippetConsumer: FormattedSnippetConsumer,
-  private val lintRequestProducer: LintRequestProducer,
-  private val lintResultConsumer: LintResultConsumer
+  private val formattedSnippetConsumer: FormattedSnippetConsumer
 ) {
 
   private val logger = LoggerFactory.getLogger(RulesController::class.java)
@@ -59,23 +55,12 @@ class RulesController(
     return snippetService.updateFormattingRules(userData, newRules)
   }
 
-//  @PostMapping("/lint/{id}")
-//  suspend fun lintSnippet(@PathVariable id: String) {
-//    logger.info("Linting snippet with id: $id")
-//
-//    val snippet = snippetService.getSnippetById(id)
-//
-//    val snippetToFormat = SnippetFormatRequest(
-//      container = snippet.author,
-//      key = snippet.id,
-//      language = snippet.language,
-//      version = "1.1"
-//    )
-//
-//    //snippetFormatProducer.publishEvent(snippetToFormat)
-//
-//    logger.info("Published formatting request for snippet id: $id")
-//  }
+  @PostMapping("/lint/rules")
+  fun updateLintingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRules: List<Rule>): List<Rule> {
+    val (userId, username) = extractUserInfo(jwt)
+    val userData = UserData(userId, username)
+    return snippetService.updateLintingRules(userData, newRules)
+  }
 
   @GetMapping("/lint/rules")
   fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {

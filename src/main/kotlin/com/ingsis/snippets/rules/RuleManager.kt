@@ -17,7 +17,7 @@ object RuleManager {
 
   fun getDefaultLintingRules(): LintingRules {
     val defaultLintingRules = LintingRules(
-      identifierNamingConvention = "snake case",
+      identifierNamingConvention = "snake-case",
       printlnExpressionAllowed = false,
       readInputExpressionAllowed = false
     )
@@ -58,7 +58,7 @@ object RuleManager {
 
   fun convertToLintingRules(rules: List<Rule>): LintingRules {
     return LintingRules(
-      identifierNamingConvention = rules.find { it.name == "identifierNamingConvention" }?.value as? String ?: "snake case",
+      identifierNamingConvention = rules.find { it.name == "identifierNamingConvention" }?.value as? String ?: "snake-case",
       printlnExpressionAllowed = rules.find { it.name == "printlnExpressionAllowed" }?.isActive == true,
       readInputExpressionAllowed = rules.find { it.name == "readInputExpressionAllowed" }?.isActive == true
     )
