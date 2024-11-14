@@ -14,7 +14,7 @@ class LintRequestProducer @Autowired constructor(
   redis: ReactiveRedisTemplate<String, String>
 ) : RedisStreamProducer(streamRequestKey, redis) {
 
-  suspend fun publishEvent(snippet: SnippetLintRequest) {
+  suspend fun publishEvent(snippet: LintRequest) {
     val requestJson = JsonUtil.serializeToJson(snippet)
     emit(requestJson).awaitSingle()
   }

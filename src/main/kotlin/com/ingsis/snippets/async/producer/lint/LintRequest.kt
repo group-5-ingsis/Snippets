@@ -1,6 +1,6 @@
 package com.ingsis.snippets.async.producer.lint
 
-data class SnippetLintRequest(
+data class LintRequest(
   val requestId: String,
   val author: String,
   val snippet: String

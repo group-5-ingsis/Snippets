@@ -6,8 +6,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormatResponse
+import com.ingsis.snippets.async.producer.lint.LintRequest
 import com.ingsis.snippets.async.producer.lint.LintResponse
-import com.ingsis.snippets.async.producer.lint.SnippetLintRequest
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
 import com.ingsis.snippets.rules.FormattingRules
@@ -24,7 +24,7 @@ object JsonUtil {
     }
   }
 
-  fun serializeToJson(snippetToFormat: SnippetLintRequest): String {
+  fun serializeToJson(snippetToFormat: LintRequest): String {
     return try {
       objectMapper.writeValueAsString(snippetToFormat)
     } catch (e: JsonProcessingException) {

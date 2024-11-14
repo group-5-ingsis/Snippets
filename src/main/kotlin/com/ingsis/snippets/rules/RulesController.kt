@@ -3,9 +3,9 @@ package com.ingsis.snippets.rules
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
+import com.ingsis.snippets.async.producer.lint.LintRequest
 import com.ingsis.snippets.async.producer.lint.LintRequestProducer
 import com.ingsis.snippets.async.producer.lint.LintResultConsumer
-import com.ingsis.snippets.async.producer.lint.SnippetLintRequest
 import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.snippet.UserData
 import org.slf4j.LoggerFactory
@@ -44,7 +44,7 @@ class RulesController(
   suspend fun lintSnippet(@AuthenticationPrincipal jwt: Jwt, @RequestBody content: String): String {
     val (_, username) = extractUserInfo(jwt)
     val requestId = UUID.randomUUID().toString()
-    val lintRequest = SnippetLintRequest(requestId, username, snippet = content)
+    val lintRequest = LintRequest(requestId, username, snippet = content)
 
     lintRequestProducer.publishEvent(lintRequest)
 
