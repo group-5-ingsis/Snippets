@@ -6,11 +6,13 @@ stream:
   format-response: "abc"
   test: ${STREAM_KEY_TEST}
   test-create: ${STREAM_KEY_TEST_CREATE}
+  test-result: ${STREAM_KEY_TEST_RESULT}
   lint-request: "12345"
   lint-response: "54321"
 
 groups:
   product: ${GROUP_ID}
+  test-res: ${GROUP_ID_TEST_RES}
 
 spring:
   application:

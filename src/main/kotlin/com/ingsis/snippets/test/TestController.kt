@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
 @RequestMapping("/test") // Set the base path correctly here
@@ -36,6 +37,7 @@ class TestController(
   suspend fun testSnippet(@PathVariable id: String) {
     val snippet = snippetService.getSnippetById(id)
     val snippetRequest = SnippetTestRequest(
+      UUID.randomUUID().toString(),
       id,
       snippet.author,
       snippet.id

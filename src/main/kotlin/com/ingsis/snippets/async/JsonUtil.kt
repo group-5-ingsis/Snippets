@@ -10,6 +10,7 @@ import com.ingsis.snippets.async.producer.lint.LintRequest
 import com.ingsis.snippets.async.producer.lint.LintResponse
 import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
 import com.ingsis.snippets.async.producer.test.SnippetTestRequest
+import com.ingsis.snippets.async.producer.test.TestResponse
 import com.ingsis.snippets.rules.FormattingRules
 import com.ingsis.snippets.rules.LintingRules
 
@@ -49,6 +50,14 @@ object JsonUtil {
   }
 
   fun deserializeFormatResponse(response: String): FormatResponse {
+    return try {
+      objectMapper.readValue(response)
+    } catch (e: JsonProcessingException) {
+      throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
+    }
+  }
+
+  fun deserializeTestResponse(response: String): TestResponse {
     return try {
       objectMapper.readValue(response)
     } catch (e: JsonProcessingException) {
