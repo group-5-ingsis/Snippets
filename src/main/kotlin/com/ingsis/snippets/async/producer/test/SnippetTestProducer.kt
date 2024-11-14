@@ -18,9 +18,4 @@ class SnippetTestProducer @Autowired constructor(
     val snippetAsJson = JsonUtil.serializeTestToJson(snippet)
     emit(snippetAsJson).awaitSingle()
   }
-
-  suspend fun publishCreateTestEvent(snippet: SnippetCreateTestRequest) {
-    val snippetAsJson = JsonUtil.serializeCreateTestToJson(snippet)
-    emit(snippetAsJson).awaitSingle()
-  }
 }

@@ -36,6 +36,7 @@ class TestController(
   suspend fun testSnippet(@PathVariable id: String) {
     val snippet = snippetService.getSnippetById(id)
     val snippetRequest = SnippetTestRequest(
+      id,
       snippet.author,
       snippet.id
     )
