@@ -79,7 +79,7 @@ class SnippetController(
       throw RuntimeException("Unable to obtain Auth0 Management API token")
     }
 
-    val url = "https://$auth0Domain/api/v2/users"
+    val url = "${auth0Domain}api/v2/users"
     val headers = HttpHeaders().apply {
       set("Authorization", "Bearer $token")
     }

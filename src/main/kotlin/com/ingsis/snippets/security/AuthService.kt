@@ -24,7 +24,7 @@ class AuthService(
   )
 
   fun getManagementApiToken(): String? {
-    val url = "https://$domain/oauth/token"
+    val url = "${domain}oauth/token"
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
     }
@@ -39,7 +39,7 @@ class AuthService(
     return try {
       val response: Auth0TokenResponse = restTemplate.postForObject(url, entity, Auth0TokenResponse::class.java)!!
       response.accessToken
-    } catch (e: RestClientException) {
+    } catch (_: RestClientException) {
       null
     }
   }
