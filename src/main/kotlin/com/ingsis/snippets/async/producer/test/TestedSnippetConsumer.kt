@@ -27,10 +27,6 @@ class TestedSnippetConsumer @Autowired constructor(
     testResponses.remove(response.requestId)
   }
 
-  fun getFormatResponse(requestId: String): CompletableDeferred<Boolean> {
-    return testResponses.computeIfAbsent(requestId) { CompletableDeferred() }
-  }
-
   override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, String>> {
     return StreamReceiver.StreamReceiverOptions.builder()
       .targetType(String::class.java)
