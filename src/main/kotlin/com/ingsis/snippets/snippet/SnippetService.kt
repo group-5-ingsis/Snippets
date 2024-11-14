@@ -164,7 +164,7 @@ class SnippetService(
 
       RuleManager.convertToRuleList(defaultLintingRules)
     } else {
-      val existingFormattingRules = JsonUtil.deserializeFormattingRules(rulesJson)
+      val existingFormattingRules = JsonUtil.deserializeLintingRules(rulesJson)
 
       RuleManager.convertToRuleList(existingFormattingRules)
     }

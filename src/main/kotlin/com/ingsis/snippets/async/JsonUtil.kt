@@ -30,6 +30,14 @@ object JsonUtil {
     }
   }
 
+  fun deserializeLintingRules(rules: String): LintingRules {
+    return try {
+      objectMapper.readValue(rules)
+    } catch (e: JsonProcessingException) {
+      throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
+    }
+  }
+
   fun deserializeFormatResponse(response: String): FormatResponse {
     return try {
       objectMapper.readValue(response)
