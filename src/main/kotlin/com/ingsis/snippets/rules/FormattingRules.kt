@@ -1,11 +1,13 @@
 package com.ingsis.snippets.rules
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class FormattingRules(
-  val spaceBeforeColon: Boolean,
-  val spaceAfterColon: Boolean,
-  val spaceAroundAssignment: Boolean,
-  val newlineAfterPrintln: Int,
-  val blockIndentation: Int,
-  val ifBraceSameLine: Boolean,
-  val singleSpaceSeparation: Boolean
+  @JsonProperty("spaceBeforeColon") val spaceBeforeColon: Boolean,
+  @JsonProperty("spaceAfterColon") val spaceAfterColon: Boolean,
+  @JsonProperty("spaceAroundAssignment") val spaceAroundAssignment: Boolean,
+  @JsonProperty("newlineAfterPrintln") val newlineAfterPrintln: Int,
+  @JsonProperty("blockIndentation") val blockIndentation: Int,
+  @JsonProperty("if-brace-same-line") val ifBraceSameLine: Boolean,
+  @JsonProperty("mandatory-single-space-separation") val singleSpaceSeparation: Boolean
 )

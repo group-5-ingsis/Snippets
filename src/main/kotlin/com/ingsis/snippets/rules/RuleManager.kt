@@ -31,8 +31,8 @@ object RuleManager {
       Rule(id = "3", name = "spaceAroundAssignment", isActive = formattingRules.spaceAroundAssignment, value = null),
       Rule(id = "4", name = "newlineAfterPrintln", isActive = true, value = formattingRules.newlineAfterPrintln),
       Rule(id = "5", name = "blockIndentation", isActive = true, value = formattingRules.blockIndentation),
-      Rule(id = "6", name = "ifBraceSameLine", isActive = formattingRules.ifBraceSameLine, value = null),
-      Rule(id = "7", name = "singleSpaceSeparation", isActive = formattingRules.singleSpaceSeparation, value = null)
+      Rule(id = "6", name = "if-brace-same-line", isActive = formattingRules.ifBraceSameLine, value = null),
+      Rule(id = "7", name = "mandatory-single-space-separation", isActive = formattingRules.singleSpaceSeparation, value = null)
     )
   }
 
@@ -51,8 +51,8 @@ object RuleManager {
       spaceAroundAssignment = rules.find { it.name == "spaceAroundAssignment" }?.isActive == true,
       newlineAfterPrintln = rules.find { it.name == "newlineAfterPrintln" }?.value as? Int ?: 0,
       blockIndentation = rules.find { it.name == "blockIndentation" }?.value as? Int ?: 0,
-      ifBraceSameLine = rules.find { it.name == "ifBraceSameLine" }?.isActive == true,
-      singleSpaceSeparation = rules.find { it.name == "singleSpaceSeparation" }?.isActive == true
+      ifBraceSameLine = rules.find { it.name == "if-brace-same-line" }?.isActive == true,
+      singleSpaceSeparation = rules.find { it.name == "mandatory-single-space-separation" }?.isActive == true
     )
   }
 
