@@ -1,11 +1,6 @@
 package com.ingsis.snippets.rules
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-
 object RuleManager {
-
-  private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
   fun getDefaultFormattingRules(): FormattingRules {
     val defaultFormattingRules = FormattingRules(
