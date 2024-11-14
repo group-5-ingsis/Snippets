@@ -27,9 +27,9 @@ class SnippetController(private val snippetService: SnippetService, private val 
   }
 
   @GetMapping("/name/{name}")
-  fun getSnippetsByName(@PathVariable name: String, @AuthenticationPrincipal jwt: Jwt): List<Snippet> {
+  fun getSnippetsByName(@PathVariable name: String): List<Snippet> {
     logger.info("Fetching snippets with name: $name (get/name/{name})")
-    return snippetService.getSnippetsByName(jwt, name)
+    return snippetService.getSnippetsByName(name)
   }
 
   @GetMapping("/")
@@ -56,12 +56,12 @@ class SnippetController(private val snippetService: SnippetService, private val 
     return permissionService.getUsers()
   }
 
-  @PostMapping("/share/{snippetId}/{userToShare}")
-  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
-    val (userId, username) = extractUserInfo(jwt)
-    val userData = UserData(userId, username)
-    return snippetService.shareSnippet(userData, snippetId, userToShare)
-  }
+//  @PostMapping("/share/{snippetId}/{userToShare}")
+//  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
+//    val (userId, username) = extractUserInfo(jwt)
+//    val userData = UserData(userId, username)
+//    return snippetService.shareSnippet(userData, snippetId, userToShare)
+//  }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
     val userId = jwt.subject

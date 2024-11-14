@@ -6,7 +6,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -18,18 +17,26 @@ class PermissionService(private val restTemplate: RestTemplate) {
 
   private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL")
 
-  fun updatePermissions(userId: String, snippetId: String, type: String) {
+  fun updatePermissions(userData: UserData, snippetId: String, type: String) {
     logger.info("Permission URL: $permissionServiceUrl")
 
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
-    val url = "$permissionServiceUrl/$type/$userId/$snippetId"
+
+    val url = "$permissionServiceUrl/$type/${userData.userId}/$snippetId"
+
     try {
-      restTemplate.exchange(url, HttpMethod.POST, HttpEntity<Unit>(null, headers), Void::class.java)
-    } catch (_: RestClientException) {
-      "Error updating permissions"
+      restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        HttpEntity(userData, headers),
+        Void::class.java
+      )
+      logger.info("Permissions updated successfully.")
+    } catch (e: RestClientException) {
+      logger.error("Error updating permissions: ${e.message}")
     }
   }
 
@@ -72,7 +79,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun getMySnippetsIds(token: Jwt): List<String> {
+  fun getMySnippetsIds(): List<String> {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)

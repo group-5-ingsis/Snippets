@@ -5,8 +5,6 @@ import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.JsonUtil
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
-import org.slf4j.LoggerFactory
-import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,8 +13,6 @@ class SnippetService(
   private val assetService: AssetService,
   private val permissionService: PermissionService
 ) {
-
-  private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto)
@@ -32,8 +28,10 @@ class SnippetService(
       content = snippetDto.content
     )
 
-    permissionService.updatePermissions(userId, createdSnippetId, "read")
-    permissionService.updatePermissions(userId, createdSnippetId, "write")
+    val userData = UserData(userId, username)
+
+    permissionService.updatePermissions(userData, createdSnippetId, "read")
+    permissionService.updatePermissions(userData, createdSnippetId, "write")
 
     assetService.createOrUpdateAsset(asset)
 
@@ -51,8 +49,8 @@ class SnippetService(
     return snippetWithContent
   }
 
-  fun getSnippetsByName(jwt: Jwt, name: String): List<Snippet> {
-    val mySnippetsIds = permissionService.getMySnippetsIds(jwt)
+  fun getSnippetsByName(name: String): List<Snippet> {
+    val mySnippetsIds = permissionService.getMySnippetsIds()
 
     return if (name.isBlank()) {
       snippetRepository.findAll().filter { it.id in mySnippetsIds }
@@ -109,13 +107,13 @@ class SnippetService(
     snippetRepository.deleteById(id)
   }
 
-  fun shareSnippet(userData: UserData, snippetId: String, userToShare: String): SnippetWithContent {
-    val snippet = getSnippetById(snippetId)
-    val writableSnippets = permissionService.getSnippets(userData, "write")
-    if (snippet.id in writableSnippets) {
-      permissionService.updatePermissions(userToShare, snippetId, "write")
-    }
-    val content = assetService.getAssetContent(snippet.author, snippet.id)
-    return SnippetWithContent(snippet, content)
-  }
+//  fun shareSnippet(userData: UserData, snippetId: String, userToShare: String): SnippetWithContent {
+//    val snippet = getSnippetById(snippetId)
+//    val writableSnippets = permissionService.getSnippets(userData, "write")
+//    if (snippet.id in writableSnippets) {
+//      permissionService.updatePermissions(userToShare, snippetId, "write")
+//    }
+//    val content = assetService.getAssetContent(snippet.author, snippet.id)
+//    return SnippetWithContent(snippet, content)
+//  }
 }
