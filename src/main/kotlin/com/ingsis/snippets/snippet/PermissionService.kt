@@ -19,7 +19,6 @@ class PermissionService(private val restTemplate: RestTemplate) {
   private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL")
 
   fun updatePermissions(userId: String, snippetId: String, type: String) {
-
     logger.info("Permission URL: $permissionServiceUrl")
 
     val headers = HttpHeaders().apply {

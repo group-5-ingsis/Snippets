@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component
 @Component
 class FormattedSnippetConsumer @Autowired constructor(
   redis: ReactiveRedisTemplate<String, String>,
-  @Value("\${stream.format.response}") streamResponseKey: String,
-  @Value("\${groups.responseGroup}") groupId: String
+  @Value("\${stream.format-response}") streamResponseKey: String,
+  @Value("\${groups.product}") groupId: String
 ) : RedisStreamConsumer<String>(streamResponseKey, groupId, redis) {
 
   private val formatResponses = mutableMapOf<String, CompletableDeferred<String>>()

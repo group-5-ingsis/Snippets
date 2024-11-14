@@ -25,7 +25,7 @@ class RulesController(
   suspend fun formatSnippet(@AuthenticationPrincipal jwt: Jwt, @RequestBody content: String): String {
     val (_, username) = extractUserInfo(jwt)
     val requestId = UUID.randomUUID().toString()
-    val formatRequest = FormatRequest(requestId, username, content)
+    val formatRequest = FormatRequest(requestId, username, snippet = content)
 
     snippetFormatProducer.publishEvent(formatRequest)
 

@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate
 @Service
 class AssetService(private val restTemplate: RestTemplate) {
 
-  // Set the default to an absolute URL
   private val assetServiceBaseUrl: String = System.getenv("ASSET_SERVICE_URL")
 
   fun getAssetContent(container: String, key: String): String {

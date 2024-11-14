@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class SnippetFormatProducer @Autowired constructor(
-  @Value("\${stream.format.request}") streamRequestKey: String,
+  @Value("\${stream.format}") streamRequestKey: String,
   redis: ReactiveRedisTemplate<String, String>
 ) : RedisStreamProducer(streamRequestKey, redis) {
 

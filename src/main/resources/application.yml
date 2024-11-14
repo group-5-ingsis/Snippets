@@ -3,6 +3,7 @@ auth0:
 
 stream:
   format: ${STREAM_KEY_FORMAT}
+  format-response: "abc"
 
 groups:
   product: ${GROUP_ID}
