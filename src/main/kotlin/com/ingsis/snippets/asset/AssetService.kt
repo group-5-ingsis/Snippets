@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate
 class AssetService(private val restTemplate: RestTemplate) {
 
   // Set the default to an absolute URL
-  private val assetServiceBaseUrl: String = System.getenv("ASSET_SERVICE_URL") ?: "http://asset_service"
+  private val assetServiceBaseUrl: String = System.getenv("ASSET_SERVICE_URL")
 
   fun getAssetContent(container: String, key: String): String {
     val headers = createHeaders(MediaType.TEXT_EVENT_STREAM)

@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class PermissionService(private val restTemplate: RestTemplate) {
 
-  private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL") ?: "permission"
+  private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL")
 
   fun updatePermissions(userId: String, snippetId: String, type: String) {
     val headers = HttpHeaders().apply {
