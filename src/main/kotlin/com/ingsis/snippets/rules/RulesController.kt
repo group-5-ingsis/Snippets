@@ -3,6 +3,7 @@ package com.ingsis.snippets.rules
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.snippet.SnippetService
+import com.ingsis.snippets.snippet.UserData
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -35,10 +36,17 @@ class RulesController(
 
   @GetMapping("/format/rules")
   fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
-    val userId = jwt.subject
+    val (userId, username) = extractUserInfo(jwt)
     logger.info("Fetching formatting rules for userId: $userId")
 
-    return snippetService.getFormattingRules(userId)
+    return snippetService.getFormattingRules(username)
+  }
+
+  @PostMapping("/format/rules")
+  fun updateFormattingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRules: List<Rule>): List<Rule> {
+    val (userId, username) = extractUserInfo(jwt)
+    val userData = UserData(userId, username)
+    return snippetService.updateFormattingRules(userData, newRules)
   }
 
 //  @PostMapping("/lint/{id}")
@@ -61,10 +69,9 @@ class RulesController(
 
   @GetMapping("/lint/rules")
   fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
-    val userId = jwt.subject
+    val (userId, username) = extractUserInfo(jwt)
     logger.info("Fetching linting rules for userId: $userId")
-
-    return snippetService.getLintingRules(userId)
+    return snippetService.getLintingRules(username)
   }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {

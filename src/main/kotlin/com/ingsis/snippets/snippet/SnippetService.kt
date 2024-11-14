@@ -3,15 +3,24 @@ package com.ingsis.snippets.snippet
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.JsonUtil
+import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
+import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
+import com.ingsis.snippets.rules.FormatRequest
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class SnippetService(
   private val snippetRepository: SnippetRepository,
   private val assetService: AssetService,
-  private val permissionService: PermissionService
+  private val permissionService: PermissionService,
+  private val snippetFormatProducer: SnippetFormatProducer,
+  private val formattedSnippetConsumer: FormattedSnippetConsumer
 ) {
 
   fun createSnippet(userId: String, username: String, snippetDto: SnippetDto): Snippet {
@@ -63,14 +72,14 @@ class SnippetService(
     return snippetRepository.findAll()
   }
 
-  fun getFormattingRules(userId: String): List<Rule> {
-    val rulesJson = assetService.getAssetContent(userId, "FormattingRules")
+  fun getFormattingRules(username: String): List<Rule> {
+    val rulesJson = assetService.getAssetContent(username, "FormattingRules")
 
     return if (rulesJson == "No Content") {
       val defaultFormattingRules = RuleManager.getDefaultFormattingRules()
 
       val asset = Asset(
-        container = userId,
+        container = username,
         key = "FormattingRules",
         content = JsonUtil.serializeFormattingRules(defaultFormattingRules)
       )
@@ -85,14 +94,68 @@ class SnippetService(
     }
   }
 
-  fun getLintingRules(userId: String): List<Rule> {
-    val rulesJson = assetService.getAssetContent(userId, "LintingRules")
+  fun updateFormattingRules(userData: UserData, rules: List<Rule>): List<Rule> {
+    val rulesAsType = RuleManager.convertToFormattingRules(rules)
+    val rulesAsJson = JsonUtil.serializeFormattingRules(rulesAsType)
+    val newAsset = Asset(
+      container = userData.username,
+      key = "FormattingRules",
+      content = rulesAsJson
+    )
+    assetService.createOrUpdateAsset(newAsset)
+
+    CoroutineScope(Dispatchers.IO).launch {
+      formatAllSnippetsForUser(userData)
+    }
+
+    val newRules = assetService.getAssetContent(userData.username, "FormattingRules")
+    return RuleManager.convertToRuleList(JsonUtil.deserializeFormattingRules(newRules))
+  }
+
+  fun formatAllSnippetsForUser(userData: UserData) {
+    val snippets = getAllSnippetsForUser(userData)
+
+    snippets.forEach { snippet ->
+      CoroutineScope(Dispatchers.IO).launch {
+        val requestId = UUID.randomUUID().toString()
+        val formatRequest = FormatRequest(requestId, userData.username, snippet.content)
+
+        snippetFormatProducer.publishEvent(formatRequest)
+
+        try {
+          val responseDeferred = formattedSnippetConsumer.getFormatResponse(requestId)
+          val formattedContent = responseDeferred.await()
+
+          updateSnippet(snippet.id, formattedContent)
+        } catch (_: Exception) {
+        }
+      }
+    }
+  }
+
+  fun getAllSnippetsForUser(userData: UserData): List<SnippetWithContent> {
+    val snippetIds = permissionService.getMyWritableSnippets(userData)
+
+    return snippetIds.mapNotNull { snippetId ->
+      try {
+        val snippet = getSnippetById(snippetId)
+        val content = assetService.getAssetContent(snippet.author, snippet.id)
+        SnippetWithContent(snippet, content)
+      } catch (e: Exception) {
+        println("Error retrieving snippet with ID $snippetId: ${e.message}")
+        null
+      }
+    }
+  }
+
+  fun getLintingRules(username: String): List<Rule> {
+    val rulesJson = assetService.getAssetContent(username, "LintingRules")
 
     return if (rulesJson == "No Content") {
       val defaultLintingRules = RuleManager.getDefaultLintingRules()
 
       val asset = Asset(
-        container = userId,
+        container = username,
         key = "LintingRules",
         content = JsonUtil.serializeLintingRules(defaultLintingRules)
       )

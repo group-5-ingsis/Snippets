@@ -125,4 +125,27 @@ class PermissionService(private val restTemplate: RestTemplate) {
       emptyList()
     }
   }
+
+  fun getMyWritableSnippets(userData: UserData): List<String> {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$permissionServiceUrl/write"
+
+    return try {
+      val result = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        HttpEntity(userData, headers),
+        object : ParameterizedTypeReference<List<String>>() {}
+      )
+
+      result.body ?: emptyList()
+    } catch (e: RestClientException) {
+      println("Error fetching snippets: ${e.message}")
+      emptyList()
+    }
+  }
 }

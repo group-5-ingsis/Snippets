@@ -43,4 +43,24 @@ object RuleManager {
       Rule(id = "3", name = "readInputExpressionAllowed", isActive = lintingRules.readInputExpressionAllowed, value = null)
     )
   }
+
+  fun convertToFormattingRules(rules: List<Rule>): FormattingRules {
+    return FormattingRules(
+      spaceBeforeColon = rules.find { it.name == "spaceBeforeColon" }?.isActive == true,
+      spaceAfterColon = rules.find { it.name == "spaceAfterColon" }?.isActive == true,
+      spaceAroundAssignment = rules.find { it.name == "spaceAroundAssignment" }?.isActive == true,
+      newlineAfterPrintln = rules.find { it.name == "newlineAfterPrintln" }?.value as? Int ?: 0,
+      blockIndentation = rules.find { it.name == "blockIndentation" }?.value as? Int ?: 0,
+      ifBraceSameLine = rules.find { it.name == "ifBraceSameLine" }?.isActive == true,
+      singleSpaceSeparation = rules.find { it.name == "singleSpaceSeparation" }?.isActive == true
+    )
+  }
+
+  fun convertToLintingRules(rules: List<Rule>): LintingRules {
+    return LintingRules(
+      identifierNamingConvention = rules.find { it.name == "identifierNamingConvention" }?.value as? String ?: "snake case",
+      printlnExpressionAllowed = rules.find { it.name == "printlnExpressionAllowed" }?.isActive == true,
+      readInputExpressionAllowed = rules.find { it.name == "readInputExpressionAllowed" }?.isActive == true
+    )
+  }
 }
