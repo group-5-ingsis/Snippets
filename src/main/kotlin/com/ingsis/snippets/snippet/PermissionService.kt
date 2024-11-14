@@ -40,25 +40,49 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun getSnippets(userData: UserData, type: String): List<String> {
+  fun shareSnippet(userId: String, snippetId: String) {
+    logger.info("Permission URL: $permissionServiceUrl")
+
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
-    val requestEntity = HttpEntity(userData, headers)
+    val url = "$permissionServiceUrl/write/$userId/$snippetId"
 
-    val url = "$permissionServiceUrl/$type"
+    val userData = UserData(userId, "Unknown")
+
+    try {
+      restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        HttpEntity(userData, headers),
+        Void::class.java
+      )
+      logger.info("Permissions updated successfully.")
+    } catch (e: RestClientException) {
+      logger.error("Error updating permissions: ${e.message}")
+    }
+  }
+
+  fun getSnippets(userId: String, type: String): List<String> {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$permissionServiceUrl/$type/$userId"
 
     return try {
       val result = restTemplate.exchange(
         url,
         HttpMethod.GET,
-        requestEntity,
-        List::class.java
+        HttpEntity<String>(null, headers),
+        object : ParameterizedTypeReference<List<String>>() {}
       )
-      result.body as List<String>
-    } catch (_: RestClientException) {
+      result.body ?: emptyList()
+    } catch (e: RestClientException) {
+      logger.error("Error fetching snippets: ${e.message}")
       emptyList()
     }
   }

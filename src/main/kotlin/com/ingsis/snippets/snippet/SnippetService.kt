@@ -107,13 +107,13 @@ class SnippetService(
     snippetRepository.deleteById(id)
   }
 
-//  fun shareSnippet(userData: UserData, snippetId: String, userToShare: String): SnippetWithContent {
-//    val snippet = getSnippetById(snippetId)
-//    val writableSnippets = permissionService.getSnippets(userData, "write")
-//    if (snippet.id in writableSnippets) {
-//      permissionService.updatePermissions(userToShare, snippetId, "write")
-//    }
-//    val content = assetService.getAssetContent(snippet.author, snippet.id)
-//    return SnippetWithContent(snippet, content)
-//  }
+  fun shareSnippet(userId: String, snippetId: String, userToShare: String): SnippetWithContent {
+    val snippet = getSnippetById(snippetId)
+    val writableSnippets = permissionService.getSnippets(userId, "write")
+    if (snippet.id in writableSnippets) {
+      permissionService.shareSnippet(userToShare, snippetId)
+    }
+    val content = assetService.getAssetContent(snippet.author, snippet.id)
+    return SnippetWithContent(snippet, content)
+  }
 }

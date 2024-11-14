@@ -56,12 +56,11 @@ class SnippetController(private val snippetService: SnippetService, private val 
     return permissionService.getUsers()
   }
 
-//  @PostMapping("/share/{snippetId}/{userToShare}")
-//  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
-//    val (userId, username) = extractUserInfo(jwt)
-//    val userData = UserData(userId, username)
-//    return snippetService.shareSnippet(userData, snippetId, userToShare)
-//  }
+  @PostMapping("/share/{snippetId}/{userToShare}")
+  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
+    val (userId, _) = extractUserInfo(jwt)
+    return snippetService.shareSnippet(userId, snippetId, userToShare)
+  }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
     val userId = jwt.subject
