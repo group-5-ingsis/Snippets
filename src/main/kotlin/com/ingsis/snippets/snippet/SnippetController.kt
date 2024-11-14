@@ -11,13 +11,13 @@ class SnippetController(private val snippetService: SnippetService, private val 
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   @PostMapping("/")
-  fun createSnippet(
+  suspend fun createSnippet(
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
-    val (userId, username) = extractUserInfo(jwt)
+    val (_, username) = extractUserInfo(jwt)
     logger.info("Creating snippet for user: $username")
-    return snippetService.createSnippet(userId, username, snippet)
+    return snippetService.createSnippet(jwt, snippet)
   }
 
   @GetMapping("/id/{id}")

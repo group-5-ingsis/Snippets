@@ -6,9 +6,11 @@ import com.ingsis.snippets.async.JsonUtil
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
+import com.ingsis.snippets.async.producer.lint.LintRequest
+import com.ingsis.snippets.async.producer.lint.LintRequestProducer
+import com.ingsis.snippets.async.producer.lint.LintResultConsumer
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
-import com.ingsis.snippets.rules.RulesController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,13 +25,14 @@ class SnippetService(
   private val permissionService: PermissionService,
   private val snippetFormatProducer: SnippetFormatProducer,
   private val formattedSnippetConsumer: FormattedSnippetConsumer,
-  private val rulesController: RulesController
+  private val lintRequestProducer: LintRequestProducer,
+  private val lintResultConsumer: LintResultConsumer
 ) {
 
   suspend fun createSnippet(jwt: Jwt, snippetDto: SnippetDto): Snippet {
     val (userId, username) = extractUserInfo(jwt)
 
-    val compliance = rulesController.lintSnippet(jwt, snippetDto.content)
+    val compliance = lintSnippet(jwt, snippetDto.content)
     val snippet = Snippet(snippetDto, compliance)
 
     snippet.author = username
@@ -51,6 +54,17 @@ class SnippetService(
     assetService.createOrUpdateAsset(asset)
 
     return savedSnippet
+  }
+
+  suspend fun lintSnippet(jwt: Jwt, content: String): String {
+    val (_, username) = extractUserInfo(jwt)
+    val requestId = UUID.randomUUID().toString()
+    val lintRequest = LintRequest(requestId, username, snippet = content)
+
+    lintRequestProducer.publishEvent(lintRequest)
+
+    val responseDeferred = lintResultConsumer.getLintResponseResponse(requestId)
+    return responseDeferred.await()
   }
 
   fun getSnippetById(id: String): Snippet {

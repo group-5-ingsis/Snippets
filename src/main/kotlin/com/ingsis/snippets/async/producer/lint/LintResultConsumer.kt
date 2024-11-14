@@ -27,7 +27,7 @@ class LintResultConsumer @Autowired constructor(
     formatResponses.remove(response.requestId)
   }
 
-  fun getFormatResponse(requestId: String): CompletableDeferred<String> {
+  fun getLintResponseResponse(requestId: String): CompletableDeferred<String> {
     return formatResponses.computeIfAbsent(requestId) { CompletableDeferred() }
   }
 
