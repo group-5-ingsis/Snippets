@@ -1,4 +1,4 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.user
 
 data class UserDto(
   val id: String,

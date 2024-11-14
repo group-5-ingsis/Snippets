@@ -11,6 +11,7 @@ import com.ingsis.snippets.async.producer.lint.LintRequestProducer
 import com.ingsis.snippets.async.producer.lint.LintResultConsumer
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
+import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -43,6 +43,7 @@ spring:
           issuer-uri: ${AUTH_SERVER_URI}
           client-id: ${AUTH_CLIENT_ID}
           client-secret: ${AUTH_CLIENT_SECRET}
+          management-api: ${MANAGEMENT_API_IDENTIFIER}
 
 server:
   port: ${SERVER_PORT}

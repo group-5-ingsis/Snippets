@@ -4,7 +4,7 @@ import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.snippet.SnippetService
-import com.ingsis.snippets.snippet.UserData
+import com.ingsis.snippets.user.UserData
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt

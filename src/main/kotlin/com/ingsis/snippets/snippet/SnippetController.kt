@@ -1,12 +1,26 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.security.AuthService
+import com.ingsis.snippets.user.UserDto
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.RestClientException
+import org.springframework.web.client.RestTemplate
 
 @RestController
-class SnippetController(private val snippetService: SnippetService) {
+class SnippetController(
+  private val snippetService: SnippetService,
+  private val auth0ManagementTokenService: AuthService,
+  @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") private val auth0Domain: String,
+  private val restTemplate: RestTemplate
+) {
 
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
@@ -56,6 +70,28 @@ class SnippetController(private val snippetService: SnippetService) {
   fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
     val (userId, _) = extractUserInfo(jwt)
     return snippetService.shareSnippet(userId, snippetId, userToShare)
+  }
+
+  @GetMapping("/users")
+  fun getUsers(): List<UserDto> {
+    val token = auth0ManagementTokenService.getManagementApiToken()
+    if (token == null) {
+      throw RuntimeException("Unable to obtain Auth0 Management API token")
+    }
+
+    val url = "https://$auth0Domain/api/v2/users"
+    val headers = HttpHeaders().apply {
+      set("Authorization", "Bearer $token")
+    }
+    val entity = HttpEntity<String>(headers)
+
+    return try {
+      val response: ResponseEntity<Array<UserDto>> =
+        restTemplate.exchange(url, HttpMethod.GET, entity, Array<UserDto>::class.java)
+      response.body?.toList() ?: emptyList()
+    } catch (_: RestClientException) {
+      emptyList()
+    }
   }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
