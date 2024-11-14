@@ -1,5 +1,6 @@
 package com.ingsis.snippets.rules
 
+import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
 import com.ingsis.snippets.snippet.SnippetService

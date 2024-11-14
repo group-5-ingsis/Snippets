@@ -1,7 +1,6 @@
 package com.ingsis.snippets.async.producer.format
 
 import com.ingsis.snippets.async.JsonUtil
-import com.ingsis.snippets.rules.FormatRequest
 import kotlinx.coroutines.reactive.awaitSingle
 import org.austral.ingsis.redis.RedisStreamProducer
 import org.springframework.beans.factory.annotation.Autowired

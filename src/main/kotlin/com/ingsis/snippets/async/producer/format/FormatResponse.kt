@@ -1,4 +1,4 @@
-package com.ingsis.snippets.rules
+package com.ingsis.snippets.async.producer.format
 
 data class FormatResponse(
   val requestId: String,

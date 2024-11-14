@@ -3,9 +3,9 @@ package com.ingsis.snippets.snippet
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.JsonUtil
+import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
-import com.ingsis.snippets.rules.FormatRequest
 import com.ingsis.snippets.rules.Rule
 import com.ingsis.snippets.rules.RuleManager
 import kotlinx.coroutines.CoroutineScope
