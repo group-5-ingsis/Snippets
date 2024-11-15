@@ -10,4 +10,4 @@ data class FormattingRules(
   @JsonProperty("blockIndentation") val blockIndentation: Int,
   @JsonProperty("if-brace-same-line") val ifBraceSameLine: Boolean,
   @JsonProperty("mandatory-single-space-separation") val singleSpaceSeparation: Boolean
-)
+) : Rules

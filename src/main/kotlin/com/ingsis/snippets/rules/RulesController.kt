@@ -3,7 +3,6 @@ package com.ingsis.snippets.rules
 import com.ingsis.snippets.async.producer.format.FormatRequest
 import com.ingsis.snippets.async.producer.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.producer.format.SnippetFormatProducer
-import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.user.UserData
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -16,7 +15,7 @@ import java.util.UUID
 
 @RestController
 class RulesController(
-  private val snippetService: SnippetService,
+  private val rulesService: RulesService,
   private val snippetFormatProducer: SnippetFormatProducer,
   private val formattedSnippetConsumer: FormattedSnippetConsumer
 ) {
@@ -38,36 +37,35 @@ class RulesController(
   @PostMapping("/lint")
   suspend fun lintSnippet(@AuthenticationPrincipal jwt: Jwt, @RequestBody content: String): String {
     val (_, username) = extractUserInfo(jwt)
-    return snippetService.lintSnippet(username, content)
+    return rulesService.lintSnippet(username, content)
   }
 
   @GetMapping("/format/rules")
-  fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
+  fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): List<RuleDto> {
     val (userId, username) = extractUserInfo(jwt)
     logger.info("Fetching formatting rules for userId: $userId")
-
-    return snippetService.getFormattingRules(username)
+    return rulesService.getFormattingRules(username)
   }
 
   @PostMapping("/format/rules")
-  fun updateFormattingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRules: List<Rule>): List<Rule> {
+  fun updateFormattingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRuleDtos: List<RuleDto>): List<RuleDto> {
     val (userId, username) = extractUserInfo(jwt)
     val userData = UserData(userId, username)
-    return snippetService.updateFormattingRules(userData, newRules)
+    return rulesService.updateFormattingRules(userData, newRuleDtos)
   }
 
   @PostMapping("/lint/rules")
-  fun updateLintingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRules: List<Rule>): List<Rule> {
+  fun updateLintingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRuleDtos: List<RuleDto>): List<RuleDto> {
     val (userId, username) = extractUserInfo(jwt)
     val userData = UserData(userId, username)
-    return snippetService.updateLintingRules(userData, newRules)
+    return rulesService.updateLintingRules(userData, newRuleDtos)
   }
 
   @GetMapping("/lint/rules")
-  fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<Rule> {
+  fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<RuleDto> {
     val (userId, username) = extractUserInfo(jwt)
     logger.info("Fetching linting rules for userId: $userId")
-    return snippetService.getLintingRules(username)
+    return rulesService.getLintingRules(username)
   }
 
   private fun extractUserInfo(jwt: Jwt): Pair<String, String> {

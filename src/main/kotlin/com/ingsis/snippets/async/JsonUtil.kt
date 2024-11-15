@@ -13,6 +13,7 @@ import com.ingsis.snippets.async.producer.test.SnippetTestRequest
 import com.ingsis.snippets.async.producer.test.TestResponse
 import com.ingsis.snippets.rules.FormattingRules
 import com.ingsis.snippets.rules.LintingRules
+import com.ingsis.snippets.rules.Rules
 
 object JsonUtil {
   private val objectMapper: ObjectMapper = jacksonObjectMapper()
@@ -73,15 +74,7 @@ object JsonUtil {
     }
   }
 
-  fun serializeFormattingRules(rules: FormattingRules): String {
-    return try {
-      objectMapper.writeValueAsString(rules)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to serialize object to JSON", e)
-    }
-  }
-
-  fun serializeLintingRules(rules: LintingRules): String {
+  fun serializeRules(rules: Rules): String {
     return try {
       objectMapper.writeValueAsString(rules)
     } catch (e: JsonProcessingException) {
