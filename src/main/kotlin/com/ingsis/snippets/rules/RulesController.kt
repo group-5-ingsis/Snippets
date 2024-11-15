@@ -24,13 +24,6 @@ class RulesController(
     return rulesService.formatSnippet(username, content)
   }
 
-  @PostMapping("/lint")
-  suspend fun lintSnippet(@AuthenticationPrincipal jwt: Jwt, @RequestBody content: String): String {
-    val (userId, username) = JwtInfoExtractor.extractUserInfo(jwt)
-    logger.info("Linting snippet for userId: $userId")
-    return rulesService.lintSnippet(username, content)
-  }
-
   @PostMapping("/format/rules")
   fun updateFormattingRules(@AuthenticationPrincipal jwt: Jwt, @RequestBody newRuleDtos: List<RuleDto>): List<RuleDto> {
     val (userId, username) = JwtInfoExtractor.extractUserInfo(jwt)

@@ -30,14 +30,6 @@ class RulesService(
   private val snippetService: SnippetService
 ) {
 
-  suspend fun lintSnippet(username: String, content: String): String {
-    val requestId = UUID.randomUUID().toString()
-    val lintRequest = LintRequest(requestId, username, snippet = content)
-    lintRequestProducer.publishEvent(lintRequest)
-    val responseDeferred = lintResultConsumer.getLintResponseResponse(requestId)
-    return responseDeferred.await()
-  }
-
   suspend fun formatSnippet(username: String, content: String): String {
     val requestId = UUID.randomUUID().toString()
     val formatRequest = FormatRequest(requestId, username, snippet = content)
