@@ -1,9 +1,9 @@
 package com.ingsis.snippets.test
 
-import com.ingsis.snippets.async.producer.test.SnippetCreateTestProducer
-import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
-import com.ingsis.snippets.async.producer.test.SnippetTestProducer
-import com.ingsis.snippets.async.producer.test.SnippetTestRequest
+import com.ingsis.snippets.async.test.SnippetCreateTestProducer
+import com.ingsis.snippets.async.test.SnippetCreateTestRequest
+import com.ingsis.snippets.async.test.SnippetTestProducer
+import com.ingsis.snippets.async.test.SnippetTestRequest
 import com.ingsis.snippets.snippet.SnippetService
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PathVariable

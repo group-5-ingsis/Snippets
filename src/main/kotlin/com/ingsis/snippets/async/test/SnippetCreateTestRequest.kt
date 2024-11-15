@@ -1,4 +1,4 @@
-package com.ingsis.snippets.async.producer.test
+package com.ingsis.snippets.async.test
 
 import com.ingsis.snippets.test.CreateTestDto
 

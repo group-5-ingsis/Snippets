@@ -1,4 +1,4 @@
-package com.ingsis.snippets.async.producer.test
+package com.ingsis.snippets.async.format
 
 import com.ingsis.snippets.async.JsonUtil
 import kotlinx.coroutines.CompletableDeferred
@@ -11,20 +11,24 @@ import org.springframework.data.redis.stream.StreamReceiver
 import org.springframework.stereotype.Component
 
 @Component
-class TestedSnippetConsumer @Autowired constructor(
+class FormattedSnippetConsumer @Autowired constructor(
   redis: ReactiveRedisTemplate<String, String>,
-  @Value("\${stream.test-result}") streamResponseKey: String,
-  @Value("\${groups.test-res}") groupId: String
+  @Value("\${stream.format-response}") streamResponseKey: String,
+  @Value("\${groups.product}") groupId: String
 ) : RedisStreamConsumer<String>(streamResponseKey, groupId, redis) {
 
-  private val testResponses = mutableMapOf<String, CompletableDeferred<Boolean>>()
+  private val formatResponses = mutableMapOf<String, CompletableDeferred<String>>()
 
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value
-    val response = JsonUtil.deserializeTestResponse(streamValue)
+    val response = JsonUtil.deserializeFormatResponse(streamValue)
 
-    testResponses[response.requestId]?.complete(response.passed)
-    testResponses.remove(response.requestId)
+    formatResponses[response.requestId]?.complete(response.content)
+    formatResponses.remove(response.requestId)
+  }
+
+  fun getFormatResponse(requestId: String): CompletableDeferred<String> {
+    return formatResponses.computeIfAbsent(requestId) { CompletableDeferred() }
   }
 
   override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, String>> {

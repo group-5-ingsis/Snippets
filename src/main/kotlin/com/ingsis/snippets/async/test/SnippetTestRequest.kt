@@ -1,4 +1,4 @@
-package com.ingsis.snippets.async.producer.test
+package com.ingsis.snippets.async.test
 
 /* Contains the test id, and the location inside the AssetService for the snippet. */
 data class SnippetTestRequest(

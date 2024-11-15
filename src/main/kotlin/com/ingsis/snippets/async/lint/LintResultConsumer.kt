@@ -1,4 +1,4 @@
-package com.ingsis.snippets.async.producer.lint
+package com.ingsis.snippets.async.lint
 
 import com.ingsis.snippets.async.JsonUtil
 import kotlinx.coroutines.CompletableDeferred
