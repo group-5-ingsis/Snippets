@@ -38,6 +38,16 @@ class RulesService(
     return responseDeferred.await()
   }
 
+  suspend fun formatSnippet(username: String, content: String): String {
+    val requestId = UUID.randomUUID().toString()
+    val formatRequest = FormatRequest(requestId, username, snippet = content)
+
+    snippetFormatProducer.publishEvent(formatRequest)
+
+    val responseDeferred = formattedSnippetConsumer.getFormatResponse(requestId)
+    return responseDeferred.await()
+  }
+
   fun getFormattingRules(username: String): List<RuleDto> {
     val rulesJson = assetService.getAssetContent(username, "FormattingRules")
     return if (rulesJson == "No Content") {
