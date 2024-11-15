@@ -103,7 +103,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
 
       val result = restTemplate.exchange(
         url,
-        HttpMethod.POST,
+        HttpMethod.GET,
         entity,
         object : ParameterizedTypeReference<List<String>>() {}
       )

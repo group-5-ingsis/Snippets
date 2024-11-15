@@ -48,8 +48,6 @@ class SnippetService(
     return snippets.filter { it.id in mySnippetIds }
   }
 
-  fun getSnippets(): List<Snippet> = snippetRepository.findAll()
-
   fun updateSnippet(id: String, newContent: String): SnippetWithContent {
     val snippet = getSnippetById(id)
     createAsset(snippet.author, snippet.id, newContent)
