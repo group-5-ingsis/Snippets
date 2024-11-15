@@ -6,8 +6,6 @@ import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResultConsumer
 import com.ingsis.snippets.user.UserData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -27,7 +25,7 @@ class SnippetService(
       author = userData.username
     }
 
-    val savedSnippet = saveSnippet(snippet)
+    val savedSnippet = snippetRepository.save(snippet)
 
     createAsset(userData.username, savedSnippet.id, snippetDto.content)
     updatePermissionsForSnippet(userData.userId, savedSnippet.id)
@@ -72,9 +70,6 @@ class SnippetService(
     val content = assetService.getAssetContent(snippet.author, snippet.id)
     return SnippetWithContent(snippet, content)
   }
-
-  private suspend fun saveSnippet(snippet: Snippet): Snippet =
-    withContext(Dispatchers.IO) { snippetRepository.save(snippet) }
 
   private fun createAsset(container: String, key: String, content: String) {
     val asset = Asset(container = container, key = key, content = content)
