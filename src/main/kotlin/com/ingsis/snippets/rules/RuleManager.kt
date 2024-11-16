@@ -30,7 +30,7 @@ object RuleManager {
       RuleDto(id = "3", name = "Space Around Assignment", isActive = formattingRules.spaceAroundAssignment, value = null),
       RuleDto(id = "4", name = "New line after Println", isActive = true, value = formattingRules.newlineAfterPrintln),
       RuleDto(id = "5", name = "Block Indentation", isActive = true, value = formattingRules.blockIndentation),
-      RuleDto(id = "6", name = "If brace same line", isActive = formattingRules.ifBraceSameLine, value = null)
+      RuleDto(id = "6", name = "If-Brace same line", isActive = formattingRules.ifBraceSameLine, value = null)
     )
   }
 
