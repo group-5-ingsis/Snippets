@@ -9,8 +9,7 @@ object RuleManager {
       spaceAroundAssignment = false,
       newlineAfterPrintln = 0,
       blockIndentation = 0,
-      ifBraceSameLine = false,
-      singleSpaceSeparation = false
+      ifBraceSameLine = false
     )
     return defaultFormattingRules
   }
@@ -31,8 +30,7 @@ object RuleManager {
       RuleDto(id = "3", name = "spaceAroundAssignment", isActive = formattingRules.spaceAroundAssignment, value = null),
       RuleDto(id = "4", name = "newlineAfterPrintln", isActive = true, value = formattingRules.newlineAfterPrintln),
       RuleDto(id = "5", name = "blockIndentation", isActive = true, value = formattingRules.blockIndentation),
-      RuleDto(id = "6", name = "if-brace-same-line", isActive = formattingRules.ifBraceSameLine, value = null),
-      RuleDto(id = "7", name = "mandatory-single-space-separation", isActive = formattingRules.singleSpaceSeparation, value = null)
+      RuleDto(id = "6", name = "if-brace-same-line", isActive = formattingRules.ifBraceSameLine, value = null)
     )
   }
 
@@ -51,7 +49,6 @@ object RuleManager {
     val newlineAfterPrintln = ruleDtos.first { it.name == "newlineAfterPrintln" }.value as? Int ?: 0
     val blockIndentation = ruleDtos.first { it.name == "blockIndentation" }.value as? Int ?: 0
     val ifBraceSameLine = ruleDtos.first { it.name == "if-brace-same-line" }.isActive
-    val singleSpaceSeparation = ruleDtos.first { it.name == "mandatory-single-space-separation" }.isActive
 
     return FormattingRules(
       spaceBeforeColon = spaceBeforeColon,
@@ -59,8 +56,7 @@ object RuleManager {
       spaceAroundAssignment = spaceAroundAssignment,
       newlineAfterPrintln = newlineAfterPrintln,
       blockIndentation = blockIndentation,
-      ifBraceSameLine = ifBraceSameLine,
-      singleSpaceSeparation = singleSpaceSeparation
+      ifBraceSameLine = ifBraceSameLine
     )
   }
 
