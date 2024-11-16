@@ -1,5 +1,9 @@
 package com.ingsis.snippets.security
 
+import com.ingsis.snippets.user.Auth0User
+import com.ingsis.snippets.user.UserController
+import com.ingsis.snippets.user.UserData
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -20,7 +24,33 @@ class AuthService(
   @Value("\${spring.security.oauth2.resourceserver.jwt.m2m-clientsecret}") private val clientSecret: String
 ) {
 
-  fun getManagementApiToken(): String {
+  private val logger = LoggerFactory.getLogger(UserController::class.java)
+
+  fun getAuth0Users(userData: UserData): List<Auth0User> {
+    val currentUserId = userData.userId
+    val token = getManagementApiToken()
+    val url = "${domain}api/v2/users"
+    val headers = HttpHeaders().apply {
+      set("Authorization", "Bearer $token")
+      accept = listOf(MediaType.APPLICATION_JSON)
+    }
+    val entity = HttpEntity<String>(headers)
+
+    return try {
+      val response: ResponseEntity<Array<Auth0User>> = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        entity,
+        Array<Auth0User>::class.java
+      )
+      response.body?.filter { it.id != currentUserId } ?: emptyList()
+    } catch (e: RestClientException) {
+      logger.error("Error fetching users: ${e.message}")
+      emptyList()
+    }
+  }
+
+  private fun getManagementApiToken(): String {
     val url = "${domain}oauth/token"
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_FORM_URLENCODED
