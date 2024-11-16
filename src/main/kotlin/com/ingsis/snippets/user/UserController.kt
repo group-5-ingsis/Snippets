@@ -31,7 +31,9 @@ class UserController(
   private val logger = LoggerFactory.getLogger(UserController::class.java)
 
   @GetMapping("/users")
-  fun getUsers(): List<UserDto> {
+  fun getUsers(@AuthenticationPrincipal jwt: Jwt): List<UserDto> {
+    val userData = JwtInfoExtractor.extractUserInfo(jwt)
+    val currentUserId = userData.first
     val token = auth0ManagementTokenService.getManagementApiToken()
     val url = "${auth0Domain}api/v2/users"
     val headers = HttpHeaders().apply {
@@ -47,7 +49,7 @@ class UserController(
         entity,
         Array<UserDto>::class.java
       )
-      response.body?.toList() ?: emptyList()
+      response.body?.filter { it.id != currentUserId } ?: emptyList()
     } catch (e: RestClientException) {
       logger.error("Error fetching users: ${e.message}")
       emptyList()
