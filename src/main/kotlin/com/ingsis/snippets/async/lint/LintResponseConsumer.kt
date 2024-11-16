@@ -13,14 +13,14 @@ import org.springframework.data.redis.stream.StreamReceiver
 import org.springframework.stereotype.Component
 
 @Component
-class LintResultConsumer @Autowired constructor(
+class LintResponseConsumer @Autowired constructor(
   redis: ReactiveRedisTemplate<String, String>,
   @Value("\${stream.lint-response}") streamResponseKey: String,
   @Value("\${groups.product}") groupId: String
 ) : RedisStreamConsumer<String>(streamResponseKey, groupId, redis) {
 
   private val lintResponses = mutableMapOf<String, CompletableDeferred<String>>()
-  private val logger = LoggerFactory.getLogger(LintResultConsumer::class.java)
+  private val logger = LoggerFactory.getLogger(LintResponseConsumer::class.java)
 
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value

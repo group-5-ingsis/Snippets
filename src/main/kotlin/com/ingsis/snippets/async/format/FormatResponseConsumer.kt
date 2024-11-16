@@ -13,14 +13,14 @@ import org.springframework.data.redis.stream.StreamReceiver
 import org.springframework.stereotype.Component
 
 @Component
-class FormattedSnippetConsumer @Autowired constructor(
+class FormatResponseConsumer @Autowired constructor(
   redis: ReactiveRedisTemplate<String, String>,
   @Value("\${stream.format-response}") streamResponseKey: String,
   @Value("\${groups.product}") groupId: String
 ) : RedisStreamConsumer<String>(streamResponseKey, groupId, redis) {
 
   private val formatResponses = mutableMapOf<String, CompletableDeferred<String>>()
-  private val logger = LoggerFactory.getLogger(FormattedSnippetConsumer::class.java)
+  private val logger = LoggerFactory.getLogger(FormatResponseConsumer::class.java)
 
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value

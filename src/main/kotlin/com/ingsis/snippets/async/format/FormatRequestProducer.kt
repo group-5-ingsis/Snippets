@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class SnippetFormatProducer @Autowired constructor(
+class FormatRequestProducer @Autowired constructor(
   @Value("\${stream.format}") streamRequestKey: String,
   redis: ReactiveRedisTemplate<String, String>
 ) : RedisStreamProducer(streamRequestKey, redis) {

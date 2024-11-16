@@ -4,11 +4,11 @@ import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.JsonUtil
 import com.ingsis.snippets.async.format.FormatRequest
-import com.ingsis.snippets.async.format.FormattedSnippetConsumer
-import com.ingsis.snippets.async.format.SnippetFormatProducer
+import com.ingsis.snippets.async.format.FormatRequestProducer
+import com.ingsis.snippets.async.format.FormatResponseConsumer
 import com.ingsis.snippets.async.lint.LintRequest
-import com.ingsis.snippets.async.lint.LintResultConsumer
-import com.ingsis.snippets.async.lint.SnippetLintProducer
+import com.ingsis.snippets.async.lint.LintRequestProducer
+import com.ingsis.snippets.async.lint.LintResponseConsumer
 import com.ingsis.snippets.snippet.PermissionService
 import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.snippet.SnippetWithContent
@@ -23,10 +23,10 @@ import java.util.*
 @Service
 class RulesService(
   private val assetService: AssetService,
-  private val snippetFormatProducer: SnippetFormatProducer,
-  private val formattedSnippetConsumer: FormattedSnippetConsumer,
-  private val snippetLintProducer: SnippetLintProducer,
-  private val lintResultConsumer: LintResultConsumer,
+  private val formatRequestProducer: FormatRequestProducer,
+  private val formatResponseConsumer: FormatResponseConsumer,
+  private val lintRequestProducer: LintRequestProducer,
+  private val lintResponseConsumer: LintResponseConsumer,
   private val permissionService: PermissionService,
   private val snippetService: SnippetService
 ) {
@@ -39,11 +39,11 @@ class RulesService(
 
     logger.info("Received request to format snippet with requestId: $requestId")
 
-    snippetFormatProducer.publishEvent(formatRequest)
+    formatRequestProducer.publishEvent(formatRequest)
 
     logger.info("Published format request event with requestId: $requestId")
 
-    val responseDeferred = formattedSnippetConsumer.getFormatResponse(requestId)
+    val responseDeferred = formatResponseConsumer.getFormatResponse(requestId)
     return responseDeferred.await()
   }
 
@@ -102,9 +102,9 @@ class RulesService(
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
         val lintRequest = LintRequest(requestId, userData.username, snippet.content)
-        snippetLintProducer.publishEvent(lintRequest)
+        lintRequestProducer.publishEvent(lintRequest)
         try {
-          lintResultConsumer.getLintResponseResponse(requestId).await()
+          lintResponseConsumer.getLintResponseResponse(requestId).await()
         } catch (e: Exception) {
           println("Error linting snippet ${snippet.id}: ${e.message}")
         }
@@ -118,9 +118,9 @@ class RulesService(
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
         val formatRequest = FormatRequest(requestId, userData.username, snippet.content)
-        snippetFormatProducer.publishEvent(formatRequest)
+        formatRequestProducer.publishEvent(formatRequest)
         try {
-          val formattedContent = formattedSnippetConsumer.getFormatResponse(requestId).await()
+          val formattedContent = formatResponseConsumer.getFormatResponse(requestId).await()
           snippetService.updateSnippet(snippet.id, formattedContent)
         } catch (e: Exception) {
           println("Error formatting snippet ${snippet.id}: ${e.message}")
