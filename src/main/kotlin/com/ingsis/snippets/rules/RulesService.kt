@@ -80,7 +80,7 @@ class RulesService(
   }
 
   fun updateLintingRules(userData: UserData, ruleDtos: List<RuleDto>): List<RuleDto> {
-    val rulesAsType = RuleManager.convertToFormattingRules(ruleDtos)
+    val rulesAsType = RuleManager.convertToLintingRules(ruleDtos)
     saveRules(userData.username, "LintingRules", rulesAsType)
     CoroutineScope(Dispatchers.IO).launch { lintAllSnippetsForUser(userData) }
     return getLintingRules(userData.username)
