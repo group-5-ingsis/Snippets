@@ -9,7 +9,6 @@ import com.ingsis.snippets.async.format.FormatResponse
 import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintResponse
 import com.ingsis.snippets.async.test.SnippetCreateTestRequest
-import com.ingsis.snippets.async.test.SnippetTestRequest
 import com.ingsis.snippets.async.test.TestResponse
 import com.ingsis.snippets.rules.FormattingRules
 import com.ingsis.snippets.rules.LintingRules
@@ -77,14 +76,6 @@ object JsonUtil {
   fun serializeRules(rules: Rules): String {
     return try {
       objectMapper.writeValueAsString(rules)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to serialize object to JSON", e)
-    }
-  }
-
-  fun serializeTestToJson(snippetToTest: SnippetTestRequest): String {
-    return try {
-      objectMapper.writeValueAsString(snippetToTest)
     } catch (e: JsonProcessingException) {
       throw RuntimeException("Failed to serialize object to JSON", e)
     }
