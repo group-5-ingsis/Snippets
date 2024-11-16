@@ -11,6 +11,7 @@ import org.springframework.data.redis.connection.stream.ObjectRecord
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.stream.StreamReceiver
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 @Component
 class LintResponseConsumer @Autowired constructor(
@@ -57,6 +58,7 @@ class LintResponseConsumer @Autowired constructor(
     logger.debug("Configuring StreamReceiver options for LintResponseConsumer")
     return StreamReceiver.StreamReceiverOptions.builder()
       .targetType(String::class.java)
+      .pollTimeout(Duration.ofSeconds(1))
       .build()
   }
 }
