@@ -121,7 +121,7 @@ class RulesService(
         formatRequestProducer.publishEvent(formatRequest)
         try {
           val formattedContent = formatResponseConsumer.getFormatResponse(requestId).await()
-          snippetService.updateSnippet(snippet.id, formattedContent)
+          snippetService.updateSnippet(userData.userId, snippet.id, formattedContent)
         } catch (e: Exception) {
           println("Error formatting snippet ${snippet.id}: ${e.message}")
         }
