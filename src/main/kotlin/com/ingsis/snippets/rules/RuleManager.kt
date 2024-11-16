@@ -25,20 +25,20 @@ object RuleManager {
 
   fun convertToRuleList(formattingRules: FormattingRules): List<RuleDto> {
     return listOf(
-      RuleDto(id = "1", name = "spaceBeforeColon", isActive = formattingRules.spaceBeforeColon, value = null),
-      RuleDto(id = "2", name = "spaceAfterColon", isActive = formattingRules.spaceAfterColon, value = null),
-      RuleDto(id = "3", name = "spaceAroundAssignment", isActive = formattingRules.spaceAroundAssignment, value = null),
-      RuleDto(id = "4", name = "newlineAfterPrintln", isActive = true, value = formattingRules.newlineAfterPrintln),
-      RuleDto(id = "5", name = "blockIndentation", isActive = true, value = formattingRules.blockIndentation),
-      RuleDto(id = "6", name = "if-brace-same-line", isActive = formattingRules.ifBraceSameLine, value = null)
+      RuleDto(id = "1", name = "Space Before Colon", isActive = formattingRules.spaceBeforeColon, value = null),
+      RuleDto(id = "2", name = "Space After Colon", isActive = formattingRules.spaceAfterColon, value = null),
+      RuleDto(id = "3", name = "Space Around Assignment", isActive = formattingRules.spaceAroundAssignment, value = null),
+      RuleDto(id = "4", name = "New line after Println", isActive = true, value = formattingRules.newlineAfterPrintln),
+      RuleDto(id = "5", name = "Block Indentation", isActive = true, value = formattingRules.blockIndentation),
+      RuleDto(id = "6", name = "If brace same line", isActive = formattingRules.ifBraceSameLine, value = null)
     )
   }
 
   fun convertToRuleList(lintingRules: LintingRules): List<RuleDto> {
     return listOf(
-      RuleDto(id = "1", name = "identifierNamingConvention", isActive = true, value = lintingRules.identifierNamingConvention),
-      RuleDto(id = "2", name = "printlnExpressionAllowed", isActive = lintingRules.printlnExpressionAllowed, value = null),
-      RuleDto(id = "3", name = "readInputExpressionAllowed", isActive = lintingRules.readInputExpressionAllowed, value = null)
+      RuleDto(id = "1", name = "Identifier Naming Convention", isActive = true, value = lintingRules.identifierNamingConvention),
+      RuleDto(id = "2", name = "Println Expression Allowed", isActive = lintingRules.printlnExpressionAllowed, value = null),
+      RuleDto(id = "3", name = "Read Input Expression Allowed", isActive = lintingRules.readInputExpressionAllowed, value = null)
     )
   }
 
