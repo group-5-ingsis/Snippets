@@ -16,14 +16,17 @@ object AsyncResultHandler {
 
       val asyncResult = responses[response.requestId]
       if (asyncResult != null) {
-        asyncResult.complete(response.content)
-        logger.info("Completed AsyncResult for requestId: ${response.requestId}")
+        if (!asyncResult.isCompleted) {
+          asyncResult.complete(response.content)
+          logger.info("Completed AsyncResult for requestId: ${response.requestId}")
+        } else {
+          logger.warn("AsyncResult already completed for requestId: ${response.requestId}")
+        }
+        responses.remove(response.requestId)
+        logger.info("Removed AsyncResult for requestId: ${response.requestId} from responses map")
       } else {
         logger.warn("No AsyncResult found for requestId: ${response.requestId}")
       }
-
-      responses.remove(response.requestId)
-      logger.info("Removed AsyncResult for requestId: ${response.requestId} from responses map")
     } catch (e: Exception) {
       logger.error("Error processing message: $streamValue", e)
     }
@@ -36,7 +39,7 @@ object AsyncResultHandler {
   ): CompletableDeferred<T> {
     logger.info("Retrieving AsyncResult for requestId: $requestId")
     return responses.computeIfAbsent(requestId) {
-      logger.info("Created new AsyncResult for requestId: $requestId")
+      logger.debug("Created new AsyncResult for requestId: $requestId")
       CompletableDeferred()
     }
   }

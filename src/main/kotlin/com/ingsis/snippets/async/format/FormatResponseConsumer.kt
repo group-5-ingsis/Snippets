@@ -58,7 +58,7 @@ class FormatResponseConsumer @Autowired constructor(
     logger.debug("Configuring StreamReceiver options for FormatResponseConsumer")
     return StreamReceiver.StreamReceiverOptions.builder()
       .targetType(String::class.java)
-      .pollTimeout(Duration.ofSeconds(1))
+      .pollTimeout(Duration.ofSeconds(5))
       .build()
   }
 }
