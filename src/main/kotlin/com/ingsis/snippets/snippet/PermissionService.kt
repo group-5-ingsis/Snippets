@@ -117,4 +117,8 @@ class PermissionService(private val restTemplate: RestTemplate) {
       emptyList()
     }
   }
+
+  fun hasPermission(userId: String, snippetId: String): Boolean {
+    return true
+  }
 }
