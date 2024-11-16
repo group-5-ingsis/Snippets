@@ -49,7 +49,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/write/$userId/$snippetId"
+    val url = "$permissionServiceUrl/read/$userId/$snippetId"
     logger.info("Sharing snippet: $snippetId to user: $userId")
 
     val entity = HttpEntity<Void>(headers)
