@@ -41,10 +41,11 @@ class RulesService(
   }
 
   fun getFormattingRules(username: String): List<RuleDto> {
-    val rulesJson = assetService.getAssetContent(username, "FormattingRules")
+    val assetKey = "FormattingRules"
+    val rulesJson = assetService.getAssetContent(username, assetKey)
     return if (rulesJson == "No Content") {
       val defaultRules = RuleManager.getDefaultFormattingRules()
-      saveRules(username, "FormattingRules", defaultRules)
+      saveRules(username, assetKey, defaultRules)
       RuleManager.convertToRuleList(defaultRules)
     } else {
       val existingRules = JsonUtil.deserializeFormattingRules(rulesJson)
@@ -65,18 +66,20 @@ class RulesService(
   }
 
   fun updateFormattingRules(userData: UserData, ruleDtos: List<RuleDto>): List<RuleDto> {
-    saveRules(userData.username, "FormattingRules", ruleDtos)
+    val rulesAsType = RuleManager.convertToFormattingRules(ruleDtos)
+    saveRules(userData.username, "FormattingRules", rulesAsType)
     CoroutineScope(Dispatchers.IO).launch { formatAllSnippetsForUser(userData) }
     return getFormattingRules(userData.username)
   }
 
   fun updateLintingRules(userData: UserData, ruleDtos: List<RuleDto>): List<RuleDto> {
-    saveRules(userData.username, "LintingRules", ruleDtos)
+    val rulesAsType = RuleManager.convertToFormattingRules(ruleDtos)
+    saveRules(userData.username, "LintingRules", rulesAsType)
     CoroutineScope(Dispatchers.IO).launch { lintAllSnippetsForUser(userData) }
     return getLintingRules(userData.username)
   }
 
-  private fun saveRules(username: String, key: String, rules: Any) {
+  private fun saveRules(username: String, key: String, rules: Rules) {
     val rulesAsJson = when (rules) {
       is FormattingRules -> JsonUtil.serializeRules(rules)
       is LintingRules -> JsonUtil.serializeRules(rules)
@@ -87,7 +90,7 @@ class RulesService(
   }
 
   private fun lintAllSnippetsForUser(userData: UserData) {
-    val snippets = getAllSnippetsForUser(userData.userId)
+    val snippets = getAllSnippets(userData.userId)
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
@@ -103,7 +106,7 @@ class RulesService(
   }
 
   private fun formatAllSnippetsForUser(userData: UserData) {
-    val snippets = getAllSnippetsForUser(userData.userId)
+    val snippets = getWritableSnippets(userData.userId)
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
@@ -119,8 +122,12 @@ class RulesService(
     }
   }
 
-  private fun getAllSnippetsForUser(userId: String): List<SnippetWithContent> {
-    val snippetIds = permissionService.getSnippets(userId, "read")
+  private fun getWritableSnippets(userId: String): List<SnippetWithContent> {
+    val snippetIds = permissionService.getSnippets(userId, "write")
+    return getSnippetContent(snippetIds)
+  }
+
+  private fun getSnippetContent(snippetIds: List<String>): List<SnippetWithContent> {
     return snippetIds.mapNotNull { snippetId ->
       try {
         val snippet = snippetService.getSnippetById(snippetId)
@@ -131,5 +138,12 @@ class RulesService(
         null
       }
     }
+  }
+
+  private fun getAllSnippets(userId: String): List<SnippetWithContent> {
+    val writeSnippets = permissionService.getSnippets(userId, "write")
+    val readSnippets = permissionService.getSnippets(userId, "read")
+    val snippetIds = writeSnippets + readSnippets
+    return getSnippetContent(snippetIds)
   }
 }
