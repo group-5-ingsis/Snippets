@@ -7,7 +7,10 @@ import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
 import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -19,6 +22,8 @@ class SnippetService(
   private val lintRequestProducer: LintRequestProducer,
   private val lintResponseConsumer: LintResponseConsumer
 ) {
+
+  private val logger = LoggerFactory.getLogger(SnippetService::class.java)
 
   suspend fun createSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
     val compliance = lintSnippet(userData.username, snippetDto.content)
@@ -94,7 +99,15 @@ class SnippetService(
     val requestId = UUID.randomUUID().toString()
     val lintRequest = LintRequest(requestId, username, snippet = content)
     lintRequestProducer.publishEvent(lintRequest)
-    val responseDeferred = lintResponseConsumer.getLintResponseResponse(requestId)
-    return responseDeferred.await()
+
+    return try {
+      withTimeout(5000L) {
+        val responseDeferred = lintResponseConsumer.getLintResponseResponse(requestId)
+        responseDeferred.await()
+      }
+    } catch (e: TimeoutCancellationException) {
+      logger.warn("Linting timed out for requestId: $requestId, assuming compliant")
+      "compliant"
+    }
   }
 }
