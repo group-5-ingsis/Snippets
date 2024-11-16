@@ -7,8 +7,8 @@ import com.ingsis.snippets.async.format.FormatRequest
 import com.ingsis.snippets.async.format.FormattedSnippetConsumer
 import com.ingsis.snippets.async.format.SnippetFormatProducer
 import com.ingsis.snippets.async.lint.LintRequest
-import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResultConsumer
+import com.ingsis.snippets.async.lint.SnippetLintProducer
 import com.ingsis.snippets.snippet.PermissionService
 import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.snippet.SnippetWithContent
@@ -25,7 +25,7 @@ class RulesService(
   private val assetService: AssetService,
   private val snippetFormatProducer: SnippetFormatProducer,
   private val formattedSnippetConsumer: FormattedSnippetConsumer,
-  private val lintRequestProducer: LintRequestProducer,
+  private val snippetLintProducer: SnippetLintProducer,
   private val lintResultConsumer: LintResultConsumer,
   private val permissionService: PermissionService,
   private val snippetService: SnippetService
@@ -102,7 +102,7 @@ class RulesService(
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
         val lintRequest = LintRequest(requestId, userData.username, snippet.content)
-        lintRequestProducer.publishEvent(lintRequest)
+        snippetLintProducer.publishEvent(lintRequest)
         try {
           lintResultConsumer.getLintResponseResponse(requestId).await()
         } catch (e: Exception) {

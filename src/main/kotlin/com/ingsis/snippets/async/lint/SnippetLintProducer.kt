@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class LintRequestProducer @Autowired constructor(
+class SnippetLintProducer @Autowired constructor(
   @Value("\${stream.lint-request}") streamRequestKey: String,
   redis: ReactiveRedisTemplate<String, String>
 ) : RedisStreamProducer(streamRequestKey, redis) {

@@ -1,8 +1,10 @@
 package com.ingsis.snippets.async.lint
 
+import com.ingsis.snippets.async.AsyncResultHandler
 import com.ingsis.snippets.async.JsonUtil
 import kotlinx.coroutines.CompletableDeferred
 import org.austral.ingsis.redis.RedisStreamConsumer
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.connection.stream.ObjectRecord
@@ -18,17 +20,24 @@ class LintResultConsumer @Autowired constructor(
 ) : RedisStreamConsumer<String>(streamResponseKey, groupId, redis) {
 
   private val lintResponses = mutableMapOf<String, CompletableDeferred<String>>()
+  private val logger = LoggerFactory.getLogger(LintResultConsumer::class.java)
 
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value
-    val response = JsonUtil.deserializeLintResponse(streamValue)
+    logger.info("Received message from stream: $streamValue")
 
-    lintResponses[response.requestId]?.complete(response.status)
-    lintResponses.remove(response.requestId)
+    AsyncResultHandler.processMessage(
+      logger,
+      lintResponses,
+      streamValue
+    ) { stream ->
+      val response = JsonUtil.deserializeLintResponse(stream)
+      AsyncResultHandler.AsyncResponse(response.requestId, response.status)
+    }
   }
 
   fun getLintResponseResponse(requestId: String): CompletableDeferred<String> {
-    return lintResponses.computeIfAbsent(requestId) { CompletableDeferred() }
+    return AsyncResultHandler.getAsyncResult(logger, lintResponses, requestId)
   }
 
   override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, String>> {

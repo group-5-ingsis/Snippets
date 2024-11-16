@@ -3,8 +3,8 @@ package com.ingsis.snippets.snippet
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.lint.LintRequest
-import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResultConsumer
+import com.ingsis.snippets.async.lint.SnippetLintProducer
 import com.ingsis.snippets.user.UserData
 import org.springframework.stereotype.Service
 import java.util.*
@@ -14,7 +14,7 @@ class SnippetService(
   private val snippetRepository: SnippetRepository,
   private val assetService: AssetService,
   private val permissionService: PermissionService,
-  private val lintRequestProducer: LintRequestProducer,
+  private val snippetLintProducer: SnippetLintProducer,
   private val lintResultConsumer: LintResultConsumer
 ) {
 
@@ -88,7 +88,7 @@ class SnippetService(
   private suspend fun lintSnippet(username: String, content: String): String {
     val requestId = UUID.randomUUID().toString()
     val lintRequest = LintRequest(requestId, username, snippet = content)
-    lintRequestProducer.publishEvent(lintRequest)
+    snippetLintProducer.publishEvent(lintRequest)
     val responseDeferred = lintResultConsumer.getLintResponseResponse(requestId)
     return responseDeferred.await()
   }
