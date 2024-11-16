@@ -16,6 +16,7 @@ import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -30,11 +31,17 @@ class RulesService(
   private val snippetService: SnippetService
 ) {
 
+  private val logger = LoggerFactory.getLogger(RulesService::class.java)
+
   suspend fun formatSnippet(username: String, content: String): String {
     val requestId = UUID.randomUUID().toString()
     val formatRequest = FormatRequest(requestId, username, snippet = content)
 
+    logger.info("Received request to format snippet with requestId: $requestId")
+
     snippetFormatProducer.publishEvent(formatRequest)
+
+    logger.info("Published format request event with requestId: $requestId")
 
     val responseDeferred = formattedSnippetConsumer.getFormatResponse(requestId)
     return responseDeferred.await()
