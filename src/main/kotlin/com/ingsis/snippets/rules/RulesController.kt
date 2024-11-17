@@ -29,7 +29,7 @@ class RulesController(
     val (userId, username) = JwtInfoExtractor.extractUserInfo(jwt)
     val userData = UserData(userId, username)
     logger.info("Updating formatting rules for userId: $userId")
-    return rulesService.updateFormattingRules(userData, newRuleDtos)
+    return rulesService.updateRules(userData, newRuleDtos, FORMATTING_KEY)
   }
 
   @PostMapping("/lint/rules")
@@ -37,20 +37,20 @@ class RulesController(
     val (userId, username) = JwtInfoExtractor.extractUserInfo(jwt)
     val userData = UserData(userId, username)
     logger.info("Updating linting rules for userId: $userId")
-    return rulesService.updateLintingRules(userData, newRuleDtos)
+    return rulesService.updateRules(userData, newRuleDtos, LINTING_KEY)
   }
 
   @GetMapping("/format/rules")
   fun getFormattingRules(@AuthenticationPrincipal jwt: Jwt): List<RuleDto> {
     val (userId, username) = JwtInfoExtractor.extractUserInfo(jwt)
     logger.info("Fetching formatting rules for userId: $userId")
-    return rulesService.getFormattingRules(username)
+    return rulesService.getRules(username, FORMATTING_KEY)
   }
 
   @GetMapping("/lint/rules")
   fun getLintingRules(@AuthenticationPrincipal jwt: Jwt): List<RuleDto> {
     val (userId, username) = JwtInfoExtractor.extractUserInfo(jwt)
     logger.info("Fetching linting rules for userId: $userId")
-    return rulesService.getLintingRules(username)
+    return rulesService.getRules(username, LINTING_KEY)
   }
 }

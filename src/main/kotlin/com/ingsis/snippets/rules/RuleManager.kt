@@ -2,25 +2,12 @@ package com.ingsis.snippets.rules
 
 object RuleManager {
 
-  fun getDefaultFormattingRules(): FormattingRules {
-    val defaultFormattingRules = FormattingRules(
-      spaceBeforeColon = false,
-      spaceAfterColon = false,
-      spaceAroundAssignment = false,
-      newlineAfterPrintln = 0,
-      blockIndentation = 0,
-      ifBraceSameLine = false
-    )
-    return defaultFormattingRules
-  }
-
-  fun getDefaultLintingRules(): LintingRules {
-    val defaultLintingRules = LintingRules(
-      identifierNamingConvention = "snake-case",
-      printlnExpressionAllowed = false,
-      readInputExpressionAllowed = false
-    )
-    return defaultLintingRules
+  fun getDefaultRules(type: String): Rules {
+    return when (type) {
+      FORMATTING_KEY -> getDefaultFormattingRules()
+      LINTING_KEY -> getDefaultLintingRules()
+      else -> throw IllegalArgumentException("Unknown rules type: $type")
+    }
   }
 
   fun convertToRuleList(rules: Rules): List<RuleDto> {
@@ -45,7 +32,15 @@ object RuleManager {
     }
   }
 
-  fun convertToFormattingRules(ruleDtos: List<RuleDto>): FormattingRules {
+  fun convertToType(ruleDtos: List<RuleDto>, type: String): Rules {
+    return when (type) {
+      FORMATTING_KEY -> convertToFormattingRules(ruleDtos)
+      LINTING_KEY -> convertToLintingRules(ruleDtos)
+      else -> throw IllegalArgumentException("Unknown rules type: $type")
+    }
+  }
+
+  private fun convertToFormattingRules(ruleDtos: List<RuleDto>): FormattingRules {
     val spaceBeforeColon = ruleDtos.first { it.name == "spaceBeforeColon" }.isActive
     val spaceAfterColon = ruleDtos.first { it.name == "spaceAfterColon" }.isActive
     val spaceAroundAssignment = ruleDtos.first { it.name == "spaceAroundAssignment" }.isActive
@@ -63,7 +58,7 @@ object RuleManager {
     )
   }
 
-  fun convertToLintingRules(ruleDtos: List<RuleDto>): LintingRules {
+  private fun convertToLintingRules(ruleDtos: List<RuleDto>): LintingRules {
     val identifierNamingConvention = ruleDtos.first { it.name == "identifierNamingConvention" }.value as? String ?: "snake-case"
     val printlnExpressionAllowed = ruleDtos.first { it.name == "printlnExpressionAllowed" }.isActive
     val readInputExpressionAllowed = ruleDtos.first { it.name == "readInputExpressionAllowed" }.isActive
@@ -73,5 +68,26 @@ object RuleManager {
       printlnExpressionAllowed = printlnExpressionAllowed,
       readInputExpressionAllowed = readInputExpressionAllowed
     )
+  }
+
+  private fun getDefaultFormattingRules(): FormattingRules {
+    val defaultFormattingRules = FormattingRules(
+      spaceBeforeColon = false,
+      spaceAfterColon = false,
+      spaceAroundAssignment = false,
+      newlineAfterPrintln = 0,
+      blockIndentation = 0,
+      ifBraceSameLine = false
+    )
+    return defaultFormattingRules
+  }
+
+  private fun getDefaultLintingRules(): LintingRules {
+    val defaultLintingRules = LintingRules(
+      identifierNamingConvention = "snake-case",
+      printlnExpressionAllowed = false,
+      readInputExpressionAllowed = false
+    )
+    return defaultLintingRules
   }
 }

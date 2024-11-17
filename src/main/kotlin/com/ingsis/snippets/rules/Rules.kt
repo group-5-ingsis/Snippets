@@ -25,3 +25,6 @@ data class LintingRules(
   @JsonProperty("printlnExpressionAllowed") val printlnExpressionAllowed: Boolean,
   @JsonProperty("readInputExpressionAllowed") val readInputExpressionAllowed: Boolean
 ) : Rules()
+
+const val FORMATTING_KEY = "FormattingRules"
+const val LINTING_KEY = "LintingRules"

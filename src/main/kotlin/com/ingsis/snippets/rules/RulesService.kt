@@ -47,12 +47,11 @@ class RulesService(
     return responseDeferred.await()
   }
 
-  fun getFormattingRules(username: String): List<RuleDto> {
-    val assetKey = "FormattingRules"
-    val rulesJson = assetService.getAssetContent(username, assetKey)
+  fun getRules(username: String, type: String): List<RuleDto> {
+    val rulesJson = assetService.getAssetContent(username, type)
     return if (rulesJson == "No Content") {
-      val defaultRules = RuleManager.getDefaultFormattingRules()
-      saveRules(username, assetKey, defaultRules)
+      val defaultRules = RuleManager.getDefaultRules(type)
+      saveRules(username, type, defaultRules)
       RuleManager.convertToRuleList(defaultRules)
     } else {
       val existingRules = JsonUtil.deserializeFormattingRules(rulesJson)
@@ -60,30 +59,19 @@ class RulesService(
     }
   }
 
-  fun getLintingRules(username: String): List<RuleDto> {
-    val rulesJson = assetService.getAssetContent(username, "LintingRules")
-    return if (rulesJson == "No Content") {
-      val defaultRules = RuleManager.getDefaultLintingRules()
-      saveRules(username, "LintingRules", defaultRules)
-      RuleManager.convertToRuleList(defaultRules)
-    } else {
-      val existingRules = JsonUtil.deserializeLintingRules(rulesJson)
-      RuleManager.convertToRuleList(existingRules)
+  fun updateRules(userData: UserData, ruleDtos: List<RuleDto>, type: String): List<RuleDto> {
+    val rulesAsType = RuleManager.convertToType(ruleDtos, type)
+    saveRules(userData.username, type, rulesAsType)
+    CoroutineScope(Dispatchers.IO).launch { updateSnippetsWithNewRules(userData, type) }
+    return getRules(userData.username, type)
+  }
+
+  private fun updateSnippetsWithNewRules(userData: UserData, type: String) {
+    when (type) {
+      FORMATTING_KEY -> formatAllSnippetsForUser(userData)
+      LINTING_KEY -> lintAllSnippetsForUser(userData)
+      else -> logger.warn("Unknown rule type: $type")
     }
-  }
-
-  fun updateFormattingRules(userData: UserData, ruleDtos: List<RuleDto>): List<RuleDto> {
-    val rulesAsType = RuleManager.convertToFormattingRules(ruleDtos)
-    saveRules(userData.username, "FormattingRules", rulesAsType)
-    CoroutineScope(Dispatchers.IO).launch { formatAllSnippetsForUser(userData) }
-    return getFormattingRules(userData.username)
-  }
-
-  fun updateLintingRules(userData: UserData, ruleDtos: List<RuleDto>): List<RuleDto> {
-    val rulesAsType = RuleManager.convertToLintingRules(ruleDtos)
-    saveRules(userData.username, "LintingRules", rulesAsType)
-    CoroutineScope(Dispatchers.IO).launch { lintAllSnippetsForUser(userData) }
-    return getLintingRules(userData.username)
   }
 
   private fun saveRules(username: String, key: String, rules: Rules) {
@@ -102,7 +90,7 @@ class RulesService(
         try {
           lintResponseConsumer.getLintResponse(requestId).await()
         } catch (e: Exception) {
-          println("Error linting snippet ${snippet.id}: ${e.message}")
+          logger.error("Error linting snippet ${snippet.id}: ${e.message}")
         }
       }
     }
@@ -119,7 +107,7 @@ class RulesService(
           val formattedContent = formatResponseConsumer.getFormatResponse(requestId).await()
           snippetService.updateSnippet(userData.userId, snippet.id, formattedContent)
         } catch (e: Exception) {
-          println("Error formatting snippet ${snippet.id}: ${e.message}")
+          logger.error("Error formatting snippet ${snippet.id}: ${e.message}")
         }
       }
     }
@@ -137,7 +125,7 @@ class RulesService(
         val content = assetService.getAssetContent(snippet.author, snippet.id)
         SnippetWithContent(snippet, content)
       } catch (e: Exception) {
-        println("Error retrieving snippet with ID $snippetId: ${e.message}")
+        logger.error("Error retrieving snippet with ID $snippetId: ${e.message}")
         null
       }
     }
