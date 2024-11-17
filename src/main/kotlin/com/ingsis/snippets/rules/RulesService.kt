@@ -9,9 +9,9 @@ import com.ingsis.snippets.async.format.FormatResponseConsumer
 import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
-import com.ingsis.snippets.snippet.PermissionService
 import com.ingsis.snippets.snippet.SnippetService
 import com.ingsis.snippets.snippet.SnippetWithContent
+import com.ingsis.snippets.user.PermissionService
 import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

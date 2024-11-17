@@ -1,5 +1,6 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.user
 
+import com.ingsis.snippets.snippet.SnippetController
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity

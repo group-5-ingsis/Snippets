@@ -5,6 +5,7 @@ import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
+import com.ingsis.snippets.user.PermissionService
 import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
