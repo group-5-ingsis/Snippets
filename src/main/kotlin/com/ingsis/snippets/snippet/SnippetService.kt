@@ -65,14 +65,15 @@ class SnippetService(
     return SnippetWithContent(snippet, newContent)
   }
 
-  fun deleteSnippet(id: String, userId: String) {
+  fun deleteSnippet(id: String, userId: String): String {
     val snippet = getSnippetById(id)
-    if (snippet.author != userId) {
-      throw IllegalArgumentException("You are not the author of this snippet and cannot delete it")
+    val writePermissionSnippets = permissionService.getSnippets(userId, "write")
+    if (snippet.id !in writePermissionSnippets){
+      return "You don't have permission to delete this snippet"
     }
-    logger.info("Snippet author = ${snippet.author}, userId = $userId")
     assetService.deleteAsset(snippet.author, snippet.id)
     snippetRepository.deleteById(id)
+    return "Snippet deleted!"
   }
 
   fun shareSnippet(userId: String, snippetId: String, userToShare: String): SnippetWithContent {
