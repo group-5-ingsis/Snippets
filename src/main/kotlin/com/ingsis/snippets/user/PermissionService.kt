@@ -122,4 +122,26 @@ class PermissionService(private val restTemplate: RestTemplate) {
   fun hasPermission(userId: String, snippetId: String): Boolean {
     return true
   }
+
+  fun deleteSnippet(snippetId: String, userId: String) {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$permissionServiceUrl/delete/$userId/$snippetId"
+
+    try {
+      val entity = HttpEntity<Void>(headers)
+
+      restTemplate.exchange(
+        url,
+        HttpMethod.DELETE,
+        entity,
+        Void::class.java
+      )
+    } catch (e: RestClientException) {
+      logger.error("Error deleting snippet: ${e.message}")
+    }
+  }
 }
