@@ -23,23 +23,26 @@ object RuleManager {
     return defaultLintingRules
   }
 
-  fun convertToRuleList(formattingRules: FormattingRules): List<RuleDto> {
-    return listOf(
-      RuleDto(id = "1", name = "Space Before Colon", isActive = formattingRules.spaceBeforeColon, value = null),
-      RuleDto(id = "2", name = "Space After Colon", isActive = formattingRules.spaceAfterColon, value = null),
-      RuleDto(id = "3", name = "Space Around Assignment", isActive = formattingRules.spaceAroundAssignment, value = null),
-      RuleDto(id = "4", name = "New line after Println", isActive = true, value = formattingRules.newlineAfterPrintln),
-      RuleDto(id = "5", name = "Block Indentation", isActive = true, value = formattingRules.blockIndentation),
-      RuleDto(id = "6", name = "If-Brace same line", isActive = formattingRules.ifBraceSameLine, value = null)
-    )
-  }
-
-  fun convertToRuleList(lintingRules: LintingRules): List<RuleDto> {
-    return listOf(
-      RuleDto(id = "1", name = "Identifier Naming Convention", isActive = true, value = lintingRules.identifierNamingConvention),
-      RuleDto(id = "2", name = "Println Expression Allowed", isActive = lintingRules.printlnExpressionAllowed, value = null),
-      RuleDto(id = "3", name = "Read Input Expression Allowed", isActive = lintingRules.readInputExpressionAllowed, value = null)
-    )
+  fun convertToRuleList(rules: Rules): List<RuleDto> {
+    return when (rules) {
+      is FormattingRules -> {
+        listOf(
+          RuleDto(id = "1", name = "Space Before Colon", isActive = rules.spaceBeforeColon, value = null),
+          RuleDto(id = "2", name = "Space After Colon", isActive = rules.spaceAfterColon, value = null),
+          RuleDto(id = "3", name = "Space Around Assignment", isActive = rules.spaceAroundAssignment, value = null),
+          RuleDto(id = "4", name = "New line after Println", isActive = true, value = rules.newlineAfterPrintln),
+          RuleDto(id = "5", name = "Block Indentation", isActive = true, value = rules.blockIndentation),
+          RuleDto(id = "6", name = "If-Brace same line", isActive = rules.ifBraceSameLine, value = null)
+        )
+      }
+      is LintingRules -> {
+        listOf(
+          RuleDto(id = "1", name = "Identifier Naming Convention", isActive = true, value = rules.identifierNamingConvention),
+          RuleDto(id = "2", name = "Println Expression Allowed", isActive = rules.printlnExpressionAllowed, value = null),
+          RuleDto(id = "3", name = "Read Input Expression Allowed", isActive = rules.readInputExpressionAllowed, value = null)
+        )
+      }
+    }
   }
 
   fun convertToFormattingRules(ruleDtos: List<RuleDto>): FormattingRules {

@@ -87,11 +87,7 @@ class RulesService(
   }
 
   private fun saveRules(username: String, key: String, rules: Rules) {
-    val rulesAsJson = when (rules) {
-      is FormattingRules -> JsonUtil.serializeRules(rules)
-      is LintingRules -> JsonUtil.serializeRules(rules)
-      else -> throw IllegalArgumentException("Unsupported rules type")
-    }
+    val rulesAsJson = JsonUtil.serializeRules(rules)
     val asset = Asset(container = username, key = key, content = rulesAsJson)
     assetService.createOrUpdateAsset(asset)
   }
