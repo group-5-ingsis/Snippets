@@ -6,8 +6,8 @@ data class SnippetCreateTestRequest(
   val snippetId: String,
   val author: String,
   val name: String,
-  val input: List<String>,
-  val output: List<String>,
+  val input: List<String>?,
+  val output: List<String>?,
   val language: String,
   val version: String
 ) {
@@ -15,8 +15,8 @@ data class SnippetCreateTestRequest(
     snippetId = testDto.id,
     author = author,
     name = testDto.name,
-    input = testDto.input,
-    output = testDto.output,
+    input = testDto.input ?: emptyList(),
+    output = testDto.output ?: emptyList(),
     language = language,
     version = version
   )

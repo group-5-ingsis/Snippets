@@ -1,8 +1,6 @@
 package com.ingsis.snippets.test
 
-import com.ingsis.snippets.async.test.SnippetCreateTestRequest
 import com.ingsis.snippets.snippet.SnippetController
-import com.ingsis.snippets.snippet.SnippetService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -13,31 +11,22 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
 @Service
-class TestService(private val restTemplate: RestTemplate, private val snippetService: SnippetService) {
+class TestService(private val restTemplate: RestTemplate) {
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
 
   fun createTest(snippetId: String, testDto: TestDto): TestDto {
-    val snippet = snippetService.getSnippetById(snippetId)
-    val languageAndVersion = snippet.language.split(" ")
-    val createTestRequest = SnippetCreateTestRequest(
-      testDto,
-      snippet.author,
-      languageAndVersion[0],
-      languageAndVersion[1]
-    )
-
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$testServiceUrl/test/create"
+    val url = "$testServiceUrl/test/$snippetId"
     logger.info("Sending test creation request to URL: $url")
 
     try {
-      val entity = HttpEntity(createTestRequest, headers)
+      val entity = HttpEntity(testDto, headers)
 
       val response = restTemplate.exchange(
         url,
