@@ -59,6 +59,11 @@ class SnippetService(
   }
 
   fun updateSnippet(userId: String, snippetId: String, newContent: String): SnippetWithContent {
+    val writePermissionSnippets = permissionService.getSnippets(userId, "write")
+    logger.info("snippets with write permission: $writePermissionSnippets, snippetId: $snippetId")
+    if (snippetId !in writePermissionSnippets){
+      return SnippetWithContent(getSnippetById(snippetId), "You don't have permission to update this snippet")
+    }
     permissionService.hasPermission(userId, snippetId)
     val snippet = getSnippetById(snippetId)
     createAsset(snippet.author, snippet.id, newContent)
@@ -68,6 +73,7 @@ class SnippetService(
   fun deleteSnippet(id: String, userId: String): String {
     val snippet = getSnippetById(id)
     val writePermissionSnippets = permissionService.getSnippets(userId, "write")
+    logger.info("snippets with write permission: $writePermissionSnippets, snippetId: ${snippet.id}")
     if (snippet.id !in writePermissionSnippets){
       return "You don't have permission to delete this snippet"
     }
