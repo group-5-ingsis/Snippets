@@ -1,4 +1,4 @@
-package com.ingsis.snippets.async.producer.lint
+package com.ingsis.snippets.async.lint
 
 data class LintResponse(
   val requestId: String,

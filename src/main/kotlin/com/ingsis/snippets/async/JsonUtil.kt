@@ -4,15 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ingsis.snippets.async.producer.format.FormatRequest
-import com.ingsis.snippets.async.producer.format.FormatResponse
-import com.ingsis.snippets.async.producer.lint.LintRequest
-import com.ingsis.snippets.async.producer.lint.LintResponse
-import com.ingsis.snippets.async.producer.test.SnippetCreateTestRequest
-import com.ingsis.snippets.async.producer.test.SnippetTestRequest
-import com.ingsis.snippets.async.producer.test.TestResponse
+import com.ingsis.snippets.async.format.FormatRequest
+import com.ingsis.snippets.async.format.FormatResponse
+import com.ingsis.snippets.async.lint.LintRequest
+import com.ingsis.snippets.async.lint.LintResponse
+import com.ingsis.snippets.async.test.TestResponse
 import com.ingsis.snippets.rules.FormattingRules
 import com.ingsis.snippets.rules.LintingRules
+import com.ingsis.snippets.rules.Rules
 
 object JsonUtil {
   private val objectMapper: ObjectMapper = jacksonObjectMapper()
@@ -73,33 +72,9 @@ object JsonUtil {
     }
   }
 
-  fun serializeFormattingRules(rules: FormattingRules): String {
+  fun serializeRules(rules: Rules): String {
     return try {
       objectMapper.writeValueAsString(rules)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to serialize object to JSON", e)
-    }
-  }
-
-  fun serializeLintingRules(rules: LintingRules): String {
-    return try {
-      objectMapper.writeValueAsString(rules)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to serialize object to JSON", e)
-    }
-  }
-
-  fun serializeTestToJson(snippetToTest: SnippetTestRequest): String {
-    return try {
-      objectMapper.writeValueAsString(snippetToTest)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to serialize object to JSON", e)
-    }
-  }
-
-  fun serializeCreateTestToJson(snippetToTest: SnippetCreateTestRequest): String {
-    return try {
-      objectMapper.writeValueAsString(snippetToTest)
     } catch (e: JsonProcessingException) {
       throw RuntimeException("Failed to serialize object to JSON", e)
     }

@@ -9,8 +9,7 @@ object RuleManager {
       spaceAroundAssignment = false,
       newlineAfterPrintln = 0,
       blockIndentation = 0,
-      ifBraceSameLine = false,
-      singleSpaceSeparation = false
+      ifBraceSameLine = false
     )
     return defaultFormattingRules
   }
@@ -24,43 +23,55 @@ object RuleManager {
     return defaultLintingRules
   }
 
-  fun convertToRuleList(formattingRules: FormattingRules): List<Rule> {
-    return listOf(
-      Rule(id = "1", name = "spaceBeforeColon", isActive = formattingRules.spaceBeforeColon, value = null),
-      Rule(id = "2", name = "spaceAfterColon", isActive = formattingRules.spaceAfterColon, value = null),
-      Rule(id = "3", name = "spaceAroundAssignment", isActive = formattingRules.spaceAroundAssignment, value = null),
-      Rule(id = "4", name = "newlineAfterPrintln", isActive = true, value = formattingRules.newlineAfterPrintln),
-      Rule(id = "5", name = "blockIndentation", isActive = true, value = formattingRules.blockIndentation),
-      Rule(id = "6", name = "if-brace-same-line", isActive = formattingRules.ifBraceSameLine, value = null),
-      Rule(id = "7", name = "mandatory-single-space-separation", isActive = formattingRules.singleSpaceSeparation, value = null)
-    )
+  fun convertToRuleList(rules: Rules): List<RuleDto> {
+    return when (rules) {
+      is FormattingRules -> {
+        listOf(
+          RuleDto(id = "1", name = "Space Before Colon", isActive = rules.spaceBeforeColon, value = null),
+          RuleDto(id = "2", name = "Space After Colon", isActive = rules.spaceAfterColon, value = null),
+          RuleDto(id = "3", name = "Space Around Assignment", isActive = rules.spaceAroundAssignment, value = null),
+          RuleDto(id = "4", name = "New line after Println", isActive = true, value = rules.newlineAfterPrintln),
+          RuleDto(id = "5", name = "Block Indentation", isActive = true, value = rules.blockIndentation),
+          RuleDto(id = "6", name = "If-Brace same line", isActive = rules.ifBraceSameLine, value = null)
+        )
+      }
+      is LintingRules -> {
+        listOf(
+          RuleDto(id = "1", name = "Identifier Naming Convention", isActive = true, value = rules.identifierNamingConvention),
+          RuleDto(id = "2", name = "Println Expression Allowed", isActive = rules.printlnExpressionAllowed, value = null),
+          RuleDto(id = "3", name = "Read Input Expression Allowed", isActive = rules.readInputExpressionAllowed, value = null)
+        )
+      }
+    }
   }
 
-  fun convertToRuleList(lintingRules: LintingRules): List<Rule> {
-    return listOf(
-      Rule(id = "1", name = "identifierNamingConvention", isActive = true, value = lintingRules.identifierNamingConvention),
-      Rule(id = "2", name = "printlnExpressionAllowed", isActive = lintingRules.printlnExpressionAllowed, value = null),
-      Rule(id = "3", name = "readInputExpressionAllowed", isActive = lintingRules.readInputExpressionAllowed, value = null)
-    )
-  }
+  fun convertToFormattingRules(ruleDtos: List<RuleDto>): FormattingRules {
+    val spaceBeforeColon = ruleDtos.first { it.name == "spaceBeforeColon" }.isActive
+    val spaceAfterColon = ruleDtos.first { it.name == "spaceAfterColon" }.isActive
+    val spaceAroundAssignment = ruleDtos.first { it.name == "spaceAroundAssignment" }.isActive
+    val newlineAfterPrintln = ruleDtos.first { it.name == "newlineAfterPrintln" }.value as? Int ?: 0
+    val blockIndentation = ruleDtos.first { it.name == "blockIndentation" }.value as? Int ?: 0
+    val ifBraceSameLine = ruleDtos.first { it.name == "if-brace-same-line" }.isActive
 
-  fun convertToFormattingRules(rules: List<Rule>): FormattingRules {
     return FormattingRules(
-      spaceBeforeColon = rules.find { it.name == "spaceBeforeColon" }?.isActive == true,
-      spaceAfterColon = rules.find { it.name == "spaceAfterColon" }?.isActive == true,
-      spaceAroundAssignment = rules.find { it.name == "spaceAroundAssignment" }?.isActive == true,
-      newlineAfterPrintln = rules.find { it.name == "newlineAfterPrintln" }?.value as? Int ?: 0,
-      blockIndentation = rules.find { it.name == "blockIndentation" }?.value as? Int ?: 0,
-      ifBraceSameLine = rules.find { it.name == "if-brace-same-line" }?.isActive == true,
-      singleSpaceSeparation = rules.find { it.name == "mandatory-single-space-separation" }?.isActive == true
+      spaceBeforeColon = spaceBeforeColon,
+      spaceAfterColon = spaceAfterColon,
+      spaceAroundAssignment = spaceAroundAssignment,
+      newlineAfterPrintln = newlineAfterPrintln,
+      blockIndentation = blockIndentation,
+      ifBraceSameLine = ifBraceSameLine
     )
   }
 
-  fun convertToLintingRules(rules: List<Rule>): LintingRules {
+  fun convertToLintingRules(ruleDtos: List<RuleDto>): LintingRules {
+    val identifierNamingConvention = ruleDtos.first { it.name == "identifierNamingConvention" }.value as? String ?: "snake-case"
+    val printlnExpressionAllowed = ruleDtos.first { it.name == "printlnExpressionAllowed" }.isActive
+    val readInputExpressionAllowed = ruleDtos.first { it.name == "readInputExpressionAllowed" }.isActive
+
     return LintingRules(
-      identifierNamingConvention = rules.find { it.name == "identifierNamingConvention" }?.value as? String ?: "snake-case",
-      printlnExpressionAllowed = rules.find { it.name == "printlnExpressionAllowed" }?.isActive == true,
-      readInputExpressionAllowed = rules.find { it.name == "readInputExpressionAllowed" }?.isActive == true
+      identifierNamingConvention = identifierNamingConvention,
+      printlnExpressionAllowed = printlnExpressionAllowed,
+      readInputExpressionAllowed = readInputExpressionAllowed
     )
   }
 }

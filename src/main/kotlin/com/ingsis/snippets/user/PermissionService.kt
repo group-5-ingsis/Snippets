@@ -1,5 +1,6 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.user
 
+import com.ingsis.snippets.snippet.SnippetController
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -24,7 +25,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
 
     val url = "$permissionServiceUrl/$type/$userId/$snippetId"
-    logger.info("Calling: $url")
+    logger.info("Updating permissions for user: $userId, type: $type")
 
     try {
       val entity = HttpEntity<Void>(headers)
@@ -49,7 +50,8 @@ class PermissionService(private val restTemplate: RestTemplate) {
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/write/$userId/$snippetId"
+    val url = "$permissionServiceUrl/read/$userId/$snippetId"
+    logger.info("Sharing snippet: $snippetId to user: $userId")
 
     val entity = HttpEntity<Void>(headers)
 
@@ -60,9 +62,9 @@ class PermissionService(private val restTemplate: RestTemplate) {
         entity,
         Void::class.java
       )
-      logger.info("Permissions updated successfully.")
+      logger.info("Shared snippet successfully.")
     } catch (e: RestClientException) {
-      logger.error("Error updating permissions: ${e.message}")
+      logger.error("Error sharing snippet: ${e.message}")
     }
   }
 
@@ -73,6 +75,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
 
     val url = "$permissionServiceUrl/$type/$userId"
+    logger.info("Getting snippets for user $userId, type: $type")
 
     return try {
       val entity = HttpEntity<Void>(headers)
@@ -97,13 +100,14 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
 
     val url = "$permissionServiceUrl/$userId"
+    logger.info("Getting all of snippets for user: $userId")
 
     return try {
       val entity = HttpEntity<Void>(headers)
 
       val result = restTemplate.exchange(
         url,
-        HttpMethod.POST,
+        HttpMethod.GET,
         entity,
         object : ParameterizedTypeReference<List<String>>() {}
       )
@@ -113,5 +117,9 @@ class PermissionService(private val restTemplate: RestTemplate) {
       println("Error fetching snippets: ${e.message}")
       emptyList()
     }
+  }
+
+  fun hasPermission(userId: String, snippetId: String): Boolean {
+    return true
   }
 }

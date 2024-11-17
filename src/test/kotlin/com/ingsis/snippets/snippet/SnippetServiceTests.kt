@@ -14,7 +14,7 @@
 // class SnippetServiceTests {
 //
 //  @InjectMocks
-//  private lateinit var snippetService: SnippetService
+//  private lateinit var snippetService: com.ingsis.snippets.snippet.SnippetService
 //
 //  @Mock
 //  private lateinit var snippetRepository: SnippetRepository

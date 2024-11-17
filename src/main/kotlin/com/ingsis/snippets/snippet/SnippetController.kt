@@ -1,5 +1,6 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.security.JwtInfoExtractor
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -15,9 +16,9 @@ class SnippetController(private val snippetService: SnippetService) {
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
   ): Snippet {
-    val (userId, username) = extractUserInfo(jwt)
-    logger.info("Creating snippet for user: $username")
-    return snippetService.createSnippet(userId, username, snippet)
+    val userData = JwtInfoExtractor.createUserData(jwt)
+    logger.info("Creating snippet for user: ${userData.username}")
+    return snippetService.createSnippet(userData, snippet)
   }
 
   @GetMapping("/id/{id}")
@@ -26,23 +27,24 @@ class SnippetController(private val snippetService: SnippetService) {
     return snippetService.getSnippetContent(id)
   }
 
-  @GetMapping("/name/{name}")
-  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable name: String): List<Snippet> {
-    val (userId, _) = extractUserInfo(jwt)
-    logger.info("Fetching snippets with name: $name (get/name/{name})")
-    return snippetService.getSnippetsByName(userId, name)
+  @GetMapping("/name/{snippetName}")
+  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetName: String): List<Snippet> {
+    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    logger.info("Fetching snippets with name: $snippetName (get/name/{name})")
+    return snippetService.getSnippetsByName(userId, snippetName)
   }
 
   @GetMapping("/")
-  fun getAllSnippets(): List<Snippet> {
-    logger.info("Fetching all snippets (get/)")
-    return snippetService.getSnippets()
+  fun getAllSnippets(@AuthenticationPrincipal jwt: Jwt): List<Snippet> {
+    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    logger.info("Fetching snippets for user:  $userId (get/)")
+    return snippetService.getSnippetsByName(userId, "")
   }
 
-  @PutMapping("/{id}")
-  fun updateSnippet(@PathVariable id: String, @RequestBody newSnippetContent: String): SnippetWithContent {
-    logger.info("Updating snippet with id: $id (put/{id})")
-    return snippetService.updateSnippet(id, newSnippetContent)
+  @PutMapping("/{snippetId}")
+  fun updateSnippet(@PathVariable snippetId: String, @RequestBody newSnippetContent: String): SnippetWithContent {
+    logger.info("Updating snippet with id: $snippetId (put/{id})")
+    return snippetService.updateSnippet(snippetId, snippetId, newSnippetContent)
   }
 
   @DeleteMapping("/{snippetId}")
@@ -51,17 +53,5 @@ class SnippetController(private val snippetService: SnippetService) {
     logger.info("Deleting snippet with id: $snippetId (delete/{id})")
     snippetService.deleteSnippet(snippetId, userId)
     return "Snippet deleted!"
-  }
-
-  @PostMapping("/share/{snippetId}/{userToShare}")
-  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
-    val (userId, _) = extractUserInfo(jwt)
-    return snippetService.shareSnippet(userId, snippetId, userToShare)
-  }
-
-  private fun extractUserInfo(jwt: Jwt): Pair<String, String> {
-    val userId = jwt.subject
-    val username = jwt.claims["https://snippets/claims/username"]?.toString() ?: "unknown"
-    return Pair(userId, username)
   }
 }
