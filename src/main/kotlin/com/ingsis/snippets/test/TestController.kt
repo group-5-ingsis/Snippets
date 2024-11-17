@@ -18,7 +18,7 @@ class TestController(
   @PostMapping("/{snippetId}")
   fun createTest(@RequestBody test: TestDto, @PathVariable snippetId: String): TestDto {
     logger.info("Received request to create a new test for snippet id: $snippetId")
-    return testService.createTestForSnippet(snippetId, test)
+    return testService.createTest(snippetId, test)
   }
 
   @DeleteMapping("/{id}")
@@ -29,12 +29,12 @@ class TestController(
   @PostMapping("/run/{testId}")
   fun testSnippet(@PathVariable testId: String) {
     logger.info("Received request to run test with id: $testId")
-    testService.testSnippet(testId)
+    testService.runTest(testId)
   }
 
   @PostMapping("/run/{snippetId}/all")
   fun runAllTestsForSnippet(@PathVariable snippetId: String) {
     logger.info("Received request to run all tests for snippet with id: $snippetId")
-    testService.runAllTestsForSnippet(snippetId)
+    testService.runAllTests(snippetId)
   }
 }
