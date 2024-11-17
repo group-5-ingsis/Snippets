@@ -65,8 +65,11 @@ class SnippetService(
     return SnippetWithContent(snippet, newContent)
   }
 
-  fun deleteSnippet(id: String) {
+  fun deleteSnippet(id: String, userId: String) {
     val snippet = getSnippetById(id)
+    if (snippet.author != userId) {
+      throw IllegalArgumentException("You are not the author of this snippet and cannot delete it")
+    }
     assetService.deleteAsset(snippet.author, snippet.id)
     snippetRepository.deleteById(id)
   }
