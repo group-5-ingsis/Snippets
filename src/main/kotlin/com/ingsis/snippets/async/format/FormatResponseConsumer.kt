@@ -23,10 +23,6 @@ class FormatResponseConsumer @Autowired constructor(
   private val formatResponses = mutableMapOf<String, CompletableDeferred<String>>()
   private val logger = LoggerFactory.getLogger(FormatResponseConsumer::class.java)
 
-  init {
-    logger.info("FormatResponseConsumer initialized with stream key: $streamResponseKey and group ID: $groupId")
-  }
-
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value
     logger.info("Received message from stream: $streamValue")
@@ -55,7 +51,6 @@ class FormatResponseConsumer @Autowired constructor(
   }
 
   override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, String>> {
-    logger.debug("Configuring StreamReceiver options for FormatResponseConsumer")
     return StreamReceiver.StreamReceiverOptions.builder()
       .targetType(String::class.java)
       .pollTimeout(Duration.ofSeconds(5))

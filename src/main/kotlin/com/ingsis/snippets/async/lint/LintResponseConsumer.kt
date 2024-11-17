@@ -23,10 +23,6 @@ class LintResponseConsumer @Autowired constructor(
   private val lintResponses = mutableMapOf<String, CompletableDeferred<String>>()
   private val logger = LoggerFactory.getLogger(LintResponseConsumer::class.java)
 
-  init {
-    logger.info("LintResponseConsumer initialized with stream key: $streamResponseKey and group ID: $groupId")
-  }
-
   override fun onMessage(record: ObjectRecord<String, String>) {
     val streamValue = record.value
     logger.info("Received message from stream: $streamValue")
@@ -47,7 +43,7 @@ class LintResponseConsumer @Autowired constructor(
     }
   }
 
-  fun getLintResponseResponse(requestId: String): CompletableDeferred<String> {
+  fun getLintResponse(requestId: String): CompletableDeferred<String> {
     logger.info("Fetching lint response for requestId: $requestId")
     return AsyncResultHandler.getAsyncResult(logger, lintResponses, requestId).also {
       logger.debug("Returned CompletableDeferred for requestId: $requestId")
@@ -55,7 +51,6 @@ class LintResponseConsumer @Autowired constructor(
   }
 
   override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, String>> {
-    logger.debug("Configuring StreamReceiver options for LintResponseConsumer")
     return StreamReceiver.StreamReceiverOptions.builder()
       .targetType(String::class.java)
       .pollTimeout(Duration.ofSeconds(5))

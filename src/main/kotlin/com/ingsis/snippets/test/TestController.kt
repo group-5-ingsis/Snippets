@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/test")
 class TestController(
-  private val snippetService: SnippetService,
+  private val snippetService: SnippetService
 ) {
   private val logger = LoggerFactory.getLogger(TestController::class.java)
 

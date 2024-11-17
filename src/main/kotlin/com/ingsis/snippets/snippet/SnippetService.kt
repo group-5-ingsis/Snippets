@@ -105,7 +105,7 @@ class SnippetService(
 
     return try {
       withTimeout(5000L) {
-        val responseDeferred = lintResponseConsumer.getLintResponseResponse(requestId)
+        val responseDeferred = lintResponseConsumer.getLintResponse(requestId)
         responseDeferred.await()
       }
     } catch (e: TimeoutCancellationException) {
@@ -118,7 +118,11 @@ class SnippetService(
     val snippet = snippetRepository.findById(testDto.snippetId).get()
     val languageAndVersion = snippet.language.split(" ")
     val createTestRequest = SnippetCreateTestRequest(
-      testDto, snippet.author, languageAndVersion[0], languageAndVersion[1])
+      testDto,
+      snippet.author,
+      languageAndVersion[0],
+      languageAndVersion[1]
+    )
     testService.createTest(createTestRequest)
   }
 

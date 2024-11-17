@@ -1,6 +1,6 @@
 package com.ingsis.snippets.async.test
 
 data class TestResponse(
-  val testId: String,
+  val requestId: String,
   val passed: Boolean
 )

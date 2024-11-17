@@ -104,7 +104,7 @@ class RulesService(
         val lintRequest = LintRequest(requestId, userData.username, snippet.content)
         lintRequestProducer.publishEvent(lintRequest)
         try {
-          lintResponseConsumer.getLintResponseResponse(requestId).await()
+          lintResponseConsumer.getLintResponse(requestId).await()
         } catch (e: Exception) {
           println("Error linting snippet ${snippet.id}: ${e.message}")
         }
