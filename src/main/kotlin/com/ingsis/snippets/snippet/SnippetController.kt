@@ -2,6 +2,8 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.security.JwtInfoExtractor
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -15,10 +17,13 @@ class SnippetController(private val snippetService: SnippetService) {
   suspend fun createSnippet(
     @RequestBody snippet: SnippetDto,
     @AuthenticationPrincipal jwt: Jwt
-  ): Snippet {
+  ): ResponseEntity<Snippet> {
     val userData = JwtInfoExtractor.createUserData(jwt)
     logger.info("Creating snippet for user: ${userData.username}")
-    return snippetService.createSnippet(userData, snippet)
+
+    val snippetResponse = snippetService.createSnippet(userData, snippet)
+
+    return ResponseEntity(snippetResponse, HttpStatus.OK)
   }
 
   @GetMapping("/id/{id}")
