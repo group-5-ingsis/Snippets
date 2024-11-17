@@ -1,7 +1,7 @@
 package com.ingsis.snippets.snippet
 
-import com.ingsis.snippets.async.JsonUtil
 import com.ingsis.snippets.async.test.SnippetCreateTestRequest
+import com.ingsis.snippets.test.TestDto
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -17,9 +17,7 @@ class TestService(private val restTemplate: RestTemplate) {
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
 
-  fun createTest(createTestRequest: SnippetCreateTestRequest) {
-    val serializedRequest = JsonUtil.serializeCreateTestToJson(createTestRequest)
-
+  fun createTest(createTestRequest: SnippetCreateTestRequest): TestDto {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
@@ -29,7 +27,7 @@ class TestService(private val restTemplate: RestTemplate) {
     logger.info("Sending test creation request to URL: $url")
 
     try {
-      val entity = HttpEntity(serializedRequest, headers)
+      val entity = HttpEntity(createTestRequest, headers)
 
       restTemplate.exchange(
         url,

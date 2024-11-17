@@ -5,8 +5,6 @@ import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
-import com.ingsis.snippets.async.test.SnippetCreateTestRequest
-import com.ingsis.snippets.test.CreateTestDto
 import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
@@ -21,7 +19,6 @@ class SnippetService(
   private val snippetRepository: SnippetRepository,
   private val assetService: AssetService,
   private val permissionService: PermissionService,
-  private val testService: TestService,
   private val lintRequestProducer: LintRequestProducer,
   private val lintResponseConsumer: LintResponseConsumer
 ) {
@@ -112,25 +109,5 @@ class SnippetService(
       logger.warn("Linting timed out for requestId: $requestId, assuming compliant")
       "compliant"
     }
-  }
-
-  fun createTestForSnippet(testDto: CreateTestDto) {
-    val snippet = snippetRepository.findById(testDto.snippetId).get()
-    val languageAndVersion = snippet.language.split(" ")
-    val createTestRequest = SnippetCreateTestRequest(
-      testDto,
-      snippet.author,
-      languageAndVersion[0],
-      languageAndVersion[1]
-    )
-    testService.createTest(createTestRequest)
-  }
-
-  fun testSnippet(testId: String) {
-    testService.runTest(testId)
-  }
-
-  fun runAllTestsForSnippet(snippetId: String) {
-    testService.runAllTests(snippetId)
   }
 }

@@ -1,6 +1,6 @@
 package com.ingsis.snippets.async.test
 
-import com.ingsis.snippets.test.CreateTestDto
+import com.ingsis.snippets.test.TestDto
 
 data class SnippetCreateTestRequest(
   val snippetId: String,
@@ -11,12 +11,12 @@ data class SnippetCreateTestRequest(
   val language: String,
   val version: String
 ) {
-  constructor(createTestDto: CreateTestDto, author: String, language: String, version: String) : this(
-    snippetId = createTestDto.snippetId,
+  constructor(testDto: TestDto, author: String, language: String, version: String) : this(
+    snippetId = testDto.id,
     author = author,
-    name = createTestDto.name,
-    input = createTestDto.input,
-    output = createTestDto.output,
+    name = testDto.name,
+    input = testDto.input,
+    output = testDto.output,
     language = language,
     version = version
   )
