@@ -70,6 +70,7 @@ class SnippetService(
     if (snippet.author != userId) {
       throw IllegalArgumentException("You are not the author of this snippet and cannot delete it")
     }
+    logger.info("Snippet author = ${snippet.author}, userId = $userId")
     assetService.deleteAsset(snippet.author, snippet.id)
     snippetRepository.deleteById(id)
   }
