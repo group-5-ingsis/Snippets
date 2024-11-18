@@ -16,13 +16,15 @@ class TestService(private val restTemplate: RestTemplate) {
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
 
-  fun createTest(snippetId: String, testDto: TestDto): TestDto {
+  fun createTest(snippetId: String, testDto: TestDto, authToken: String): TestDto {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
+      set("Authorization", "Bearer $authToken")
     }
+    logger.info("Content: $testDto")
 
-    val url = "$testServiceUrl/test/$snippetId"
+    val url = "$testServiceUrl/$snippetId"
     logger.info("Sending test creation request to URL: $url")
 
     try {
@@ -49,7 +51,7 @@ class TestService(private val restTemplate: RestTemplate) {
       accept = listOf(MediaType.APPLICATION_JSON)
     }
 
-    val url = "$testServiceUrl/service/test/run/$testId"
+    val url = "$testServiceUrl/test/$testId"
     logger.info("Sending test run request to: $url")
 
     try {
@@ -73,7 +75,7 @@ class TestService(private val restTemplate: RestTemplate) {
       accept = listOf(MediaType.APPLICATION_JSON)
     }
 
-    val url = "$testServiceUrl/service/test/run/$snippetId/all"
+    val url = "$testServiceUrl/test/$snippetId/all"
     logger.info("Sending run all tests request to: $url")
 
     try {

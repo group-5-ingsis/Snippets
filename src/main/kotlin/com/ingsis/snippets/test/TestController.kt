@@ -1,12 +1,7 @@
 package com.ingsis.snippets.test
 
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/test")
@@ -16,9 +11,9 @@ class TestController(
   private val logger = LoggerFactory.getLogger(TestController::class.java)
 
   @PostMapping("/{snippetId}")
-  fun createTest(@RequestBody test: TestDto, @PathVariable snippetId: String): TestDto {
+  fun createTest(@RequestBody test: TestDto, @PathVariable snippetId: String, @RequestHeader("Authorization") token: String): TestDto {
     logger.info("Received request to create a new test for snippet id: $snippetId")
-    return testService.createTest(snippetId, test)
+    return testService.createTest(snippetId, test, token)
   }
 
   @DeleteMapping("/{id}")
