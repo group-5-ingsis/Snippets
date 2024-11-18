@@ -125,7 +125,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/delete/$userId/$snippetId"
+    val url = "$permissionServiceUrl/$snippetId"
 
     try {
       val entity = HttpEntity<Void>(headers)
