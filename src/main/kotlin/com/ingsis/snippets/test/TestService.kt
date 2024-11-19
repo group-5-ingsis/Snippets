@@ -16,11 +16,10 @@ class TestService(private val restTemplate: RestTemplate) {
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
 
-  fun createTest(snippetId: String, testDto: TestDto, authToken: String): TestDto {
+  fun createTest(snippetId: String, testDto: TestDto): TestDto {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
-      set("Authorization", "Bearer $authToken")
     }
     logger.info("Content: $testDto")
 

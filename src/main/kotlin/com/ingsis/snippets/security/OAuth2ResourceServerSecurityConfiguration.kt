@@ -49,7 +49,7 @@ open class OAuth2ResourceServerSecurityConfiguration(
   @Bean
   open fun corsConfigurationSource(): CorsConfigurationSource {
     val corsConfig = CorsConfiguration()
-    corsConfig.allowedOrigins = listOf("http://localhost:5173", "https://snippetsearcher-group5.duckdns.org")
+    corsConfig.allowedOrigins = listOf("http://localhost:5173", "https://printscript-group5.duckdns.org", "https://testing-ps-g5.duckdns.org")
     corsConfig.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
     corsConfig.allowedHeaders = listOf("Authorization", "Content-Type")
     corsConfig.allowCredentials = true

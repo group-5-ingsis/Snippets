@@ -11,9 +11,9 @@ class TestController(
   private val logger = LoggerFactory.getLogger(TestController::class.java)
 
   @PostMapping("/{snippetId}")
-  fun createTest(@RequestBody test: TestDto, @PathVariable snippetId: String, @RequestHeader("Authorization") token: String): TestDto {
+  fun createTest(@RequestBody test: TestDto, @PathVariable snippetId: String): TestDto {
     logger.info("Received request to create a new test for snippet id: $snippetId")
-    return testService.createTest(snippetId, test, token)
+    return testService.createTest(snippetId, test)
   }
 
   @DeleteMapping("/{id}")
