@@ -76,15 +76,16 @@ class SnippetService(
     return SnippetWithContent(savedSnippet, newContent)
   }
 
-  fun deleteSnippet(id: String, userId: String): String {
-    val snippet = getSnippetById(id)
+  fun deleteSnippet(snippetId: String, userId: String): String {
+    val snippet = getSnippetById(snippetId)
     val writePermissionSnippets = permissionService.getSnippets(userId, "write")
     if (snippet.id !in writePermissionSnippets) {
+      permissionService.removePermission(snippetId, userId, "read")
       return "You don't have permission to delete this snippet"
     }
     assetService.deleteAsset(snippet.author, snippet.id)
-    snippetRepository.deleteById(id)
-    permissionService.deleteSnippet(id, userId)
+    snippetRepository.deleteById(snippetId)
+    permissionService.deleteSnippet(snippetId, userId)
     return "Snippet deleted!"
   }
 
