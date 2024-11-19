@@ -47,7 +47,7 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @PutMapping("/{snippetId}")
-  fun updateSnippet(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @RequestBody newSnippetContent: String): SnippetWithContent {
+  suspend fun updateSnippet(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @RequestBody newSnippetContent: String): SnippetWithContent {
     logger.info("Updating snippet with id: $snippetId (put/{id})")
     val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
     return snippetService.updateSnippet(userId, snippetId, newSnippetContent)
