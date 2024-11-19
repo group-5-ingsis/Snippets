@@ -54,7 +54,7 @@ class RulesService(
       saveRules(username, type, defaultRules)
       RuleManager.convertToRuleList(defaultRules)
     } else {
-      val existingRules = JsonUtil.deserializeFormattingRules(rulesJson)
+      val existingRules = JsonUtil.deserializeRules(rulesJson, type)
       RuleManager.convertToRuleList(existingRules)
     }
   }

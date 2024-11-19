@@ -9,9 +9,7 @@ import com.ingsis.snippets.async.format.FormatResponse
 import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintResponse
 import com.ingsis.snippets.async.test.TestResponse
-import com.ingsis.snippets.rules.FormattingRules
-import com.ingsis.snippets.rules.LintingRules
-import com.ingsis.snippets.rules.Rules
+import com.ingsis.snippets.rules.*
 
 object JsonUtil {
   private val objectMapper: ObjectMapper = jacksonObjectMapper()
@@ -37,6 +35,18 @@ object JsonUtil {
       objectMapper.readValue(rules)
     } catch (e: JsonProcessingException) {
       throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
+    }
+  }
+
+  fun deserializeRules(rules: String, type: String): Rules {
+    return try {
+      when (type) {
+        FORMATTING_KEY -> objectMapper.readValue(rules, FormattingRules::class.java)
+        LINTING_KEY -> objectMapper.readValue(rules, LintingRules::class.java)
+        else -> throw IllegalArgumentException("Unknown rule type: $type")
+      }
+    } catch (e: JsonProcessingException) {
+      throw RuntimeException("Failed to deserialize JSON to Rules", e)
     }
   }
 

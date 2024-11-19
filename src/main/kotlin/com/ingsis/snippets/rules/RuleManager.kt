@@ -41,12 +41,12 @@ object RuleManager {
   }
 
   private fun convertToFormattingRules(ruleDtos: List<RuleDto>): FormattingRules {
-    val spaceBeforeColon = ruleDtos.first { it.name == "spaceBeforeColon" }.isActive
-    val spaceAfterColon = ruleDtos.first { it.name == "spaceAfterColon" }.isActive
-    val spaceAroundAssignment = ruleDtos.first { it.name == "spaceAroundAssignment" }.isActive
-    val newlineAfterPrintln = ruleDtos.first { it.name == "newlineAfterPrintln" }.value as? Int ?: 0
-    val blockIndentation = ruleDtos.first { it.name == "blockIndentation" }.value as? Int ?: 0
-    val ifBraceSameLine = ruleDtos.first { it.name == "if-brace-same-line" }.isActive
+    val spaceBeforeColon = ruleDtos.first { it.name == "Space Before Colon" }.isActive
+    val spaceAfterColon = ruleDtos.first { it.name == "Space After Colon" }.isActive
+    val spaceAroundAssignment = ruleDtos.first { it.name == "Space Around Assignment" }.isActive
+    val newlineAfterPrintln = ruleDtos.first { it.name == "New line after Println" }.value as? Int ?: 0
+    val blockIndentation = ruleDtos.first { it.name == "Block Indentation" }.value as? Int ?: 0
+    val ifBraceSameLine = ruleDtos.first { it.name == "If-Brace same line" }.isActive
 
     return FormattingRules(
       spaceBeforeColon = spaceBeforeColon,
@@ -59,9 +59,9 @@ object RuleManager {
   }
 
   private fun convertToLintingRules(ruleDtos: List<RuleDto>): LintingRules {
-    val identifierNamingConvention = ruleDtos.first { it.name == "identifierNamingConvention" }.value as? String ?: "snake-case"
-    val printlnExpressionAllowed = ruleDtos.first { it.name == "printlnExpressionAllowed" }.isActive
-    val readInputExpressionAllowed = ruleDtos.first { it.name == "readInputExpressionAllowed" }.isActive
+    val identifierNamingConvention = ruleDtos.first { it.name == "Identifier Naming Convention" }.value as? String ?: "snake-case"
+    val printlnExpressionAllowed = ruleDtos.first { it.name == "Println Expression Allowed" }.isActive
+    val readInputExpressionAllowed = ruleDtos.first { it.name == "Read Input Expression Allowed" }.isActive
 
     return LintingRules(
       identifierNamingConvention = identifierNamingConvention,
