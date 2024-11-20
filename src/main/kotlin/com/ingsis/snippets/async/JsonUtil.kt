@@ -30,14 +30,6 @@ object JsonUtil {
     }
   }
 
-  fun deserializeFormattingRules(rules: String): FormattingRules {
-    return try {
-      objectMapper.readValue(rules)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
-    }
-  }
-
   fun deserializeRules(rules: String, type: String): Rules {
     return try {
       when (type) {
@@ -47,14 +39,6 @@ object JsonUtil {
       }
     } catch (e: JsonProcessingException) {
       throw RuntimeException("Failed to deserialize JSON to Rules", e)
-    }
-  }
-
-  fun deserializeLintingRules(rules: String): LintingRules {
-    return try {
-      objectMapper.readValue(rules)
-    } catch (e: JsonProcessingException) {
-      throw RuntimeException("Failed to deserialize JSON to FormattingRules", e)
     }
   }
 

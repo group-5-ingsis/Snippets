@@ -85,7 +85,7 @@ class SnippetService(
     }
     assetService.deleteAsset(snippet.author, snippet.id)
     snippetRepository.deleteById(snippetId)
-    permissionService.deleteSnippet(snippetId, userId)
+    permissionService.deleteSnippet(snippetId)
     return "Snippet deleted!"
   }
 
