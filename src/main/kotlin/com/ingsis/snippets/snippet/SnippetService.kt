@@ -54,7 +54,13 @@ class SnippetService(
 
   fun getSnippetsByName(userId: String, name: String): List<Snippet> {
     val mySnippetIds = permissionService.getMySnippetsIds(userId)
-    val snippets = if (name.isBlank()) snippetRepository.findAll() else snippetRepository.findByName(name)
+
+    val snippets = if (name.isBlank()) {
+      snippetRepository.findAll()
+    } else {
+      listOf(snippetRepository.findByName(name)) ?: emptyList()
+    }
+
     return snippets.filter { it.id in mySnippetIds }
   }
 

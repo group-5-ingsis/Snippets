@@ -1,10 +1,20 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.H2Dialect
+      ddl-auto: create-drop    # Automatically creates schema for each test run and drops it afterward
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true             # Enable SQL logging for debugging
+    properties:
+      hibernate:
+        format_sql: true       # Format SQL logs for better readability
   datasource:
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
-    url: jdbc:h2:mem:testdb
+    driver-class-name: org.postgresql.Driver
+    username: test_user        # Replace with your PostgreSQL test username
+    password: test_password    # Replace with your PostgreSQL test password
+    url: jdbc:postgresql://localhost:5432/test_snippet
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG             # Logs the executed SQL statements
+      hibernate.type.descriptor.sql.BasicBinder: TRACE  # Logs SQL parameter bindings
