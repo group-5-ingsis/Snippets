@@ -119,7 +119,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun deleteSnippet(snippetId: String, userId: String) {
+  fun deleteSnippet(snippetId: String) {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)

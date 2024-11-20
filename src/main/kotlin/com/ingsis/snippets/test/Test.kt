@@ -1,6 +1,6 @@
 package com.ingsis.snippets.test
 
-data class Test (
+data class Test(
   val id: String,
   val snippetId: String,
   val name: String,
