@@ -37,8 +37,43 @@ class TestService(private val restTemplate: RestTemplate) {
       )
 
       logger.info("Test creation request sent successfully.")
+      logger.info("Response: " + response.body.toString())
 
       return response.body ?: throw RuntimeException("Failed to create test. No response body.")
+    } catch (e: RestClientException) {
+      logger.error("Error sending test creation request: ${e.message}")
+      throw RuntimeException("Error sending test creation request: ${e.message}", e)
+    }
+  }
+
+  fun getAllTestsForSnippet(snippetId: String): List<TestDto> {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$testServiceUrl/$snippetId"
+    logger.info("Sending request to fetch all tests for snippetId $snippetId to URL: $url")
+    try {
+      val entity = HttpEntity<Void>(headers)
+
+      val response = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        entity,
+        Array<Test>::class.java
+      )
+
+      val tests = response.body?.toList() ?: emptyList()
+      logger.info("Response: $tests")
+
+      return tests.map { test ->
+        TestDto(
+          name = test.name,
+          input = test.userInputs,
+          output = test.userOutputs
+        )
+      }
     } catch (e: RestClientException) {
       logger.error("Error sending test creation request: ${e.message}")
       throw RuntimeException("Error sending test creation request: ${e.message}", e)
