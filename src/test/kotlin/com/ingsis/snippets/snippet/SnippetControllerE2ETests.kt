@@ -1,9 +1,11 @@
 package com.ingsis.snippets.snippet
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import com.ingsis.snippets.user.PermissionService
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -12,43 +14,56 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-  properties = ["spring.profiles.active=test"])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = ["spring.profiles.active=test"])
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allows us to use @BeforeAll and maintain state across tests
 class SnippetControllerE2ETests @Autowired constructor(
   private val client: WebTestClient,
-  private val snippetRepository: SnippetRepository
+  private val snippetRepository: SnippetRepository,
+  private val permissionService: PermissionService
 ) {
 
   private lateinit var accessToken: String
+  private lateinit var firstSnippetId: String
 
-  @BeforeEach
+  @BeforeAll
   fun setup() {
     accessToken = fetchAccessToken()
-    println("Access Token: $accessToken")
+
     val snippet1 = Snippet(
-      author = "user1",
+      author = "whahw",
       name = "Snippet One",
       language = "Kotlin",
       extension = ".kt",
       compliance = "100%"
     )
     val snippet2 = Snippet(
-      author = "user1",
+      author = "whahw",
       name = "Snippet Two",
       language = "Java",
       extension = ".java",
       compliance = "95%"
     )
+
     snippetRepository.save(snippet1)
+    val savedSnippet1 = snippetRepository.findByName("Snippet One")
+    permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet1.id, "write")
+    firstSnippetId = savedSnippet1.id
+
+
     snippetRepository.save(snippet2)
+    val savedSnippet2 = snippetRepository.findByName("Snippet Two")
+    permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet2.id, "write")
   }
 
-  @AfterEach
+  @AfterAll
   fun tearDown() {
     snippetRepository.deleteAll()
+    for (snippetId in permissionService.getMySnippetsIds("auth0|6738e1579d3c4beaae5d1487")) {
+      permissionService.deleteSnippet(snippetId)
+    }
   }
 
   private fun fetchAccessToken(): String {
@@ -56,20 +71,19 @@ class SnippetControllerE2ETests @Autowired constructor(
       .command(
         "curl",
         "--location",
-        "https://dev-baomkzt76ougszgg.us.auth0.com/oauth/token",
+        System.getenv("AUTH_SERVER_URI"),
         "--data-urlencode", "grant_type=password",
-        "--data-urlencode", "username=test@test.com",
-        "--data-urlencode", "password=Hola123!",
-        "--data-urlencode", "scope=read:snippets write:snippets",
-        "--data-urlencode", "audience=https://snippets",
-        "--data-urlencode", "client_id=eloEUq9yJ9yFVYegEf72MDGTa6HF4KI7",
-        "--data-urlencode", "client_secret=BjT6pO9gPGTVc4XVIPGlk7XrA6pLgAEcQmAIbKce1aP6VMqcJkpjEvMINjhAvy8v"
+        "--data-urlencode", "username=${System.getenv("AUTH_USERNAME")}",
+        "--data-urlencode", "password=${System.getenv("AUTH_PASSWORD")}",
+        "--data-urlencode", "scope=${System.getenv("AUTH_SCOPE")}",
+        "--data-urlencode", "audience=${System.getenv("AUTH0_AUDIENCE")}",
+        "--data-urlencode", "client_id=${System.getenv("AUTH_CLIENT_ID")}",
+        "--data-urlencode", "client_secret=${System.getenv("AUTH_CLIENT_SECRET")}"
       )
       .redirectErrorStream(true)
       .start()
 
     val rawResponse = process.inputStream.bufferedReader().readText()
-    println("Raw Token Response: $rawResponse")
 
     val jsonStartIndex = rawResponse.indexOf('{')
     val jsonEndIndex = rawResponse.lastIndexOf('}')
@@ -92,8 +106,8 @@ class SnippetControllerE2ETests @Autowired constructor(
     val snippetDto = SnippetDto(
       name = "Snippet Three",
       content = "print('Hello, World!')",
-      language = "Python",
-      extension = ".py"
+      language = "PrintScript",
+      extension = ".ps"
     )
     client.post()
       .uri("/")
@@ -170,17 +184,13 @@ class SnippetControllerE2ETests @Autowired constructor(
 
   @Test
   fun `should delete a snippet`() {
-    val snippet = snippetRepository.findAll().first()
+
     client.delete()
-      .uri("/${snippet.id}")
+      .uri("/${firstSnippetId}")
       .header("Authorization", "Bearer $accessToken")
       .exchange()
       .expectStatus().isOk
 
-    client.get()
-      .uri("/id/${snippet.id}")
-      .header("Authorization", "Bearer $accessToken")
-      .exchange()
-      .expectStatus().isNotFound
+    assert(snippetRepository.findById(firstSnippetId).isEmpty)
   }
 }
