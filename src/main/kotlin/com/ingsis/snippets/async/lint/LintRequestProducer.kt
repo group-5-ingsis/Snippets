@@ -1,6 +1,7 @@
 package com.ingsis.snippets.async.lint
 
 import com.ingsis.snippets.async.JsonUtil
+import com.ingsis.snippets.async.LintRequest
 import kotlinx.coroutines.reactive.awaitSingle
 import org.austral.ingsis.redis.RedisStreamProducer
 import org.slf4j.LoggerFactory

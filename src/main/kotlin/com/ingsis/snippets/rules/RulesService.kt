@@ -2,11 +2,11 @@ package com.ingsis.snippets.rules
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
+import com.ingsis.snippets.async.FormatRequest
 import com.ingsis.snippets.async.JsonUtil
-import com.ingsis.snippets.async.format.FormatRequest
+import com.ingsis.snippets.async.LintRequest
 import com.ingsis.snippets.async.format.FormatRequestProducer
 import com.ingsis.snippets.async.format.FormatResponseConsumer
-import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
 import com.ingsis.snippets.snippet.SnippetService
@@ -85,7 +85,7 @@ class RulesService(
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
-        val lintRequest = LintRequest(requestId, userData.username, snippet.content)
+        val lintRequest = LintRequest(requestId, userData.username, snippet.content, snippet.language)
         lintRequestProducer.publishEvent(lintRequest)
         try {
           lintResponseConsumer.getLintResponse(requestId).await()

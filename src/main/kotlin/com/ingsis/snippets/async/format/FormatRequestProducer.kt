@@ -1,5 +1,6 @@
 package com.ingsis.snippets.async.format
 
+import com.ingsis.snippets.async.FormatRequest
 import com.ingsis.snippets.async.JsonUtil
 import kotlinx.coroutines.reactive.awaitSingle
 import org.austral.ingsis.redis.RedisStreamProducer

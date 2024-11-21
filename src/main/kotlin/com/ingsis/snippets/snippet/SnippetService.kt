@@ -2,7 +2,7 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
-import com.ingsis.snippets.async.lint.LintRequest
+import com.ingsis.snippets.async.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
 import com.ingsis.snippets.user.PermissionService
@@ -27,7 +27,7 @@ class SnippetService(
   private val logger = LoggerFactory.getLogger(SnippetService::class.java)
 
   suspend fun createSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
-    val compliance = lintSnippet(userData.username, snippetDto.content)
+    val compliance = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
 
     val snippet = Snippet(snippetDto, compliance).apply {
       author = userData.username
@@ -58,7 +58,7 @@ class SnippetService(
     val snippets = if (name.isBlank()) {
       snippetRepository.findAll()
     } else {
-      listOf(snippetRepository.findByName(name)) ?: emptyList()
+      listOf(snippetRepository.findByName(name))
     }
 
     return snippets.filter { it.id in mySnippetIds }
@@ -71,7 +71,7 @@ class SnippetService(
       return SnippetWithContent(getSnippetById(snippetId), "You don't have permission to update this snippet")
     }
     val snippet = getSnippetById(snippetId)
-    val compliance = lintSnippet(snippet.author, newContent)
+    val compliance = lintSnippet(snippet.author, newContent, snippet.language)
     snippet.compliance = compliance
 
     val savedSnippet = withContext(Dispatchers.IO) {
@@ -120,9 +120,9 @@ class SnippetService(
     return snippetId in writableSnippets
   }
 
-  private suspend fun lintSnippet(username: String, content: String): String {
+  private suspend fun lintSnippet(username: String, content: String, language: String): String {
     val requestId = UUID.randomUUID().toString()
-    val lintRequest = LintRequest(requestId, username, snippet = content)
+    val lintRequest = LintRequest(requestId, username, content, language)
     lintRequestProducer.publishEvent(lintRequest)
 
     return try {
