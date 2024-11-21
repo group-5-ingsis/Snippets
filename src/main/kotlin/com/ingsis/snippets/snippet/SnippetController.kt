@@ -1,6 +1,7 @@
 package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.security.JwtInfoExtractor
+import com.newrelic.api.agent.NewRelic
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -58,5 +59,21 @@ class SnippetController(private val snippetService: SnippetService) {
     val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
     logger.info("Deleting snippet with id: $snippetId (delete/{id})")
     return snippetService.deleteSnippet(snippetId, userId)
+  }
+
+  @PostMapping("/trigger-alert")
+  fun triggerAlert(@RequestParam email: String): ResponseEntity<String> {
+    // Log and trigger an alert in New Relic
+    val alertMessage = "Manual alert triggered by hitting /trigger-alert endpoint"
+    logger.error(alertMessage)
+
+    // Report the custom error to New Relic
+    NewRelic.noticeError(RuntimeException(alertMessage))
+
+    // Add custom attributes to the alert (e.g., email of the user)
+    NewRelic.addCustomParameter("email", email)
+    NewRelic.addCustomParameter("triggeredBy", "SnippetController")
+
+    return ResponseEntity("Alert triggered and reported to New Relic", HttpStatus.OK)
   }
 }

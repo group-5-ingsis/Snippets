@@ -39,15 +39,15 @@ class SnippetControllerE2ETests @Autowired constructor(
     val snippet1 = Snippet(
       author = "whahw",
       name = "Snippet One",
-      language = "Kotlin",
-      extension = ".kt",
+      language = "PrintScript 1.0",
+      extension = ".ps",
       compliance = "100%"
     )
     val snippet2 = Snippet(
       author = "whahw",
       name = "Snippet Two",
-      language = "Java",
-      extension = ".java",
+      language = "PrintScript 1.0",
+      extension = ".ps",
       compliance = "95%"
     )
 
@@ -55,7 +55,6 @@ class SnippetControllerE2ETests @Autowired constructor(
     val savedSnippet1 = snippetRepository.findByName("Snippet One")
     permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet1.id, "write")
     firstSnippetId = savedSnippet1.id
-
 
     snippetRepository.save(snippet2)
     val savedSnippet2 = snippetRepository.findByName("Snippet Two")
@@ -110,7 +109,7 @@ class SnippetControllerE2ETests @Autowired constructor(
     val snippetDto = SnippetDto(
       name = "Snippet Three",
       content = "print('Hello, World!')",
-      language = "PrintScript",
+      language = "PrintScript 1.0",
       extension = ".ps"
     )
     client.post()
@@ -188,9 +187,8 @@ class SnippetControllerE2ETests @Autowired constructor(
 
   @Test
   fun `should delete a snippet`() {
-
     client.delete()
-      .uri("/${firstSnippetId}")
+      .uri("/$firstSnippetId")
       .header("Authorization", "Bearer $accessToken")
       .exchange()
       .expectStatus().isOk
