@@ -1,6 +1,10 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.tests.snippet
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ingsis.snippets.snippet.Snippet
+import com.ingsis.snippets.snippet.SnippetDto
+import com.ingsis.snippets.snippet.SnippetRepository
+import com.ingsis.snippets.snippet.SnippetWithContent
 import com.ingsis.snippets.user.PermissionService
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -18,7 +22,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allows us to use @BeforeAll and maintain state across tests
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SnippetControllerE2ETests @Autowired constructor(
   private val client: WebTestClient,
   private val snippetRepository: SnippetRepository,
