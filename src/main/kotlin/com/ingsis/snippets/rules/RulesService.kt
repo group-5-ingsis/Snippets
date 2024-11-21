@@ -85,7 +85,7 @@ class RulesService(
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
-        val lintRequest = LintRequest(requestId, userData.username, snippet.content)
+        val lintRequest = LintRequest(requestId, userData.username, snippet.content, snippet.language)
         lintRequestProducer.publishEvent(lintRequest)
         try {
           lintResponseConsumer.getLintResponse(requestId).await()

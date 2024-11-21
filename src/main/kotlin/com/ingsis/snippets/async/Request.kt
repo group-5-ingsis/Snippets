@@ -10,6 +10,5 @@ data class LintRequest(
   val requestId: String,
   val author: String,
   val snippet: String,
-  val language: String,
-  val version: String
+  val language: String
 )

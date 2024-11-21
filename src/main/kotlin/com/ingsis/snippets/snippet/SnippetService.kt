@@ -121,13 +121,8 @@ class SnippetService(
   }
 
   private suspend fun lintSnippet(username: String, content: String, language: String): String {
-    val parts = getLanguageData(language)
-
-    val languageName = parts[0]
-    val version = parts[1]
-
     val requestId = UUID.randomUUID().toString()
-    val lintRequest = LintRequest(requestId, username, content, languageName, version)
+    val lintRequest = LintRequest(requestId, username, content, language)
     lintRequestProducer.publishEvent(lintRequest)
 
     return try {
@@ -139,13 +134,5 @@ class SnippetService(
       logger.warn("Linting timed out for requestId: $requestId, assuming compliant")
       "compliant"
     }
-  }
-
-  private fun getLanguageData(language: String): List<String> {
-    val parts = language.split(" ", limit = 2)
-    if (parts.size != 2) {
-      throw IllegalArgumentException("Invalid language format. Expected format: 'LanguageName version'. Got: $language")
-    }
-    return parts
   }
 }
