@@ -3,12 +3,17 @@ FROM gradle:8.10.1-jdk21 AS build
 COPY . /home/gradle/src
 WORKDIR /home/gradle/src
 
-RUN ./gradlew assemble --no-daemon
+RUN --mount=type=secret,id=USERNAME,required,env=USERNAME \
+    --mount=type=secret,id=TOKEN,required,env=TOKEN \
+    ./gradlew assemble --no-daemon
 
 FROM amazoncorretto:21-alpine
 
 RUN mkdir /app
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/snippet.jar
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/snippets.jar
+COPY newrelic /app/newrelic
 
-ENTRYPOINT ["java", "-jar", "/app/snippet.jar"]
+RUN ls -l /app && ls -l /app/newrelic
+
+ENTRYPOINT ["java", "-javaagent:/app/newrelic/newrelic.jar", "-jar", "/app/snippets.jar"]

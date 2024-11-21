@@ -1,0 +1,56 @@
+auth0:
+  audience: ${AUTH0_AUDIENCE}
+
+stream:
+  format: ${STREAM_KEY_FORMAT}
+  format-response: "abc"
+  test-result: ${STREAM_KEY_TEST_RESULT}
+  lint-request: "12345"
+  lint-response: "54321"
+
+groups:
+  product: ${GROUP_ID}
+  test-res: ${GROUP_ID_TEST_RES}
+
+spring:
+  application:
+    name: "Snippet Service"
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_SERVER_URI}
+          client-id: ${AUTH_CLIENT_ID}
+          client-secret: ${AUTH_CLIENT_SECRET}
+          management-api: ${MANAGEMENT_API_IDENTIFIER}
+          m2m-clientsecret: ${M_CLIENT_SECRET}
+          m2m-clientId: ${M_CLIENT_ID}
+
+
+server:
+  port: ${SERVER_PORT}
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+  level:
+    root: info

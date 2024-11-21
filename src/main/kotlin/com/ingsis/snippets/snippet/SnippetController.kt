@@ -1,45 +1,62 @@
 package com.ingsis.snippets.snippet
 
+import com.ingsis.snippets.security.JwtInfoExtractor
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/snippets")
 class SnippetController(private val snippetService: SnippetService) {
 
-  @PostMapping("/create")
-  fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
-    val createdSnippet = snippetService.createSnippet(snippet)
-    return ResponseEntity(createdSnippet, HttpStatus.CREATED)
+  private val logger = LoggerFactory.getLogger(SnippetController::class.java)
+
+  @PostMapping("/")
+  suspend fun createSnippet(
+    @RequestBody snippet: SnippetDto,
+    @AuthenticationPrincipal jwt: Jwt
+  ): ResponseEntity<Snippet> {
+    val userData = JwtInfoExtractor.createUserData(jwt)
+    logger.info("Creating snippet for user: ${userData.username}")
+
+    val snippetResponse = snippetService.createSnippet(userData, snippet)
+
+    return ResponseEntity(snippetResponse, HttpStatus.OK)
   }
 
-  @GetMapping("/{id}")
-  fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
-    val snippet = snippetService.getSnippet(id)
-    return if (snippet != null) {
-      ResponseEntity(snippet, HttpStatus.OK)
-    } else {
-      ResponseEntity(HttpStatus.NOT_FOUND)
-    }
+  @GetMapping("/id/{id}")
+  fun getSnippetById(@PathVariable id: String): SnippetWithContent {
+    logger.info("Fetching snippet with id: $id")
+    return snippetService.getSnippetContent(id)
   }
 
-  @PutMapping("/update/{id}")
-  fun updateSnippet(@PathVariable id: String, @RequestBody updatedSnippet: Snippet): ResponseEntity<Snippet> {
-    val snippet = snippetService.updateSnippet(id, updatedSnippet)
-    return if (snippet != null) {
-      ResponseEntity(snippet, HttpStatus.OK)
-    } else {
-      ResponseEntity(HttpStatus.NOT_FOUND)
-    }
+  @GetMapping("/name/{snippetName}")
+  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetName: String): List<Snippet> {
+    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    logger.info("Fetching snippets with name: $snippetName (get/name/{name})")
+    return snippetService.getSnippetsByName(userId, snippetName)
   }
 
-  @DeleteMapping("/delete/{id}")
-  fun deleteSnippet(@PathVariable id: String): ResponseEntity<Void> {
-    return if (snippetService.deleteSnippet(id)) {
-      ResponseEntity(HttpStatus.OK)
-    } else {
-      ResponseEntity(HttpStatus.NOT_FOUND)
-    }
+  @GetMapping("/")
+  fun getAllSnippets(@AuthenticationPrincipal jwt: Jwt): List<Snippet> {
+    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    logger.info("Fetching snippets for user:  $userId (get/)")
+    return snippetService.getSnippetsByName(userId, "")
+  }
+
+  @PutMapping("/{snippetId}")
+  suspend fun updateSnippet(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @RequestBody newSnippetContent: String): SnippetWithContent {
+    logger.info("Updating snippet with id: $snippetId (put/{id})")
+    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    return snippetService.updateSnippet(userId, snippetId, newSnippetContent)
+  }
+
+  @DeleteMapping("/{snippetId}")
+  fun deleteSnippet(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String): String {
+    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    logger.info("Deleting snippet with id: $snippetId (delete/{id})")
+    return snippetService.deleteSnippet(snippetId, userId)
   }
 }

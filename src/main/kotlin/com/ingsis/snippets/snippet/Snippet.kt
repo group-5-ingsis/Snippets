@@ -1,31 +1,40 @@
 package com.ingsis.snippets.snippet
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 data class Snippet(
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  var id: String? = null,
+  var id: String = UUID.randomUUID().toString(),
 
-  var title: String? = null,
+  var author: String,
 
-  var content: String? = null,
+  var name: String,
 
-  var language: String? = null,
+  var language: String,
 
-  var creationDate: LocalDateTime? = null,
+  var extension: String,
 
-  var modificationDate: LocalDateTime? = null,
+  var compliance: String
+) {
+  constructor() : this(
+    id = "",
+    author = "",
+    name = "",
+    language = "",
+    extension = "",
+    compliance = ""
+  )
 
-  var userId: Long? = null,
-
-  @ElementCollection
-  var comments: List<String>? = mutableListOf(),
-
-  @ElementCollection
-  var testCases: List<String>? = mutableListOf()
-
-)
+  constructor(snippetDto: SnippetDto, compliance: String) : this(
+    id = "",
+    author = "",
+    name = snippetDto.name,
+    language = snippetDto.language,
+    extension = snippetDto.extension,
+    compliance = compliance
+  )
+}

@@ -1,6 +1,7 @@
 services:
-  snippet:
-    container_name: snippet
+
+  snippets:
+    container_name: snippets
     build:
       context: .
       dockerfile: Dockerfile
@@ -31,5 +32,35 @@ services:
     ports:
       - ${DB_PORT}
 
+  asset-service:
+    container_name: "asset_service"
+    image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      AZURE_HOST: "http://azurite"
+      NEW_RELIC_APP_NAME: "asset-service"
+      NEW_RELIC_AGENT_ENABLED: false
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: "azurite"
+    hostname: azurite
+    restart: always
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - blob:/workspace
+
+  redis:
+    container_name: "event-bus"
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+
 volumes:
   postgres_data:
+  blob:
+    external: false
