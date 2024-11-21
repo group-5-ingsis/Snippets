@@ -1,6 +1,10 @@
-package com.ingsis.snippets.snippet
+package com.ingsis.snippets.tests.snippet
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ingsis.snippets.snippet.Snippet
+import com.ingsis.snippets.snippet.SnippetDto
+import com.ingsis.snippets.snippet.SnippetRepository
+import com.ingsis.snippets.snippet.SnippetWithContent
 import com.ingsis.snippets.user.PermissionService
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -18,7 +22,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allows us to use @BeforeAll and maintain state across tests
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SnippetControllerE2ETests @Autowired constructor(
   private val client: WebTestClient,
   private val snippetRepository: SnippetRepository,
@@ -51,6 +55,7 @@ class SnippetControllerE2ETests @Autowired constructor(
     val savedSnippet1 = snippetRepository.findByName("Snippet One")
     permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet1.id, "write")
     firstSnippetId = savedSnippet1.id
+
 
     snippetRepository.save(snippet2)
     val savedSnippet2 = snippetRepository.findByName("Snippet Two")
@@ -183,8 +188,9 @@ class SnippetControllerE2ETests @Autowired constructor(
 
   @Test
   fun `should delete a snippet`() {
+
     client.delete()
-      .uri("/$firstSnippetId")
+      .uri("/${firstSnippetId}")
       .header("Authorization", "Bearer $accessToken")
       .exchange()
       .expectStatus().isOk
