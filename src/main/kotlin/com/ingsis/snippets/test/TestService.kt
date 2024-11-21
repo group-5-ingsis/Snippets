@@ -1,6 +1,9 @@
 package com.ingsis.snippets.test
 
+import com.ingsis.snippets.async.test.TestedSnippetConsumer
 import com.ingsis.snippets.snippet.SnippetController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -11,7 +14,10 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
 @Service
-class TestService(private val restTemplate: RestTemplate) {
+class TestService(
+  private val restTemplate: RestTemplate,
+  private val testedSnippetConsumer: TestedSnippetConsumer
+) {
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
@@ -80,7 +86,7 @@ class TestService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun runTest(testId: String) {
+  suspend fun runTest(testId: String): Boolean {
     val headers = HttpHeaders().apply {
       accept = listOf(MediaType.APPLICATION_JSON)
     }
@@ -90,16 +96,21 @@ class TestService(private val restTemplate: RestTemplate) {
 
     try {
       val entity = HttpEntity<Void>(headers)
+      val deferred = testedSnippetConsumer.registerTestResponse(testId)
 
-      restTemplate.exchange(
-        url,
-        HttpMethod.POST,
-        entity,
-        Void::class.java
-      )
+      withContext(Dispatchers.IO) {
+        restTemplate.exchange(
+          url,
+          HttpMethod.POST,
+          entity,
+          Void::class.java
+        )
+      }
       logger.info("Test run request sent successfully.")
+      return deferred.await()
     } catch (e: RestClientException) {
       logger.error("Error sending test run request: ${e.message}")
+      throw RuntimeException("Error sending test run request: ${e.message}", e)
     }
   }
 

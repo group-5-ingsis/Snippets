@@ -49,4 +49,10 @@ class TestedSnippetConsumer @Autowired constructor(
       .pollTimeout(Duration.ofSeconds(5))
       .build()
   }
+
+  fun registerTestResponse(requestId: String): CompletableDeferred<Boolean> {
+    val deferred = CompletableDeferred<Boolean>()
+    testResponses[requestId] = deferred
+    return deferred
+  }
 }
