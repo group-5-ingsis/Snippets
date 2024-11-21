@@ -58,7 +58,7 @@ class SnippetService(
     val snippets = if (name.isBlank()) {
       snippetRepository.findAll()
     } else {
-      listOf(snippetRepository.findByName(name)) ?: emptyList()
+      listOf(snippetRepository.findByName(name))
     }
 
     return snippets.filter { it.id in mySnippetIds }
