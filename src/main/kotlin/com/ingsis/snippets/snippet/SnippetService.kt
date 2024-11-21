@@ -2,6 +2,7 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
+import com.ingsis.snippets.async.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
 import com.ingsis.snippets.user.PermissionService
@@ -26,7 +27,7 @@ class SnippetService(
   private val logger = LoggerFactory.getLogger(SnippetService::class.java)
 
   suspend fun createSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
-    val compliance = lintSnippet(userData.username, snippetDto.content)
+    val compliance = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
 
     val snippet = Snippet(snippetDto, compliance).apply {
       author = userData.username
@@ -70,7 +71,7 @@ class SnippetService(
       return SnippetWithContent(getSnippetById(snippetId), "You don't have permission to update this snippet")
     }
     val snippet = getSnippetById(snippetId)
-    val compliance = lintSnippet(snippet.author, newContent)
+    val compliance = lintSnippet(snippet.author, newContent, snippet.language)
     snippet.compliance = compliance
 
     val savedSnippet = withContext(Dispatchers.IO) {
@@ -119,9 +120,14 @@ class SnippetService(
     return snippetId in writableSnippets
   }
 
-  private suspend fun lintSnippet(username: String, content: String): String {
+  private suspend fun lintSnippet(username: String, content: String, language: String): String {
+    val parts = getLanguageData(language)
+
+    val languageName = parts[0]
+    val version = parts[1]
+
     val requestId = UUID.randomUUID().toString()
-    val lintRequest = LintRequest(requestId, username, snippet = content)
+    val lintRequest = LintRequest(requestId, username, content, languageName, version)
     lintRequestProducer.publishEvent(lintRequest)
 
     return try {
@@ -133,5 +139,13 @@ class SnippetService(
       logger.warn("Linting timed out for requestId: $requestId, assuming compliant")
       "compliant"
     }
+  }
+
+  private fun getLanguageData(language: String): List<String> {
+    val parts = language.split(" ", limit = 2)
+    if (parts.size != 2) {
+      throw IllegalArgumentException("Invalid language format. Expected format: 'LanguageName version'. Got: $language")
+    }
+    return parts
   }
 }
