@@ -5,6 +5,7 @@ import com.ingsis.snippets.asset.AssetService
 import com.ingsis.snippets.async.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
+import com.ingsis.snippets.test.TestService
 import com.ingsis.snippets.user.PermissionService
 import com.ingsis.snippets.user.UserData
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,8 @@ class SnippetService(
   private val assetService: AssetService,
   private val permissionService: PermissionService,
   private val lintRequestProducer: LintRequestProducer,
-  private val lintResponseConsumer: LintResponseConsumer
+  private val lintResponseConsumer: LintResponseConsumer,
+  private val testService: TestService,
 ) {
 
   private val logger = LoggerFactory.getLogger(SnippetService::class.java)
@@ -77,7 +79,7 @@ class SnippetService(
     val savedSnippet = withContext(Dispatchers.IO) {
       snippetRepository.save(snippet)
     }
-
+    testService.runAllTests(snippetId)
     createAsset(savedSnippet.author, savedSnippet.id, newContent)
     return SnippetWithContent(savedSnippet, newContent)
   }
