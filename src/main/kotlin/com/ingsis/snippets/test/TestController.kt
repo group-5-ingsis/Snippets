@@ -28,9 +28,14 @@ class TestController(
   }
 
   @PostMapping("/run/{testId}")
-  fun testSnippet(@PathVariable testId: String) {
+  suspend fun testSnippet(@PathVariable testId: String): String {
     logger.info("Received request to run test with id: $testId")
-    testService.runTest(testId)
+    val result = testService.runTest(testId)
+    return if (result) {
+      "Success"
+    } else {
+      "Fail"
+    }
   }
 
   @PostMapping("/run/{snippetId}/all")
