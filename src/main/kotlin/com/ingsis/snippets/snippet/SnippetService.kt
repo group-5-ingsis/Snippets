@@ -122,7 +122,7 @@ class SnippetService(
 
   private suspend fun lintSnippet(username: String, content: String, language: String): String {
     val requestId = UUID.randomUUID().toString()
-    val lintRequest = LintRequest(requestId, username, content)
+    val lintRequest = LintRequest(requestId, username, content, language)
     lintRequestProducer.publishEvent(lintRequest)
 
     return try {

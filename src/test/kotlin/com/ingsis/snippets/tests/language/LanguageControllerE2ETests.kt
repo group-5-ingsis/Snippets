@@ -1,6 +1,7 @@
-package com.ingsis.snippets.language
+package com.ingsis.snippets.tests.language
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ingsis.snippets.language.Language
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -72,4 +73,6 @@ class LanguageControllerE2ETests @Autowired constructor(
 
     assertTrue(fileTypes.isNotEmpty(), "File types should not be empty")
   }
+
+
 }
