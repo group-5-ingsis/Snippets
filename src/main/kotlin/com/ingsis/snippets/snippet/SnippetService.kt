@@ -2,7 +2,6 @@ package com.ingsis.snippets.snippet
 
 import com.ingsis.snippets.asset.Asset
 import com.ingsis.snippets.asset.AssetService
-import com.ingsis.snippets.async.lint.LintRequest
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
 import com.ingsis.snippets.user.PermissionService
