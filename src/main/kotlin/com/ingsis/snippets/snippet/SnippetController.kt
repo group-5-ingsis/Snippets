@@ -62,7 +62,7 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @PostMapping("/trigger-alert")
-  fun triggerAlert(@RequestParam email: String): ResponseEntity<String> {
+  fun triggerAlert(): ResponseEntity<String> {
     // Log and trigger an alert in New Relic
     val alertMessage = "Manual alert triggered by hitting /trigger-alert endpoint"
     logger.error(alertMessage)
@@ -70,8 +70,6 @@ class SnippetController(private val snippetService: SnippetService) {
     // Report the custom error to New Relic
     NewRelic.noticeError(RuntimeException(alertMessage))
 
-    // Add custom attributes to the alert (e.g., email of the user)
-    NewRelic.addCustomParameter("email", email)
     NewRelic.addCustomParameter("triggeredBy", "SnippetController")
 
     return ResponseEntity("Alert triggered and reported to New Relic", HttpStatus.OK)
