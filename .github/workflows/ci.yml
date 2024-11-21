@@ -1,13 +1,13 @@
-#name: CI
-#
-#on:
-#  pull_request:
-#    branches: [ "main" ]
-#
-#permissions:
-#  contents: read
-#  packages: write
-#
-#jobs:
-#  ci:
-#    uses: group-5-ingsis/workflows/.github/workflows/ci-gradle.yml@main
+name: CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    uses: group-5-ingsis/workflows/.github/workflows/ci-gradle.yml@main
