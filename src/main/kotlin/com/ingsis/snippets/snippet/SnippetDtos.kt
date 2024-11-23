@@ -35,3 +35,10 @@ data class SnippetDto(
   var language: String,
   var extension: String
 )
+
+
+enum class DeleteResult {
+  FULLY_DELETED,
+  PERMISSION_REMOVED,
+  NOT_FOUND
+}

@@ -86,16 +86,23 @@ class SnippetService(
 
   fun deleteSnippet(snippetId: String, userId: String): String {
     val snippet = getSnippetById(snippetId)
-    val writePermissionSnippets = permissionService.getSnippets(userId, "write")
-    if (snippet.id !in writePermissionSnippets) {
-      permissionService.removePermission(snippetId, userId, "read")
-      return "You don't have permission to delete this snippet"
+    val result = permissionService.deleteSnippet(userId, snippetId)
+
+    return when (result) {
+      DeleteResult.FULLY_DELETED -> {
+        assetService.deleteAsset(snippet.author, snippet.id)
+        snippetRepository.deleteById(snippetId)
+        "Snippet deleted for everyone!"
+      }
+      DeleteResult.PERMISSION_REMOVED -> {
+        "Your access to the snippet has been removed."
+      }
+
+      DeleteResult.NOT_FOUND -> "Error deleting snippet"
     }
-    assetService.deleteAsset(snippet.author, snippet.id)
-    snippetRepository.deleteById(snippetId)
-    permissionService.deleteSnippet(snippetId)
-    return "Snippet deleted!"
   }
+
+
 
   fun shareSnippet(userId: String, snippetId: String, userToShare: String): SnippetWithContent {
     val snippet = getSnippetById(snippetId)

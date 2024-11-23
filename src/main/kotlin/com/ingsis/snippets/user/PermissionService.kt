@@ -1,12 +1,10 @@
 package com.ingsis.snippets.user
 
+import com.ingsis.snippets.snippet.DeleteResult
 import com.ingsis.snippets.snippet.SnippetController
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -119,47 +117,29 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun deleteSnippet(snippetId: String) {
+  fun deleteSnippet(userId: String, snippetId: String): DeleteResult {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
+      accept = listOf(MediaType.APPLICATION_JSON)
     }
 
-    val url = "$permissionServiceUrl/$snippetId"
+    val url = "$permissionServiceUrl/$userId/$snippetId"
 
     try {
       val entity = HttpEntity<Void>(headers)
 
-      restTemplate.exchange(
+      val response = restTemplate.exchange(
         url,
         HttpMethod.DELETE,
         entity,
-        Void::class.java
+        DeleteResult::class.java
       )
+
+      return response.body ?: DeleteResult.NOT_FOUND
     } catch (e: RestClientException) {
-      logger.error("Error deleting snippet: ${e.message}")
+      logger.error("Error deleting snippet for userId: $userId, snippetId: $snippetId: ${e.message}")
+      return DeleteResult.NOT_FOUND
     }
   }
 
-  fun removePermission(snippetId: String, userId: String, type: String) {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
-    }
-
-    val url = "$permissionServiceUrl/$type/$snippetId/$userId"
-
-    try {
-      val entity = HttpEntity<Void>(headers)
-
-      restTemplate.exchange(
-        url,
-        HttpMethod.DELETE,
-        entity,
-        Void::class.java
-      )
-    } catch (e: RestClientException) {
-      logger.error("Error removing permissions: ${e.message}")
-    }
-  }
 }

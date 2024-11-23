@@ -13,6 +13,11 @@ object JwtInfoExtractor {
     return Pair(userId, username)
   }
 
+  fun extractUserId(jwt: Jwt): String {
+    val userId = jwt.subject
+    return userId
+  }
+
   fun createUserData(jwt: Jwt): UserData {
     val userId = jwt.subject
     val username = jwt.claims[CLAIMS_KEY]?.toString() ?: "unknown"
