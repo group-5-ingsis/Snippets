@@ -37,4 +37,13 @@ data class Snippet(
     extension = snippetDto.extension,
     compliance = compliance
   )
+
+  constructor(snippetDto: SnippetDto) : this(
+    id = "",
+    author = "",
+    name = snippetDto.name,
+    language = snippetDto.language,
+    extension = snippetDto.extension,
+    compliance = "unknown"
+  )
 }

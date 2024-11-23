@@ -36,7 +36,6 @@ data class SnippetDto(
   var extension: String
 )
 
-
 enum class DeleteResult {
   FULLY_DELETED,
   PERMISSION_REMOVED,

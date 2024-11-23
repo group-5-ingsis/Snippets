@@ -2,7 +2,6 @@ package com.ingsis.snippets.test
 
 import com.ingsis.snippets.async.test.TestedSnippetConsumer
 import com.ingsis.snippets.snippet.SnippetController
-import com.ingsis.snippets.user.PermissionService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -17,8 +16,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class TestService(
   private val restTemplate: RestTemplate,
-  private val testedSnippetConsumer: TestedSnippetConsumer,
-  private val permissionService: PermissionService
+  private val testedSnippetConsumer: TestedSnippetConsumer
 ) {
   private val logger = LoggerFactory.getLogger(SnippetController::class.java)
 
@@ -116,7 +114,7 @@ class TestService(
     }
   }
 
-  /* Test service handles breaking down each individual test for the snippet. */
+  /* Test service handles breaking down each test for the snippet. */
   fun runAllTests(snippetId: String) {
     val headers = HttpHeaders().apply {
       accept = listOf(MediaType.APPLICATION_JSON)

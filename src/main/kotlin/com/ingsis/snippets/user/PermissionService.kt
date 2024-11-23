@@ -141,5 +141,4 @@ class PermissionService(private val restTemplate: RestTemplate) {
       return DeleteResult.NOT_FOUND
     }
   }
-
 }

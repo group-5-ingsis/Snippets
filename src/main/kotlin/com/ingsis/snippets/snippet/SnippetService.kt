@@ -23,20 +23,28 @@ class SnippetService(
   private val permissionService: PermissionService,
   private val lintRequestProducer: LintRequestProducer,
   private val lintResponseConsumer: LintResponseConsumer,
-  private val testService: TestService,
+  private val testService: TestService
 ) {
 
   private val logger = LoggerFactory.getLogger(SnippetService::class.java)
 
   suspend fun createSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
-    val compliance = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
-
-    val snippet = Snippet(snippetDto, compliance).apply {
+    val snippet = Snippet(snippetDto).apply {
       author = userData.username
+      compliance = "unknown"
     }
 
     val savedSnippet = withContext(Dispatchers.IO) {
       snippetRepository.save(snippet)
+    }
+
+    withContext(Dispatchers.Default) {
+      val snippetCompliance = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
+
+      withContext(Dispatchers.IO) {
+        savedSnippet.compliance = snippetCompliance
+        snippetRepository.save(savedSnippet)
+      }
     }
 
     createAsset(userData.username, savedSnippet.id, snippetDto.content)
@@ -101,8 +109,6 @@ class SnippetService(
       DeleteResult.NOT_FOUND -> "Error deleting snippet"
     }
   }
-
-
 
   fun shareSnippet(userId: String, snippetId: String, userToShare: String): SnippetWithContent {
     val snippet = getSnippetById(snippetId)
