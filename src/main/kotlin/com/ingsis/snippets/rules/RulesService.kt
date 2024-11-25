@@ -89,7 +89,7 @@ class RulesService(
             existingCompliance.complianceStatus = "unknown"
             snippetComplianceRepository.save(existingCompliance)
           } else {
-            val newCompliance = SnippetCompliance(
+            val newCompliance = SnippetConformance(
               snippetId = snippet.id,
               userId = userData.userId,
               complianceStatus = "unknown"
@@ -115,7 +115,7 @@ class RulesService(
               existingCompliance.complianceStatus = complianceResult
               snippetComplianceRepository.save(existingCompliance)
             } else {
-              val newCompliance = SnippetCompliance(
+              val newCompliance = SnippetConformance(
                 snippetId = snippet.id,
                 userId = userData.userId,
                 complianceStatus = complianceResult

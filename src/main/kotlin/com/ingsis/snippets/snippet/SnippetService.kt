@@ -38,10 +38,10 @@ class SnippetService(
       snippetRepository.save(snippet)
     }
 
-    val snippetCompliance = withContext(Dispatchers.Default) {
+    val snippetConformance = withContext(Dispatchers.Default) {
       val complianceStatus = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
 
-      SnippetCompliance(
+      SnippetConformance(
         snippetId = savedSnippet.id,
         userId = userData.userId,
         complianceStatus = complianceStatus
@@ -49,7 +49,7 @@ class SnippetService(
     }
 
     withContext(Dispatchers.IO) {
-      snippetComplianceRepository.save(snippetCompliance)
+      snippetComplianceRepository.save(snippetConformance)
     }
 
     createAsset(userData.username, savedSnippet.id, snippetDto.content)
@@ -93,14 +93,14 @@ class SnippetService(
       snippetRepository.save(snippet)
     }
 
-    val snippetCompliance = withContext(Dispatchers.IO) {
+    val snippetConformance = withContext(Dispatchers.IO) {
       val complianceResult = lintSnippet(userId, newContent, snippet.language)
 
       val existingCompliance = snippetComplianceRepository.findBySnippetIdAndUserId(snippetId, userId)
       existingCompliance?.apply {
         complianceStatus = complianceResult
       }
-        ?: SnippetCompliance(
+        ?: SnippetConformance(
           snippetId = updatedSnippet.id,
           userId = userId,
           complianceStatus = complianceResult
@@ -108,7 +108,7 @@ class SnippetService(
     }
 
     withContext(Dispatchers.IO) {
-      snippetComplianceRepository.save(snippetCompliance)
+      snippetComplianceRepository.save(snippetConformance)
     }
 
     withContext(Dispatchers.Default) {

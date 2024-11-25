@@ -2,11 +2,11 @@ package com.ingsis.snippets.snippet
 
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface SnippetComplianceRepository : JpaRepository<SnippetCompliance, String> {
+interface SnippetComplianceRepository : JpaRepository<SnippetConformance, String> {
 
-  fun findBySnippetIdAndUserId(snippetId: String, userId: String): SnippetCompliance?
+  fun findBySnippetIdAndUserId(snippetId: String, userId: String): SnippetConformance?
 
-  fun findAllByUserId(userId: String): List<SnippetCompliance>
+  fun findAllByUserId(userId: String): List<SnippetConformance>
 
-  fun findAllBySnippetId(snippetId: String): List<SnippetCompliance>
+  fun findAllBySnippetId(snippetId: String): List<SnippetConformance>
 }

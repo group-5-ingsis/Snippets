@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
-data class SnippetCompliance(
+data class SnippetConformance(
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -18,4 +18,11 @@ data class SnippetCompliance(
   var complianceStatus: String,
 
   var lastChecked: LocalDateTime = LocalDateTime.now()
-)
+) {
+
+  constructor() : this(
+    snippetId = "",
+    userId = "",
+    complianceStatus = "unknown"
+  )
+}
