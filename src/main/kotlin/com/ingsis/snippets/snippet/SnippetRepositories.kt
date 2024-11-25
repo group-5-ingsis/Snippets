@@ -7,3 +7,8 @@ import org.springframework.stereotype.Repository
 interface SnippetRepository : JpaRepository<Snippet, String> {
   fun findByName(name: String): Snippet
 }
+
+@Repository
+interface SnippetComplianceRepository : JpaRepository<SnippetConformance, String> {
+  fun findBySnippetIdAndUserId(snippetId: String, userId: String): SnippetConformance?
+}
