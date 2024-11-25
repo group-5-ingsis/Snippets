@@ -29,9 +29,8 @@ class UserController(
   }
 
   @PostMapping("/share/{snippetId}/{userToShare}")
-  fun shareSnippetWithUser(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
-    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+  fun shareSnippetWithUser(@PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
     logger.info("Sharing snippet: $snippetId with user: $userToShare")
-    return snippetService.shareSnippet(userId, snippetId, userToShare)
+    return snippetService.shareSnippet(snippetId, userToShare)
   }
 }

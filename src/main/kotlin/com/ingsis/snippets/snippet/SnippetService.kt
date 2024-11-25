@@ -75,11 +75,11 @@ class SnippetService(
   }
 
   suspend fun updateSnippet(userId: String, snippetId: String, newContent: String): SnippetWithContent {
-    val writePermissionSnippets = permissionService.getSnippets(userId, "write")
-    logger.info("snippets with write permission: $writePermissionSnippets, snippetId: $snippetId")
-    if (snippetId !in writePermissionSnippets) {
+    val hasWritePermission = permissionService.hasPermissions("write", userId, snippetId)
+    if (!hasWritePermission) {
       return SnippetWithContent(getSnippetById(snippetId), "You don't have permission to update this snippet")
     }
+
     val snippet = getSnippetById(snippetId)
     val compliance = lintSnippet(snippet.author, newContent, snippet.language)
     snippet.compliance = compliance
@@ -94,27 +94,25 @@ class SnippetService(
 
   fun deleteSnippet(snippetId: String, userId: String): String {
     val snippet = getSnippetById(snippetId)
-    val result = permissionService.deleteSnippet(userId, snippetId)
 
-    return when (result) {
-      DeleteResult.FULLY_DELETED -> {
-        assetService.deleteAsset(snippet.author, snippet.id)
-        snippetRepository.deleteById(snippetId)
-        "Snippet deleted for everyone!"
-      }
-      DeleteResult.PERMISSION_REMOVED -> {
-        "Your access to the snippet has been removed."
-      }
+    val hasWritePermission = permissionService.hasPermissions("write", snippetId, userId)
 
-      DeleteResult.NOT_FOUND -> "Error deleting snippet"
+    if (!hasWritePermission) {
+      permissionService.updatePermissions("read", "remove", userId, snippetId)
+      return "Read permission removed"
     }
+
+    assetService.deleteAsset(snippet.author, snippet.id)
+    snippetRepository.deleteById(snippetId)
+    permissionService.deleteSnippet(snippetId)
+    return "Deleted snippet"
   }
 
-  fun shareSnippet(userId: String, snippetId: String, userToShare: String): SnippetWithContent {
+  fun shareSnippet(snippetId: String, userToShare: String): SnippetWithContent {
     val snippet = getSnippetById(snippetId)
-    if (hasWritePermission(userId, snippetId)) {
-      permissionService.shareSnippet(userToShare, snippetId)
-    }
+
+    permissionService.updatePermissions("read", "add", userToShare, snippet.id)
+
     val content = assetService.getAssetContent(snippet.author, snippet.id)
     return SnippetWithContent(snippet, content)
   }
@@ -126,13 +124,8 @@ class SnippetService(
 
   private fun updatePermissionsForSnippet(userId: String, snippetId: String) {
     listOf("read", "write").forEach { permission ->
-      permissionService.updatePermissions(userId, snippetId, permission)
+      permissionService.updatePermissions(permission, "add", userId, snippetId)
     }
-  }
-
-  private fun hasWritePermission(userId: String, snippetId: String): Boolean {
-    val writableSnippets = permissionService.getSnippets(userId, "write")
-    return snippetId in writableSnippets
   }
 
   private suspend fun lintSnippet(username: String, content: String, language: String): String {

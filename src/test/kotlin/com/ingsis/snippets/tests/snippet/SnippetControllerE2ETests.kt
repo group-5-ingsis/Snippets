@@ -53,12 +53,12 @@ class SnippetControllerE2ETests @Autowired constructor(
 
     snippetRepository.save(snippet1)
     val savedSnippet1 = snippetRepository.findByName("Snippet One")
-    permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet1.id, "write")
+    permissionService.updatePermissions("write", "add", "auth0|6738e1579d3c4beaae5d1487", savedSnippet1.id)
     firstSnippetId = savedSnippet1.id
 
     snippetRepository.save(snippet2)
     val savedSnippet2 = snippetRepository.findByName("Snippet Two")
-    permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet2.id, "write")
+    permissionService.updatePermissions("write", "add", "auth0|6738e1579d3c4beaae5d1487", savedSnippet2.id)
   }
 
   @AfterAll

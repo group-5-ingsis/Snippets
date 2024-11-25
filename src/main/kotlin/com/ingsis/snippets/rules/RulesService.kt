@@ -114,7 +114,7 @@ class RulesService(
   }
 
   private fun getWritableSnippets(userId: String): List<SnippetWithContent> {
-    val snippetIds = permissionService.getSnippets(userId, "write")
+    val snippetIds = permissionService.getUserSnippetsOfType(userId, "write")
     return getSnippetContent(snippetIds)
   }
 
@@ -132,8 +132,8 @@ class RulesService(
   }
 
   private fun getAllSnippets(userId: String): List<SnippetWithContent> {
-    val writeSnippets = permissionService.getSnippets(userId, "write")
-    val readSnippets = permissionService.getSnippets(userId, "read")
+    val writeSnippets = permissionService.getUserSnippetsOfType(userId, "write")
+    val readSnippets = permissionService.getUserSnippetsOfType(userId, "read")
     val snippetIds = writeSnippets + readSnippets
     return getSnippetContent(snippetIds)
   }

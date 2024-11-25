@@ -46,7 +46,7 @@ class UserControllerE2ETests @Autowired constructor(
 
     snippetRepository.save(snippet)
     val savedSnippet = snippetRepository.findByName("Shared Snippet")
-    permissionService.updatePermissions("auth0|6738e1579d3c4beaae5d1487", savedSnippet.id, "write")
+    permissionService.updatePermissions("write", "add", "auth0|6738e1579d3c4beaae5d1487", savedSnippet.id)
     sharedSnippetId = savedSnippet.id
   }
 
