@@ -30,7 +30,6 @@ class UserController(
 
   @PostMapping("/share/{snippetId}/{userToShare}")
   fun shareSnippetWithUser(@PathVariable snippetId: String, @PathVariable userToShare: String): SnippetWithContent {
-    logger.info("Sharing snippet: $snippetId with user: $userToShare")
     return snippetService.shareSnippet(snippetId, userToShare)
   }
 }

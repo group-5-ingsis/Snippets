@@ -110,9 +110,7 @@ class SnippetService(
 
   fun shareSnippet(snippetId: String, userToShare: String): SnippetWithContent {
     val snippet = getSnippetById(snippetId)
-
-    permissionService.updatePermissions("read", "add", userToShare, snippet.id)
-
+    permissionService.updatePermissions("read", "add", userToShare, snippetId)
     val content = assetService.getAssetContent(snippet.author, snippet.id)
     return SnippetWithContent(snippet, content)
   }
