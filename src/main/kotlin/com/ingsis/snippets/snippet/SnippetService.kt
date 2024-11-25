@@ -23,7 +23,8 @@ class SnippetService(
   private val permissionService: PermissionService,
   private val lintRequestProducer: LintRequestProducer,
   private val lintResponseConsumer: LintResponseConsumer,
-  private val testService: TestService
+  private val testService: TestService,
+  private val snippetComplianceRepository: SnippetComplianceRepository
 ) {
 
   private val logger = LoggerFactory.getLogger(SnippetService::class.java)
@@ -31,20 +32,24 @@ class SnippetService(
   suspend fun createSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
     val snippet = Snippet(snippetDto).apply {
       author = userData.username
-      compliance = "unknown"
     }
 
     val savedSnippet = withContext(Dispatchers.IO) {
       snippetRepository.save(snippet)
     }
 
-    withContext(Dispatchers.Default) {
-      val snippetCompliance = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
+    val snippetCompliance = withContext(Dispatchers.Default) {
+      val complianceStatus = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
 
-      withContext(Dispatchers.IO) {
-        savedSnippet.compliance = snippetCompliance
-        snippetRepository.save(savedSnippet)
-      }
+      SnippetCompliance(
+        snippetId = savedSnippet.id,
+        userId = userData.userId,
+        complianceStatus = complianceStatus
+      )
+    }
+
+    withContext(Dispatchers.IO) {
+      snippetComplianceRepository.save(snippetCompliance)
     }
 
     createAsset(userData.username, savedSnippet.id, snippetDto.content)
@@ -80,16 +85,37 @@ class SnippetService(
       return SnippetWithContent(getSnippetById(snippetId), "You don't have permission to update this snippet")
     }
 
-    val snippet = getSnippetById(snippetId)
-    val compliance = lintSnippet(snippet.author, newContent, snippet.language)
-    snippet.compliance = compliance
+    val snippet = getSnippetById(snippetId).apply {
+      createAsset(author, id, newContent)
+    }
 
-    val savedSnippet = withContext(Dispatchers.IO) {
+    val updatedSnippet = withContext(Dispatchers.IO) {
       snippetRepository.save(snippet)
     }
-    testService.runAllTests(snippetId)
-    createAsset(savedSnippet.author, savedSnippet.id, newContent)
-    return SnippetWithContent(savedSnippet, newContent)
+
+    val snippetCompliance = withContext(Dispatchers.IO) {
+      val complianceResult = lintSnippet(userId, newContent, snippet.language)
+
+      val existingCompliance = snippetComplianceRepository.findBySnippetIdAndUserId(snippetId, userId)
+      existingCompliance?.apply {
+        complianceStatus = complianceResult
+      }
+        ?: SnippetCompliance(
+          snippetId = updatedSnippet.id,
+          userId = userId,
+          complianceStatus = complianceResult
+        )
+    }
+
+    withContext(Dispatchers.IO) {
+      snippetComplianceRepository.save(snippetCompliance)
+    }
+
+    withContext(Dispatchers.Default) {
+      testService.runAllTests(snippetId)
+    }
+
+    return SnippetWithContent(updatedSnippet, newContent)
   }
 
   fun deleteSnippet(snippetId: String, userId: String): String {

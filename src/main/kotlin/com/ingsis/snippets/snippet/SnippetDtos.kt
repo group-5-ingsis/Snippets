@@ -14,8 +14,6 @@ data class SnippetWithContent(
 
   var extension: String,
 
-  var compliance: String,
-
   var content: String
 ) {
   constructor(snippet: Snippet, content: String) : this(
@@ -24,7 +22,6 @@ data class SnippetWithContent(
     name = snippet.name,
     language = snippet.language,
     extension = snippet.extension,
-    compliance = snippet.compliance,
     content = content
   )
 }
@@ -35,9 +32,3 @@ data class SnippetDto(
   var language: String,
   var extension: String
 )
-
-enum class DeleteResult {
-  FULLY_DELETED,
-  PERMISSION_REMOVED,
-  NOT_FOUND
-}

@@ -9,13 +9,10 @@ import com.ingsis.snippets.async.format.FormatRequestProducer
 import com.ingsis.snippets.async.format.FormatResponseConsumer
 import com.ingsis.snippets.async.lint.LintRequestProducer
 import com.ingsis.snippets.async.lint.LintResponseConsumer
-import com.ingsis.snippets.snippet.SnippetService
-import com.ingsis.snippets.snippet.SnippetWithContent
+import com.ingsis.snippets.snippet.*
 import com.ingsis.snippets.user.PermissionService
 import com.ingsis.snippets.user.UserData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
@@ -28,7 +25,8 @@ class RulesService(
   private val lintRequestProducer: LintRequestProducer,
   private val lintResponseConsumer: LintResponseConsumer,
   private val permissionService: PermissionService,
-  private val snippetService: SnippetService
+  private val snippetService: SnippetService,
+  private val snippetComplianceRepository: SnippetComplianceRepository
 ) {
 
   private val logger = LoggerFactory.getLogger(RulesService::class.java)
@@ -82,13 +80,49 @@ class RulesService(
 
   private fun lintAllSnippetsForUser(userData: UserData) {
     val snippets = getAllSnippets(userData.userId)
+
+    runBlocking {
+      withContext(Dispatchers.IO) {
+        snippets.forEach { snippet ->
+          val existingCompliance = snippetComplianceRepository.findBySnippetIdAndUserId(snippet.id, userData.userId)
+          if (existingCompliance != null) {
+            existingCompliance.complianceStatus = "unknown"
+            snippetComplianceRepository.save(existingCompliance)
+          } else {
+            val newCompliance = SnippetCompliance(
+              snippetId = snippet.id,
+              userId = userData.userId,
+              complianceStatus = "unknown"
+            )
+            snippetComplianceRepository.save(newCompliance)
+          }
+        }
+      }
+    }
+
     snippets.forEach { snippet ->
       CoroutineScope(Dispatchers.IO).launch {
         val requestId = UUID.randomUUID().toString()
         val lintRequest = LintRequest(requestId, userData.username, snippet.content, snippet.language)
         lintRequestProducer.publishEvent(lintRequest)
+
         try {
-          lintResponseConsumer.getLintResponse(requestId).await()
+          val complianceResult = lintResponseConsumer.getLintResponse(requestId).await()
+
+          withContext(Dispatchers.IO) {
+            val existingCompliance = snippetComplianceRepository.findBySnippetIdAndUserId(snippet.id, userData.userId)
+            if (existingCompliance != null) {
+              existingCompliance.complianceStatus = complianceResult
+              snippetComplianceRepository.save(existingCompliance)
+            } else {
+              val newCompliance = SnippetCompliance(
+                snippetId = snippet.id,
+                userId = userData.userId,
+                complianceStatus = complianceResult
+              )
+              snippetComplianceRepository.save(newCompliance)
+            }
+          }
         } catch (e: Exception) {
           logger.error("Error linting snippet ${snippet.id}: ${e.message}")
         }
