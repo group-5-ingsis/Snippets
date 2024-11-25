@@ -67,7 +67,7 @@ class SnippetService(
     return SnippetWithContent(snippet, content)
   }
 
-  fun getSnippetsByName(userId: String, name: String): List<Snippet> {
+  fun getSnippetsByName(userId: String, name: String): List<SnippetWithCompliance> {
     val mySnippetIds = permissionService.getMySnippetsIds(userId)
 
     val snippets = if (name.isBlank()) {
@@ -76,7 +76,10 @@ class SnippetService(
       listOf(snippetRepository.findByName(name))
     }
 
-    return snippets.filter { it.id in mySnippetIds }
+    return snippets.filter { it.id in mySnippetIds }.map { snippet ->
+      val complianceStatus = snippetComplianceRepository.findBySnippetIdAndUserId(snippet.id, userId)?.complianceStatus ?: "pending"
+      SnippetWithCompliance(snippet, complianceStatus)
+    }
   }
 
   suspend fun updateSnippet(userId: String, snippetId: String, newContent: String): SnippetWithContent {

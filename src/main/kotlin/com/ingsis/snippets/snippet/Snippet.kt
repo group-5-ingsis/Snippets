@@ -16,25 +16,20 @@ data class Snippet(
 
   var language: String,
 
-  var extension: String,
-
-  @OneToOne(cascade = [CascadeType.ALL])
-  var conformance: SnippetConformance
+  var extension: String
 
 ) {
   constructor() : this(
     author = "",
     name = "",
     language = "",
-    extension = "",
-    conformance = SnippetConformance()
+    extension = ""
   )
 
   constructor(snippetDto: SnippetDto) : this(
     author = "",
     name = snippetDto.name,
     language = snippetDto.language,
-    extension = snippetDto.extension,
-    conformance = SnippetConformance(snippetId = "", userId = "", complianceStatus = "unknown")
+    extension = snippetDto.extension
   )
 }

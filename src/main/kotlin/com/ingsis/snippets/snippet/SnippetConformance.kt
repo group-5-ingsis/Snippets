@@ -1,7 +1,6 @@
 package com.ingsis.snippets.snippet
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
@@ -15,14 +14,12 @@ data class SnippetConformance(
 
   var userId: String,
 
-  var complianceStatus: String,
-
-  var lastChecked: LocalDateTime = LocalDateTime.now()
+  var complianceStatus: String
 ) {
 
   constructor() : this(
     snippetId = "",
     userId = "",
-    complianceStatus = "unknown"
+    complianceStatus = "pending"
   )
 }

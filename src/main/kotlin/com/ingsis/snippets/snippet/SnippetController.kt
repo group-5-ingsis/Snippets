@@ -34,14 +34,14 @@ class SnippetController(private val snippetService: SnippetService) {
   }
 
   @GetMapping("/name/{snippetName}")
-  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetName: String): List<Snippet> {
+  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetName: String): List<SnippetWithCompliance> {
     val userId = JwtInfoExtractor.extractUserId(jwt)
     logger.info("Fetching snippets with name: $snippetName (get/name/{name})")
     return snippetService.getSnippetsByName(userId, snippetName)
   }
 
   @GetMapping("/")
-  fun getAllSnippets(@AuthenticationPrincipal jwt: Jwt): List<Snippet> {
+  fun getAllSnippets(@AuthenticationPrincipal jwt: Jwt): List<SnippetWithCompliance> {
     val userId = JwtInfoExtractor.extractUserId(jwt)
     logger.info("Fetching snippets for user:  $userId (get/)")
     return snippetService.getSnippetsByName(userId, "")
