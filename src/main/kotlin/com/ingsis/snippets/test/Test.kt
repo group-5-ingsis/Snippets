@@ -13,5 +13,5 @@ data class Test(
 enum class TestStatus {
   PENDING,
   PASSED,
-  FAILED,
+  FAILED
 }
