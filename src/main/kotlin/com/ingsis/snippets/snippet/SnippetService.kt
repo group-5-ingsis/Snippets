@@ -131,7 +131,8 @@ class SnippetService(
   }
 
   private fun ensureWritePermission(userId: String, snippetId: String) {
-    if (!permissionService.hasPermissions("write", userId, snippetId)) {
+    val hasPermissions = permissionService.hasPermissions("write", userId, snippetId)
+    if (!hasPermissions) {
       throw IllegalAccessException("You don't have permission to update this snippet")
     }
   }

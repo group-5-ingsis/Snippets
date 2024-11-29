@@ -69,7 +69,7 @@ class PermissionService(private val restTemplate: RestTemplate) {
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/$type/$userId/$snippetId"
+    val url = "$permissionServiceUrl/$type/$snippetId/$userId"
     logger.info("Checking if user has $type permissions for snippetId: $snippetId")
 
     return try {
