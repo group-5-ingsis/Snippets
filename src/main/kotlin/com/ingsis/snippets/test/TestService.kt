@@ -75,6 +75,7 @@ class TestService(
 
       return tests.map { test ->
         TestDto(
+          id = test.id,
           name = test.name,
           input = test.userInputs,
           output = test.userOutputs
