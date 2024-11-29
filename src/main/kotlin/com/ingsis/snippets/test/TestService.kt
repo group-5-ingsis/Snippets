@@ -52,6 +52,32 @@ class TestService(
     }
   }
 
+  fun deleteTest(testId: String) {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$testServiceUrl/$testId"
+    logger.info("Sending request to delete test to URL: $url")
+
+    try {
+      val entity = HttpEntity<Void>(headers)
+
+      restTemplate.exchange(
+        url,
+        HttpMethod.DELETE,
+        entity,
+        Void::class.java
+      )
+
+      logger.info("Test deletion request sent successfully.")
+    } catch (e: RestClientException) {
+      logger.error("Error sending test deletion request: ${e.message}")
+      throw RuntimeException("Error sending test deletion request: ${e.message}", e)
+    }
+  }
+
   fun getAllTestsForSnippet(snippetId: String): List<TestDto> {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
@@ -75,6 +101,7 @@ class TestService(
 
       return tests.map { test ->
         TestDto(
+          id = test.id,
           name = test.name,
           input = test.userInputs,
           output = test.userOutputs
