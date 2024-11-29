@@ -1,19 +1,22 @@
 package com.ingsis.snippets.test
 
+import com.ingsis.snippets.snippet.SnippetRepository
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/test")
 class TestController(
-  private val testService: TestService
+  private val testService: TestService,
+  private val snippetRepository: SnippetRepository
 ) {
   private val logger = LoggerFactory.getLogger(TestController::class.java)
 
   @PostMapping("/{snippetId}")
   fun createTest(@RequestBody test: TestDto, @PathVariable snippetId: String): TestDto {
     logger.info("Received request to create a new test for snippet id: $snippetId")
-    return testService.createTest(snippetId, test)
+    val snippetAuthor = snippetRepository.findById(snippetId).get().author
+    return testService.createTest(snippetId, test, snippetAuthor)
   }
 
   @DeleteMapping("/{id}")

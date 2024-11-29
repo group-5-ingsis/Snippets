@@ -22,7 +22,7 @@ class TestService(
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
 
-  fun createTest(snippetId: String, testDto: TestDto): TestDto {
+  fun createTest(snippetId: String, testDto: TestDto, snippetAuthor: String): TestDto {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
@@ -32,8 +32,10 @@ class TestService(
     val url = "$testServiceUrl/$snippetId"
     logger.info("Sending test creation request to URL: $url")
 
+    val newTestDto = TestDto(testDto, snippetAuthor)
+
     try {
-      val entity = HttpEntity(testDto, headers)
+      val entity = HttpEntity(newTestDto, headers)
 
       val response = restTemplate.exchange(
         url,
