@@ -49,11 +49,19 @@ class SnippetService(
 
   fun getSnippetsByName(userId: String, name: String): List<SnippetWithCompliance> {
     val mySnippetIds = permissionService.getMySnippetsIds(userId)
-    return (if (name.isBlank()) snippetRepository.findAll() else listOfNotNull(snippetRepository.findByName(name)))
+
+    val snippets = if (name.isBlank()) {
+      snippetRepository.findAll()
+    } else {
+      snippetRepository.findByName(name)
+    }
+
+    return snippets
       .filter { it.id in mySnippetIds }
       .map { snippet ->
         val complianceStatus = snippetComplianceRepository
-          .findBySnippetIdAndUserId(snippet.id, userId)?.complianceStatus ?: "pending"
+          .findBySnippetIdAndUserId(snippet.id, userId)
+          ?.complianceStatus ?: "pending"
         SnippetWithCompliance(snippet, complianceStatus)
       }
   }
