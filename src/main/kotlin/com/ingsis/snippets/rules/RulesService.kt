@@ -47,13 +47,19 @@ class RulesService(
 
   fun getRules(username: String, type: String): List<RuleDto> {
     val rulesJson = assetService.getAssetContent(username, type)
-    return if (rulesJson == "No Content") {
+    return try {
+      if (rulesJson == "No Content") {
+        val defaultRules = RuleManager.getDefaultRules(type)
+        saveRules(username, type, defaultRules)
+        RuleManager.convertToRuleList(defaultRules)
+      } else {
+        val existingRules = JsonUtil.deserializeRules(rulesJson, type)
+        RuleManager.convertToRuleList(existingRules)
+      }
+    } catch (e: Exception) {
       val defaultRules = RuleManager.getDefaultRules(type)
       saveRules(username, type, defaultRules)
       RuleManager.convertToRuleList(defaultRules)
-    } else {
-      val existingRules = JsonUtil.deserializeRules(rulesJson, type)
-      RuleManager.convertToRuleList(existingRules)
     }
   }
 
