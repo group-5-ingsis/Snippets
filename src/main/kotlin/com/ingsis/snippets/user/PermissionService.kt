@@ -3,10 +3,7 @@ package com.ingsis.snippets.user
 import com.ingsis.snippets.snippet.SnippetController
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -18,13 +15,13 @@ class PermissionService(private val restTemplate: RestTemplate) {
 
   private val permissionServiceUrl: String = System.getenv("PERMISSION_SERVICE_URL") ?: "http://localhost:8083"
 
-  fun updatePermissions(userId: String, snippetId: String, type: String) {
+  fun updatePermissions(type: String, operation: String, userId: String, snippetId: String) {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/$type/$userId/$snippetId"
+    val url = "$permissionServiceUrl/$type/$operation/$userId/$snippetId"
     logger.info("Updating permissions for user: $userId, type: $type")
 
     try {
@@ -42,33 +39,56 @@ class PermissionService(private val restTemplate: RestTemplate) {
     }
   }
 
-  fun shareSnippet(userId: String, snippetId: String) {
-    logger.info("Permission URL: $permissionServiceUrl")
-
+  fun deleteSnippet(snippetId: String) {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
     }
 
-    val url = "$permissionServiceUrl/read/$userId/$snippetId"
-    logger.info("Sharing snippet: $snippetId to user: $userId")
-
-    val entity = HttpEntity<Void>(headers)
+    val url = "$permissionServiceUrl/$snippetId"
+    logger.info("Deleting snippet: $snippetId")
 
     try {
+      val entity = HttpEntity<Void>(headers)
+
       restTemplate.exchange(
         url,
-        HttpMethod.POST,
+        HttpMethod.DELETE,
         entity,
         Void::class.java
       )
-      logger.info("Shared snippet successfully.")
+      logger.info("Snippet deleted successfully.")
     } catch (e: RestClientException) {
-      logger.error("Error sharing snippet: ${e.message}")
+      logger.error("Error deleting snippet: ${e.message}")
     }
   }
 
-  fun getSnippets(userId: String, type: String): List<String> {
+  fun hasPermissions(type: String, userId: String, snippetId: String): Boolean {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$permissionServiceUrl/$type/$snippetId/$userId"
+    logger.info("Checking if user has $type permissions for snippetId: $snippetId")
+
+    return try {
+      val entity = HttpEntity<Void>(headers)
+
+      val result = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        entity,
+        Boolean::class.java
+      )
+      result.body ?: false
+    } catch (e: RestClientException) {
+      logger.error("Error fetching permissions for userId $userId and snippetId $snippetId: ${e.message}")
+      false
+    }
+  }
+
+  fun getUserSnippetsOfType(userId: String, type: String): List<String> {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
@@ -116,50 +136,6 @@ class PermissionService(private val restTemplate: RestTemplate) {
     } catch (e: RestClientException) {
       println("Error fetching snippets: ${e.message}")
       emptyList()
-    }
-  }
-
-  fun deleteSnippet(snippetId: String) {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
-    }
-
-    val url = "$permissionServiceUrl/$snippetId"
-
-    try {
-      val entity = HttpEntity<Void>(headers)
-
-      restTemplate.exchange(
-        url,
-        HttpMethod.DELETE,
-        entity,
-        Void::class.java
-      )
-    } catch (e: RestClientException) {
-      logger.error("Error deleting snippet: ${e.message}")
-    }
-  }
-
-  fun removePermission(snippetId: String, userId: String, type: String) {
-    val headers = HttpHeaders().apply {
-      contentType = MediaType.APPLICATION_JSON
-      accept = listOf(MediaType.ALL)
-    }
-
-    val url = "$permissionServiceUrl/$type/$snippetId/$userId"
-
-    try {
-      val entity = HttpEntity<Void>(headers)
-
-      restTemplate.exchange(
-        url,
-        HttpMethod.DELETE,
-        entity,
-        Void::class.java
-      )
-    } catch (e: RestClientException) {
-      logger.error("Error removing permissions: ${e.message}")
     }
   }
 }

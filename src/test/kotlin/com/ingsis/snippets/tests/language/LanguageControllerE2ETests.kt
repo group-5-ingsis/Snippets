@@ -73,6 +73,4 @@ class LanguageControllerE2ETests @Autowired constructor(
 
     assertTrue(fileTypes.isNotEmpty(), "File types should not be empty")
   }
-
-
 }

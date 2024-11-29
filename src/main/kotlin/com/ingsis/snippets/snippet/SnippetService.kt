@@ -24,25 +24,18 @@ class SnippetService(
   private val lintRequestProducer: LintRequestProducer,
   private val lintResponseConsumer: LintResponseConsumer,
   private val testService: TestService,
+  private val snippetComplianceRepository: SnippetComplianceRepository
 ) {
 
   private val logger = LoggerFactory.getLogger(SnippetService::class.java)
 
   suspend fun createSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
-    val compliance = lintSnippet(userData.username, snippetDto.content, snippetDto.language)
-
-    val snippet = Snippet(snippetDto, compliance).apply {
-      author = userData.username
-    }
-
-    val savedSnippet = withContext(Dispatchers.IO) {
-      snippetRepository.save(snippet)
-    }
-
-    createAsset(userData.username, savedSnippet.id, snippetDto.content)
-    updatePermissionsForSnippet(userData.userId, savedSnippet.id)
-
-    return savedSnippet
+    val snippet = createAndSaveSnippet(userData, snippetDto)
+    saveSnippetConformance(userData, snippet, snippetDto.content)
+    createAsset(userData.username, snippet.id, snippetDto.content)
+    grantPermissions(userData.userId, snippet.id, listOf("read", "write"))
+    logger.info("Snippet created with ID: ${snippet.id}")
+    return snippet
   }
 
   fun getSnippetById(id: String): Snippet =
@@ -54,56 +47,69 @@ class SnippetService(
     return SnippetWithContent(snippet, content)
   }
 
-  fun getSnippetsByName(userId: String, name: String): List<Snippet> {
+  fun getSnippetsByName(userId: String, name: String): List<SnippetWithCompliance> {
     val mySnippetIds = permissionService.getMySnippetsIds(userId)
 
     val snippets = if (name.isBlank()) {
       snippetRepository.findAll()
     } else {
-      listOf(snippetRepository.findByName(name))
+      snippetRepository.findByName(name)
     }
 
-    return snippets.filter { it.id in mySnippetIds }
+    return snippets
+      .filter { it.id in mySnippetIds }
+      .map { snippet ->
+        val complianceStatus = snippetComplianceRepository
+          .findBySnippetIdAndUserId(snippet.id, userId)
+          ?.complianceStatus ?: "pending"
+        SnippetWithCompliance(snippet, complianceStatus)
+      }
   }
 
   suspend fun updateSnippet(userId: String, snippetId: String, newContent: String): SnippetWithContent {
-    val writePermissionSnippets = permissionService.getSnippets(userId, "write")
-    logger.info("snippets with write permission: $writePermissionSnippets, snippetId: $snippetId")
-    if (snippetId !in writePermissionSnippets) {
-      return SnippetWithContent(getSnippetById(snippetId), "You don't have permission to update this snippet")
-    }
-    val snippet = getSnippetById(snippetId)
-    val compliance = lintSnippet(snippet.author, newContent, snippet.language)
-    snippet.compliance = compliance
-
-    val savedSnippet = withContext(Dispatchers.IO) {
-      snippetRepository.save(snippet)
-    }
+    ensureWritePermission(userId, snippetId)
+    val snippet = updateSnippetContent(snippetId, newContent)
+    val complianceResult = lintSnippet(userId, newContent, snippet.language)
+    updateOrCreateCompliance(snippetId, userId, complianceResult)
     testService.runAllTests(snippetId)
-    createAsset(savedSnippet.author, savedSnippet.id, newContent)
-    return SnippetWithContent(savedSnippet, newContent)
+    return SnippetWithContent(snippet, newContent)
   }
 
   fun deleteSnippet(snippetId: String, userId: String): String {
     val snippet = getSnippetById(snippetId)
-    val writePermissionSnippets = permissionService.getSnippets(userId, "write")
-    if (snippet.id !in writePermissionSnippets) {
-      permissionService.removePermission(snippetId, userId, "read")
-      return "You don't have permission to delete this snippet"
+
+    if (!permissionService.hasPermissions("write", userId, snippetId)) {
+      permissionService.updatePermissions("read", "remove", userId, snippetId)
+      return "Read permission removed"
     }
+
     assetService.deleteAsset(snippet.author, snippet.id)
     snippetRepository.deleteById(snippetId)
     permissionService.deleteSnippet(snippetId)
-    return "Snippet deleted!"
+    logger.info("Snippet with ID: $snippetId deleted successfully")
+    return "Deleted snippet"
   }
 
-  fun shareSnippet(userId: String, snippetId: String, userToShare: String): SnippetWithContent {
+  fun shareSnippet(snippetId: String, userToShare: String): SnippetWithContent {
     val snippet = getSnippetById(snippetId)
-    if (hasWritePermission(userId, snippetId)) {
-      permissionService.shareSnippet(userToShare, snippetId)
-    }
+    permissionService.updatePermissions("read", "add", userToShare, snippetId)
     val content = assetService.getAssetContent(snippet.author, snippet.id)
     return SnippetWithContent(snippet, content)
+  }
+
+  private suspend fun createAndSaveSnippet(userData: UserData, snippetDto: SnippetDto): Snippet {
+    val snippet = Snippet(snippetDto).apply { author = userData.username }
+    return withContext(Dispatchers.IO) { snippetRepository.save(snippet) }
+  }
+
+  private suspend fun saveSnippetConformance(userData: UserData, snippet: Snippet, content: String) {
+    val complianceStatus = lintSnippet(userData.username, content, snippet.language)
+    val conformance = SnippetConformance(
+      snippetId = snippet.id,
+      userId = userData.userId,
+      complianceStatus = complianceStatus
+    )
+    withContext(Dispatchers.IO) { snippetComplianceRepository.save(conformance) }
   }
 
   private fun createAsset(container: String, key: String, content: String) {
@@ -111,15 +117,10 @@ class SnippetService(
     assetService.createOrUpdateAsset(asset)
   }
 
-  private fun updatePermissionsForSnippet(userId: String, snippetId: String) {
-    listOf("read", "write").forEach { permission ->
-      permissionService.updatePermissions(userId, snippetId, permission)
+  private fun grantPermissions(userId: String, snippetId: String, permissions: List<String>) {
+    permissions.forEach { permission ->
+      permissionService.updatePermissions(permission, "add", userId, snippetId)
     }
-  }
-
-  private fun hasWritePermission(userId: String, snippetId: String): Boolean {
-    val writableSnippets = permissionService.getSnippets(userId, "write")
-    return snippetId in writableSnippets
   }
 
   private suspend fun lintSnippet(username: String, content: String, language: String): String {
@@ -129,12 +130,37 @@ class SnippetService(
 
     return try {
       withTimeout(5000L) {
-        val responseDeferred = lintResponseConsumer.getLintResponse(requestId)
-        responseDeferred.await()
+        lintResponseConsumer.getLintResponse(requestId).await()
       }
     } catch (e: TimeoutCancellationException) {
       logger.warn("Linting timed out for requestId: $requestId, assuming compliant")
       "compliant"
+    }
+  }
+
+  private fun ensureWritePermission(userId: String, snippetId: String) {
+    val hasPermissions = permissionService.hasPermissions("write", userId, snippetId)
+    if (!hasPermissions) {
+      throw IllegalAccessException("You don't have permission to update this snippet")
+    }
+  }
+
+  private suspend fun updateSnippetContent(snippetId: String, newContent: String): Snippet {
+    val snippet = getSnippetById(snippetId).apply {
+      createAsset(author, id, newContent)
+    }
+    return withContext(Dispatchers.IO) { snippetRepository.save(snippet) }
+  }
+
+  private suspend fun updateOrCreateCompliance(snippetId: String, userId: String, complianceResult: String): SnippetConformance {
+    val existingCompliance = withContext(Dispatchers.IO) {
+      snippetComplianceRepository.findBySnippetIdAndUserId(snippetId, userId)
+    }
+    return (
+      existingCompliance?.apply { complianceStatus = complianceResult }
+        ?: SnippetConformance(snippetId = snippetId, userId = userId, complianceStatus = complianceResult)
+      ).also {
+      withContext(Dispatchers.IO) { snippetComplianceRepository.save(it) }
     }
   }
 }

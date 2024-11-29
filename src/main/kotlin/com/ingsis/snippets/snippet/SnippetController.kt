@@ -27,47 +27,45 @@ class SnippetController(private val snippetService: SnippetService) {
     return ResponseEntity(snippetResponse, HttpStatus.OK)
   }
 
-  @GetMapping("/id/{id}")
+  @GetMapping("/{id}")
   fun getSnippetById(@PathVariable id: String): SnippetWithContent {
     logger.info("Fetching snippet with id: $id")
     return snippetService.getSnippetContent(id)
   }
 
   @GetMapping("/name/{snippetName}")
-  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetName: String): List<Snippet> {
-    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+  fun getSnippetsByName(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetName: String): List<SnippetWithCompliance> {
+    val userId = JwtInfoExtractor.extractUserId(jwt)
     logger.info("Fetching snippets with name: $snippetName (get/name/{name})")
     return snippetService.getSnippetsByName(userId, snippetName)
   }
 
   @GetMapping("/")
-  fun getAllSnippets(@AuthenticationPrincipal jwt: Jwt): List<Snippet> {
-    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+  fun getAllSnippets(@AuthenticationPrincipal jwt: Jwt): List<SnippetWithCompliance> {
+    val userId = JwtInfoExtractor.extractUserId(jwt)
     logger.info("Fetching snippets for user:  $userId (get/)")
     return snippetService.getSnippetsByName(userId, "")
   }
 
   @PutMapping("/{snippetId}")
   suspend fun updateSnippet(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String, @RequestBody newSnippetContent: String): SnippetWithContent {
+    val userId = JwtInfoExtractor.extractUserId(jwt)
     logger.info("Updating snippet with id: $snippetId (put/{id})")
-    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
     return snippetService.updateSnippet(userId, snippetId, newSnippetContent)
   }
 
   @DeleteMapping("/{snippetId}")
   fun deleteSnippet(@AuthenticationPrincipal jwt: Jwt, @PathVariable snippetId: String): String {
-    val (userId, _) = JwtInfoExtractor.extractUserInfo(jwt)
+    val userId = JwtInfoExtractor.extractUserId(jwt)
     logger.info("Deleting snippet with id: $snippetId (delete/{id})")
     return snippetService.deleteSnippet(snippetId, userId)
   }
 
   @PostMapping("/trigger-alert")
   fun triggerAlert(): ResponseEntity<String> {
-    // Log and trigger an alert in New Relic
     val alertMessage = "Manual alert triggered by hitting /trigger-alert endpoint"
     logger.error(alertMessage)
 
-    // Report the custom error to New Relic
     NewRelic.noticeError(RuntimeException(alertMessage))
 
     NewRelic.addCustomParameter("triggeredBy", "SnippetController")

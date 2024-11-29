@@ -22,7 +22,7 @@ class TestService(
 
   private val testServiceUrl: String = System.getenv("TEST_SERVICE_URL") ?: "http://localhost:8084"
 
-  fun createTest(snippetId: String, testDto: TestDto): TestDto {
+  fun createTest(snippetId: String, testDto: TestDto, snippetAuthor: String): TestDto {
     val headers = HttpHeaders().apply {
       contentType = MediaType.APPLICATION_JSON
       accept = listOf(MediaType.ALL)
@@ -32,8 +32,10 @@ class TestService(
     val url = "$testServiceUrl/$snippetId"
     logger.info("Sending test creation request to URL: $url")
 
+    val newTestDto = TestDto(testDto, snippetAuthor)
+
     try {
-      val entity = HttpEntity(testDto, headers)
+      val entity = HttpEntity(newTestDto, headers)
 
       val response = restTemplate.exchange(
         url,
@@ -49,6 +51,32 @@ class TestService(
     } catch (e: RestClientException) {
       logger.error("Error sending test creation request: ${e.message}")
       throw RuntimeException("Error sending test creation request: ${e.message}", e)
+    }
+  }
+
+  fun deleteTest(testId: String) {
+    val headers = HttpHeaders().apply {
+      contentType = MediaType.APPLICATION_JSON
+      accept = listOf(MediaType.ALL)
+    }
+
+    val url = "$testServiceUrl/$testId"
+    logger.info("Sending request to delete test to URL: $url")
+
+    try {
+      val entity = HttpEntity<Void>(headers)
+
+      restTemplate.exchange(
+        url,
+        HttpMethod.DELETE,
+        entity,
+        Void::class.java
+      )
+
+      logger.info("Test deletion request sent successfully.")
+    } catch (e: RestClientException) {
+      logger.error("Error sending test deletion request: ${e.message}")
+      throw RuntimeException("Error sending test deletion request: ${e.message}", e)
     }
   }
 
@@ -75,6 +103,7 @@ class TestService(
 
       return tests.map { test ->
         TestDto(
+          id = test.id,
           name = test.name,
           input = test.userInputs,
           output = test.userOutputs
@@ -114,7 +143,7 @@ class TestService(
     }
   }
 
-  /* Test service handles breaking down each individual test for the snippet. */
+  /* Test service handles breaking down each test for the snippet. */
   fun runAllTests(snippetId: String) {
     val headers = HttpHeaders().apply {
       accept = listOf(MediaType.APPLICATION_JSON)

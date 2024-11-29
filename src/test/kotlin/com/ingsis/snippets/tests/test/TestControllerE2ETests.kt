@@ -50,7 +50,7 @@ class TestControllerE2ETests @Autowired constructor(
     snippetId = savedSnippet.id
 
     // Update permissions for the snippet
-    permissionService.updatePermissions(userId, snippetId, "write")
+    permissionService.updatePermissions("write", "add", userId, snippetId)
   }
 
   @AfterAll
