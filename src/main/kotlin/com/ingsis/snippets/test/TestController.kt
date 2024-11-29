@@ -19,6 +19,7 @@ class TestController(
   @DeleteMapping("/{id}")
   fun removeTest(@PathVariable id: String) {
     logger.info("Received request to remove test for snippet id: $id")
+    this.testService.deleteTest(id)
   }
 
   @GetMapping("/{snippetId}")
